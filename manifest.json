@@ -1,0 +1,29 @@
+{
+  "name": "Mark as done",
+  "description": "Keep track of your progress!",
+  "version": "0.3.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "incognito": "not_allowed",
+  "permissions": [
+    "storage",
+    "scripting",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup_disabled.html",
+    "default_icon": {
+      "128": "/images/icon-toolbar-disabled.png"
+    }
+  },
+  "icons": {
+    "128": "/images/icon-done.png"
+  },
+  "options_page": "options.html"
+}

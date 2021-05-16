@@ -1,0 +1,29 @@
+a.marked-as-done {
+    color: green !important;
+}
+
+a.marked-as-done::after {
+    content: " ☑";
+    color: green !important;
+    font-weight: bolder;
+}
+
+a.marked-as-started {
+    color: #de9621 !important;
+}
+
+a.marked-as-started::after {
+    content: " ⊘︎";
+    color: #de9621 !important;
+    font-weight: bolder;
+}
+
+a.marked-as-todo {
+    color: #d73700 !important;
+}
+
+a.marked-as-todo::after {
+    content: " ★";
+    color: #d73700 !important;
+    font-weight: bolder;
+}
