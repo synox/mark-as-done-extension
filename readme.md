@@ -22,3 +22,4 @@ Clone repo and "load unpackaed" as descibed in https://developer.chrome.com/docs
 # Notes
 
 * Initially, the extension has no permissions. It will only update links on pages that were added by the user.
+* What does the Logo 🔰 mean? : We are constantly learning. See [Source](https://emojipedia.org/japanese-symbol-for-beginner/)
