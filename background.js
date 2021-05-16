@@ -44,6 +44,12 @@ chrome.runtime.onMessage.addListener(async function (message, sender, sendRespon
         }
         if (message.type === "access-granted") {
             await activateTab(message.tab)
+        }
+        if (message.type === "import-data") {
+            for (let entry of message.data) {
+                chrome.storage.local.set({[entry.url]: entry.status});
+            }
+            sendResponse("success")
 
         }
     }

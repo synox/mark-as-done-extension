@@ -40,8 +40,6 @@ async function prepareUrl(url) {
     return url;
 }
 
-
-
 function promisify(api, context) {
     return (...args) => {
         return new Promise((resolve, reject) => {

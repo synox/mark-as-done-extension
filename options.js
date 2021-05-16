@@ -25,6 +25,30 @@ document.getElementById("exportButton").addEventListener('click', async event =>
 });
 
 
+document.getElementById("importButton").addEventListener('click', async event => {
+    document.getElementById('upload').click();
+})
+
+document.getElementById('upload').addEventListener("change", handleFiles, false);
+
+function handleFiles() {
+    if (this.files.length === 0) {
+        console.log('No file selected.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function fileReadCompleted() {
+        // when the reader is done, the content is in reader.result.
+        const data = JSON.parse(reader.result);
+        chrome.runtime.sendMessage({type: 'import-data', data: data}, response => {
+            document.getElementById("importStatus").append("import completed. status: " + response)
+        });
+    };
+    reader.readAsText(this.files[0]);
+}
+
+
 document.getElementById("listButton").addEventListener('click', async event => {
     let allItems = await chrome.storage.local.getP(null);
     let result = Object.entries(allItems)
