@@ -1,68 +1,74 @@
-#controls {
+body.popup {
     text-align: right;
+    padding: 0;
+    margin: 0;
 }
 
-#buttonDiv {
-    min-width: 187px;
+#controls {
+    display: inline-block;
+    text-align: center;
+    margin: 0;
 }
+ 
 
 #buttonDiv button {
-    border: 2px solid black;
+    border: 1px solid gray;
     background-color: white;
     color: black;
-    padding: 4px 7px;
+    
     font-size: 16px;
     cursor: pointer;
-    border-radius: 5px;
-    margin: 10px;
+    text-align: left;
+
+    padding: 4px 10px;
+    display: block;
+    width: 8em;
+    height: 2em;
 }
 
 #buttonDiv button img {
     width: 16px;
-    margin-right: 4px;
+    margin-right: 14px;
 }
 
 #buttonDiv button span {
-    line-height: 30px;
 }
 
 #buttonDiv button[data-status='done'] {
-    border-color: #04AA6D;
+    /* border-color: #04AA6D; */
     color: green;
+
 }
 
 #buttonDiv button[data-status='done'].current {
-    background-color: #04AA6D;
+    background-color: #04aa6db0;
     color: white;
 }
 
 #buttonDiv button[data-status='none'] {
-    border-color: gray;
     color: black;
+    text-align: center;
 }
 #buttonDiv button[data-status='none'].current {
-    background-color: gray;
-    color: white;
+    background-color: #ccc;
 }
 
 #buttonDiv button[data-status='started'] {
-    border-color: #ff9800;
-    color: orange;
+    color: #ff9800;
 }
 
 #buttonDiv button[data-status='started'].current {
-    background-color: #ff9800;
+    background-color: #ffb340;
     color: white;
 
 }
 
 #buttonDiv button[data-status='todo'] {
-    border-color: #f44336;
     color: red;
 }
 
 #buttonDiv button[data-status='todo'].current {
-    background-color: #f44336;
+    background-color: #fc7970;
     color: white;
 }
 
@@ -70,6 +76,7 @@
 #list-result ul {
     list-style-type: none;
     white-space: nowrap;
+    text-align: left;
 }
 
 #list-result ul li {

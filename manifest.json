@@ -1,7 +1,7 @@
 {
   "name": "Mark as done",
   "description": "Keep track of your progress!",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "manifest_version": 3,
   "background": {
     "service_worker": "background.js"
@@ -17,7 +17,7 @@
     "https://*/*"
   ],
   "action": {
-    "default_popup": "popup_disabled.html",
+    "default_popup": "popup/popup_disabled.html",
     "default_icon": {
       "128": "/images/icon-toolbar-disabled.png"
     }
