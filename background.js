@@ -3,7 +3,14 @@
 importScripts("global.js")
 
 
-async function activateTab(tab) {
+async function activateIcon(tab) {
+    // Update Icon in toolbar
+    let status = await getStatus(tab.url)
+    await chrome.action.setPopup({popup: "popup/popup.html", tabId: tab.id})
+    await updateIcon(tab.id, status)
+}
+
+async function activateTabContent(tab) {
     // activate UI changes in content.js
     await chrome.scripting.executeScript({
         target: {tabId: tab.id},
@@ -18,18 +25,18 @@ async function activateTab(tab) {
         files: ["content/content.css"],
     });
     chrome.tabs.sendMessage(tab.id, {type: 'update-content'})
-
-    // Update Icon in toolbar
-    let status = await getStatus(tab.url)
-    await chrome.action.setPopup({popup: "popup/popup.html", tabId: tab.id})
-    await updateIcon(tab.id, status)
 }
+
 
 chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
     // tab.url will be null if the permission is missing for this domain
-    if (tab.url && tab.status === "complete") {
-        console.log("tab was updated", tab.url);
-        await activateTab(tab);
+    if (tab.url) {
+        if (tab.status === "loading") {
+            await activateIcon(tab)
+        } else if (tab.status === "complete") {
+            console.log("tab was updated", tab.url);
+            await activateTabContent(tab);
+        }
     }
 })
 
