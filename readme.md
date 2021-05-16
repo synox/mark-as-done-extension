@@ -9,9 +9,9 @@ The following shows a partially read website, with some links marked as done.
 
 # Symbols
 
- * <img src="images/icon-done.png" width=30> Page is marked as **Done** 
- * <img src="images/icon-todo.png" width=30> Page is marked as **Todo** 
- * <img src="images/icon-started.png.png" width=30> Page is marked as **Started**, or **partially completed**
+ * <img src="images/icon-done.png" width=20> Page is marked as **Done** 
+ * <img src="images/icon-todo.png" width=20> Page is marked as **Todo** 
+ * <img src="images/icon-started.png" width=20> Page is marked as **Started**, or **partially completed**
 
 
 # How to Install
