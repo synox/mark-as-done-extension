@@ -11,17 +11,17 @@ async function activateTab(tab) {
     });
     await chrome.scripting.executeScript({
         target: {tabId: tab.id},
-        files: ["content.js"],
+        files: ["content/content.js"],
     });
     await chrome.scripting.insertCSS({
         target: {tabId: tab.id},
-        files: ["content.css"],
+        files: ["content/content.css"],
     });
     chrome.tabs.sendMessage(tab.id, {type: 'update-content'})
 
     // Update Icon in toolbar
     let status = await getStatus(tab.url)
-    await chrome.action.setPopup({popup: "popup.html", tabId: tab.id})
+    await chrome.action.setPopup({popup: "popup/popup.html", tabId: tab.id})
     await updateIcon(tab.id, status)
 }
 
