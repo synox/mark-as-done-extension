@@ -7,6 +7,13 @@ The following shows a partially read website, with some links marked as done.
 
  ![](images/example.png) 
 
+# Symbols
+
+ * <img src="images/icon-done.png" width=30> Page is marked as **Done** 
+ * <img src="images/icon-todo.png" width=30> Page is marked as **Todo** 
+ * <img src="images/icon-started.png.png" width=30> Page is marked as **Started**, or **partially completed**
+
+
 # How to Install
 
 Clone repo and "load unpackaed" as descibed in https://developer.chrome.com/docs/extensions/mv3/getstarted/#manifest
@@ -16,6 +23,7 @@ Clone repo and "load unpackaed" as descibed in https://developer.chrome.com/docs
 **Activate on site:** Click the icon <img src="images/icon-toolbar-disabled.png" width=30>, then follow the wizard to add permissions for a site.
 
 **Mark a page:** Click the icon <img src="images/icon-none.png" width=30>, then mark the current page as Todo, Started, Done, or unmarked. 
+
 
 **List all pages / Export**: Right-click on the Icon, then Click Options 
 
