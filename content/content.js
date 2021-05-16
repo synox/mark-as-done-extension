@@ -10,15 +10,20 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     }
 );
 
-function shouldIncludeHash(url) {
-    let withoutHash = url.replaceAll(ignoreHashRegex, "");
-    // ignore special case where links go the the same page, but with an empty hash
-    if (withoutHash === location.href && withoutHash + "#" === url) {
-        return false;
-    } else {
+function shouldMarkLink(url, documentUrl) {
+    if (url === documentUrl) {
         return true;
     }
+    // links to the current page, but with different anchor should not be handled
+    let plainUrl = url.replaceAll(ignoreHashRegex, "");
+    let plainDocumentUrl = documentUrl.replaceAll(ignoreHashRegex, "");
+    if (plainUrl === plainDocumentUrl) {
+        return false;
+    }
+
+    return true;
 }
+
 
 async function updateAllLinksOnPage() {
     let links = document.getElementsByTagName('a');
@@ -26,7 +31,7 @@ async function updateAllLinksOnPage() {
     console.log("found ", links.length, "links")
     for (let i = 0; i < links.length; i++) {
         const link = links[i];
-        if (shouldIncludeHash(link.href)) {
+        if (shouldMarkLink(link.href, location.href)) {
             let status = await getStatus(link.href)
 
             link.classList.remove("marked-as-done")

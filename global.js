@@ -7,11 +7,6 @@ const STATUS_STARTED = "started"
 const STATUS_NONE = "none"
 const STATUS_TODO = "todo"
 
-let options = {
-    // Ignore everything in the URL after the hash
-    ignoreUrlHashConfig: true
-}
-
 // keep backwards compatibility
 function compatibiltyStatus(oldStatus) {
 
@@ -33,10 +28,9 @@ async function getStatus(url) {
     return compatibiltyStatus(value[preparedUrl])
 }
 
+// in general, the anchor is not respected
 async function prepareUrl(url) {
-    if (options.ignoreUrlHashConfig) {
-        url = url.replaceAll(ignoreHashRegex, "");
-    }
+    url = url.replaceAll(ignoreHashRegex, "");
     return url;
 }
 
