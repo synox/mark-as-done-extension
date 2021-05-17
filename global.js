@@ -28,10 +28,10 @@ async function getStatus(url) {
     return compatibiltyStatus(value[preparedUrl])
 }
 
-// in general, the anchor is not respected
 async function prepareUrl(url) {
-    url = url.replaceAll(ignoreHashRegex, "");
-    return url;
+    let urlObject = new URL(url)
+    // in general, the search and hash are ignored
+    return urlObject.origin + urlObject.pathname;
 }
 
 function promisify(api, context) {
