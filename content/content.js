@@ -10,12 +10,19 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     }
 );
 
-function shouldMarkLink(url, documentUrl) {
+function shouldMarkLink(link, url, documentUrl) {
     if (url === "") {
         return false;
     }
     if (url === documentUrl) {
         return true;
+    }
+
+    // ignore header links in the sidebar
+    if (documentUrl.startsWith("https://experienceleague.adobe.com/") &&
+        link.matches('#container [data-id="toc"] a[href^="#"]')) {
+        return false;
+
     }
     let isSamePage = prepareUrl(url) === prepareUrl(documentUrl)
     if (isSamePage) {
@@ -32,7 +39,7 @@ async function updateAllLinksOnPage() {
     console.log("found ", links.length, "links")
     for (let i = 0; i < links.length; i++) {
         const link = links[i];
-        if (shouldMarkLink(link.href, location.href)) {
+        if (shouldMarkLink(link, link.href, location.href)) {
             let status = await getStatus(link.href)
 
             link.classList.remove("marked-as-done")
