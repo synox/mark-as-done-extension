@@ -68,7 +68,7 @@ async function updateIcon(tabId, status) {
 }
 
 async function storePageStatus(url, status) {
-    let preparedUrl = await prepareUrl(url);
+    let preparedUrl = prepareUrl(url);
 
     if (status === STATUS_NONE) {
         return chrome.storage.local.remove(preparedUrl);

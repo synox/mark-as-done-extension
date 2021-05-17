@@ -1,7 +1,5 @@
 // noinspection JSDeprecatedSymbols
 
-const ignoreHashRegex = /#.*$/ig;
-
 const STATUS_DONE = "done"
 const STATUS_STARTED = "started"
 const STATUS_NONE = "none"
@@ -23,15 +21,19 @@ async function getStatus(url) {
     if (!url) {
         return STATUS_NONE
     }
-    let preparedUrl = await prepareUrl(url);
+    let preparedUrl = prepareUrl(url);
     const value = await chrome.storage.local.getP(preparedUrl)
     return compatibiltyStatus(value[preparedUrl])
 }
 
-async function prepareUrl(url) {
-    let urlObject = new URL(url)
-    // in general, the search and hash are ignored
-    return urlObject.origin + urlObject.pathname;
+function prepareUrl(url) {
+    try {
+        let urlObject = new URL(url)
+        // in general, the search and hash are ignored
+        return urlObject.origin + urlObject.pathname;
+    } catch (error) {
+        console.error(`Can not parse as url=${url}, error=${error}`)
+    }
 }
 
 function promisify(api, context) {
