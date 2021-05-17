@@ -11,17 +11,15 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 );
 
 function shouldMarkLink(url, documentUrl) {
-    if(url === ""){
+    if (url === "") {
         return false;
     }
     if (url === documentUrl) {
         return true;
     }
-    // links to the current page, but with different anchor should not be handled
-    let plainUrl = prepareUrl(url)
-    let plainDocumentUrl = prepareUrl(documentUrl)
-    if (plainUrl === plainDocumentUrl) {
-        return false;
+    let isSamePage = prepareUrl(url) === prepareUrl(documentUrl)
+    if (isSamePage) {
+        return true;
     }
 
     return true;
