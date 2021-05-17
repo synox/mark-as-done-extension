@@ -125,3 +125,14 @@ body.popup {
     border-bottom: 1px solid #aaa;
     margin-bottom: .5em;
 }
+
+
+details.danger {
+    margin: 30px 0;
+}
+details.danger summary {
+    color: red;
+}
+details.danger button {
+    color: red;
+}
