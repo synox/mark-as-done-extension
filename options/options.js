@@ -49,6 +49,13 @@ function handleFiles() {
 }
 
 
+document.getElementById("deleteAllButton").addEventListener('click', async event => {
+    if (confirm("This will delete all data. First export everything!") && confirm("Really, are you ready to delete it all?")) {
+        await chrome.storage.local.clear()
+        alert("done")
+    }
+});
+
 document.getElementById("listButton").addEventListener('click', async event => {
     let allItems = await chrome.storage.local.getP(null);
     let result = Object.entries(allItems)
