@@ -2,12 +2,87 @@
 <html>
 <head>
     <link rel="stylesheet" href="../global.css">
-    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <script src="../global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+
+        }
+
+        .controls {
+            margin: 5px;
+
+        }
+
+        .controls h1 {
+            font-size: 18px;
+            padding: 5px 5px 5px 0;
+        }
+
+        .buttonDiv {
+            margin: 20px 0;
+        }
+
+        .controls a {
+            padding: 10px 0;
+            color: darkgray;
+            margin-right: 15px;
+            font-size: 14px;
+            text-decoration: none;
+
+            font-size: 12px;
+            background-color: #eee;
+            border-radius: 10px;
+            padding: 10px;
+            color: #444;
+        }
+
+        .controls a:hover {
+            background-color: #eaeaea;
+        }
+
+
+        .controls a i {
+            font-size: 20px;
+        }
+
+        .controls a span {
+        }
+
+        .controls {
+            min-width: 16rem;;
+            /*display: none;*/
+        }
+
+        .controls.current {
+            display: block;
+            white-space: nowrap;
+
+        }
+
+
+        h1 .fa-check-circle,
+        a:hover .fa-check-circle {
+            color: green;
+        }
+
+        h1 .fa-circle-notch,
+        a:hover .fa-circle-notch {
+            color: #00b7ff;
+        }
+
+        h1 .fa-clock,
+        a:hover .fa-clock {
+            color: #ff624e;
+        }
+
+    </style>
 </head>
-<body class="popup">
+<body>
+<!------
 <div id="controls">
-    <div id="buttonDiv">
+    <div class="buttonDiv">
         <button class="changeStateButton" data-status="none">
             <span> -</span>
         </button>
@@ -33,8 +108,61 @@
     </p>
 </div>
 
-<div id="list-result"></div>
-<script src="popup.js"></script>
+ -->
+<div class="controls" id="controls-todo" data-status="todo">
 
+    <h1><i class="fas fa-clock"></i> Page saved for later.</h1>
+
+    <div class="buttonDiv">
+
+        <a href="#" class="changeStateButton" data-status="started">
+            <i class="fas fa-circle-notch"></i>
+            <span> start progress</span>
+        </a>
+
+        <a href="#" class="changeStateButton" data-status="done">
+            <i class="fas fa-check-circle"></i>
+            <span> done</span>
+        </a>
+
+        <a href="#" class="changeStateButton" data-status="none">
+            <i class="far fa-trash-alt"></i>
+            <span> Remove</span>
+        </a>
+    </div>
+</div>
+
+<div class="controls" id="controls-started" data-status="started">
+
+    <h1><i class="fas fa-circle-notch"></i> Page is in progress.</h1>
+
+    <div class="buttonDiv">
+
+        <a href="#" class="changeStateButton" data-status="done">
+            <i class="fas fa-check-circle"></i>
+            <span> done</span>
+        </a>
+
+        <a href="#" class="changeStateButton" data-status="none">
+            <i class="far fa-trash-alt"></i>
+            <span> Remove</span>
+        </a>
+    </div>
+</div>
+
+<div class="controls" id="controls-done" data-status="done">
+
+    <h1><i class="fas fa-check-circle"></i> Page marked as done.</h1>
+
+    <div id="buttonDiv">
+
+        <a href="#" class="changeStateButton" data-status="none">
+            <i class="far fa-trash-alt"></i>
+            <span> Remove</span>
+        </a>
+    </div>
+</div>
+
+<script src="popup.js"></script>
 </body>
 </html>
