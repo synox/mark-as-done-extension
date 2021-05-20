@@ -7,7 +7,7 @@ document.querySelectorAll("a.changeStateButton")
 
 async function handleButtonClick(button) {
     let status = button.getAttribute("data-status");
-    updateButtons(status)
+    updateView(status, true)
     let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
     chrome.runtime.sendMessage({type: "set-status", status, tab});
     if (status === "none") {
@@ -17,16 +17,14 @@ async function handleButtonClick(button) {
     }
 }
 
-function updateButtons(status) {
+function updateView(status, animate = false) {
     console.log("update with status", status)
-    document.querySelectorAll("button.changeStateButton").forEach(button => {
-        if (button.getAttribute("data-status") === status) {
-            button.classList.add("current")
-        } else {
-            button.classList.remove("current")
-        }
-    });
 
+    if (animate) {
+        document.querySelectorAll("h1").forEach(h1 => {
+            h1.classList.add("appearFromTop")
+        })
+    }
     document.querySelectorAll(".controls").forEach(controls => {
         if (controls.getAttribute("data-status") === status) {
             controls.classList.add("current")
@@ -63,8 +61,11 @@ async function init() {
     if (status === "none") {
         status = "todo"
         chrome.runtime.sendMessage({type: "set-status", status, tab});
+        updateView(status, true)
+    } else {
+        updateView(status, false)
+
     }
-    updateButtons(status)
 }
 
 init()
