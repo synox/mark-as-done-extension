@@ -7,6 +7,15 @@ The following shows a partially read website, with some links marked as done.
 
  ![](images/example.png) 
 
+With one click the page is marked as TODO: 
+
+![](docs/screenshot-todo.png)
+
+And then it's easy to mark it as done: 
+
+![](docs/screenshot-done.png)
+
+
 # Symbols
 
  * <img src="images/icon-done.png" width=20> Page is marked as **Done** 
