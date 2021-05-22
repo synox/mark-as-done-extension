@@ -27,6 +27,8 @@ And then it's easy to mark it as done:
 
 Clone repo and "load unpackaed" as descibed in https://developer.chrome.com/docs/extensions/mv3/getstarted/#manifest
 
+(Submission to Chrome Web Store is awaiting review.)
+
 # How to Use
 
 **Activate on site:** Click the icon <img src="images/icon-toolbar-disabled.png" width=30>, then follow the wizard to add permissions for a site.
