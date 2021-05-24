@@ -14,6 +14,11 @@ function shouldMarkLink(link, url, documentUrl) {
     if (url === "") {
         return false;
     }
+    // a plain '#' is often used for buttons and menubars. Can be ignored.
+    if (link.getAttribute("href") === "#") {
+        return false;
+    }
+
     if (url === documentUrl) {
         return true;
     }
@@ -22,7 +27,6 @@ function shouldMarkLink(link, url, documentUrl) {
     if (documentUrl.startsWith("https://experienceleague.adobe.com/") &&
         link.matches('#container [data-id="toc"] a[href^="#"]')) {
         return false;
-
     }
     let isSamePage = prepareUrl(url) === prepareUrl(documentUrl)
     if (isSamePage) {
