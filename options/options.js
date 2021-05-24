@@ -80,7 +80,9 @@ document.getElementById("listButton").addEventListener('click', async event => {
 
     let htmlItems = "";
     for (let domain of Object.keys(result).sort()) {
-        htmlItems += `<details><summary>${domain}</summary>
+        let totalCount = result[domain].length
+        let doneCount = result[domain].filter(item => item.status === STATUS_DONE).length
+        htmlItems += `<details><summary>${domain} (${doneCount}/${totalCount})</summary>
         <ul>`
         for (const item of result[domain]) {
             htmlItems += `<li data-status="${item.status}"><a href="${item.url}" target="_blank">${item.url}</a></li>`
