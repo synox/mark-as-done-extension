@@ -3,9 +3,13 @@ a.marked-as-done {
 }
 
 a.marked-as-done::after {
-    content: " ☑";
-    color: green !important;
-    font-weight: bolder;
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-done.png');
+    background-size: 1em 1em;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    content:"";
+    margin-left: 0.3em;
 }
 
 a.marked-as-started {
@@ -13,17 +17,29 @@ a.marked-as-started {
 }
 
 a.marked-as-started::after {
-    content: " ⊘︎";
-    color: #de9621 !important;
-    font-weight: bolder;
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-started.png');
+    background-size: 1em 1em;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    content:"";
+    margin-left: 0.3em;
 }
 
 a.marked-as-todo {
     color: #d73700 !important;
 }
 
-a.marked-as-todo::after {
-    content: " ★";
-    color: #d73700 !important;
-    font-weight: bolder;
+a.marked-as-todo:after {
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-todo.png');
+    background-size: 1em 1em;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    content:"";
+    margin-left: 0.3em;
+}
+
+h1 {
+    font-size: 22pt;
 }

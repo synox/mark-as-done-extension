@@ -25,5 +25,17 @@
   "icons": {
     "128": "/images/icon-done.png"
   },
-  "options_page": "options/options.html"
+  "options_page": "options/options.html",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/icon-todo.png",
+        "images/icon-started.png",
+        "images/icon-done.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }
