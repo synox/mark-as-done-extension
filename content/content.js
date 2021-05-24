@@ -10,6 +10,13 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     }
 );
 
+chrome.storage.local.onChanged.addListener(async function (changes, areaName) {
+        console.log("chrome.storage.local.onChanged triggered")
+        updateAllLinksOnPage();
+    }
+);
+
+
 function shouldMarkLink(link, url, documentUrl) {
     if (url === "") {
         return false;
