@@ -5,6 +5,16 @@
     <link rel="stylesheet" href="../global.css">
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <script src="../global.js"></script>
+    <script>
+        // show preview if not running as extension
+        window.addEventListener('DOMContentLoaded', (event) => {
+            if (chrome.storage === undefined) {
+                document.querySelectorAll(".controls").forEach(controls => {
+                    controls.classList.add("current")
+                });
+            }
+        });
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
