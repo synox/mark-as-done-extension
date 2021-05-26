@@ -12,57 +12,20 @@
                 document.querySelectorAll(".controls").forEach(controls => {
                     controls.classList.add("current")
                 });
+                document.querySelectorAll("h1").forEach(h1 => {
+                    h1.classList.add("appearFromTop")
+                })
             }
+
         });
     </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-
         }
 
         .controls {
             margin: 5px;
-
-        }
-
-        .controls h1 {
-            font-size: 18px;
-            padding: 5px 5px 5px 0;
-        }
-
-        .buttonDiv {
-            margin: 20px 0;
-        }
-
-        .controls a {
-            padding: 10px 0;
-            color: darkgray;
-            margin-right: 15px;
-            font-size: 14px;
-            text-decoration: none;
-
-            font-size: 12px;
-            background-color: #eee;
-            border-radius: 10px;
-            padding: 10px;
-            color: #444;
-        }
-
-        .controls a:hover {
-            background-color: #eaeaea;
-        }
-
-
-        .controls a i {
-            font-size: 20px;
-            width: 20px;
-        }
-
-        .controls a span {
-        }
-
-        .controls {
             min-width: 20rem;;
             display: none;
         }
@@ -70,7 +33,36 @@
         .controls.current {
             display: block;
             white-space: nowrap;
+        }
 
+        .controls h1 {
+            font-size: 18px;
+            padding: 5px 5px 5px 0;
+        }
+
+        .controls a {
+            margin-right: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 12px;
+            background-color: #eee;
+            color: #444;
+        }
+
+        .controls a:hover {
+            background-color: #eaeaea;
+        }
+
+        .controls a i {
+            /* fontawesome icon */
+            font-size: 20px;
+            width: 20px;
+        }
+
+
+        .controls .buttonDiv {
+            margin: 20px 0;
         }
 
         .appearFromTop {
@@ -86,18 +78,6 @@
             to {
                 top: 0;
                 opacity: 1
-            }
-        }
-
-        @-webkit-keyframes mymove /* Safari and Chrome */
-        {
-            from {
-                top: 0px;
-                opacity: 0;
-            }
-            to {
-                top: 200px;
-                opacity: 1;
             }
         }
 
@@ -119,35 +99,7 @@
     </style>
 </head>
 <body>
-<!------
-<div id="controls">
-    <div class="buttonDiv">
-        <button class="changeStateButton" data-status="none">
-            <span> -</span>
-        </button>
-        <button class="changeStateButton" data-status="todo">
-            <img src="../images/icon-todo.png"/>
-            <span> todo</span>
-        </button>
-        <button class="changeStateButton" data-status="started">
-            <img src="../images/icon-started.png"/>
-            <span> started</span>
-        </button>
-        <button class="changeStateButton" data-status="done">
-            <img src="../images/icon-done.png"/>
-            <span> done</span>
-        </button>
 
-
-    </div>
-    <p>
-        <a id="listButton" href="#">
-            list all
-        </a>
-    </p>
-</div>
-
- -->
 <div class="controls" id="controls-todo" data-status="todo">
 
     <h1><i class="fas fa-clock"></i> Page saved for later.</h1>
