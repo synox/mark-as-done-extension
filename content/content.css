@@ -1,7 +1,7 @@
 a.marked-as-todo {
     color: #ff6758 !important;
 }
-a.marked-as-todo:after {
+a.marked-as-todo::after {
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-todo.png');
     background-size: 1em 1em;
     display: inline-block;
