@@ -6,6 +6,14 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
         console.log("content: received", request)
         if (request.type === "update-content") {
             await updateAllLinksOnPage()
+
+            // Some pages load content later. Need to add a trigger to process the links later.
+            if (location.href.startsWith("https://learning.oreilly.com/") != -1) {
+                // button to show the toc
+                document.querySelectorAll("a.sbo-toc-thumb").forEach(a => {
+                    a.addEventListener('click', () => updateAllLinksOnPage());
+                })
+            }
         }
     }
 );
