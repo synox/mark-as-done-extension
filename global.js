@@ -29,8 +29,8 @@ async function getStatus(url) {
 function prepareUrl(url) {
     try {
         let urlObject = new URL(url)
-        // in general, the search and hash are ignored
-        return urlObject.origin + urlObject.pathname;
+        // in general, hash are ignored. Search must be respected for confluence-wiki. (/pages/viewpage.action?pageId=123)
+        return urlObject.origin + urlObject.pathname + urlObject.search;
     } catch (error) {
         console.error(`Can not parse as url=${url}, error=${error}`)
     }
