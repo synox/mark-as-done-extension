@@ -29,8 +29,16 @@ async function getStatus(url) {
 function prepareUrl(url) {
     try {
         let urlObject = new URL(url)
-        // in general, hash are ignored. Search must be respected for confluence-wiki. (/pages/viewpage.action?pageId=123)
-        return urlObject.origin + urlObject.pathname + urlObject.search;
+        // in general, hash are ignored.
+
+        //Search must be respected for confluence-wiki. (/pages/viewpage.action?pageId=123)
+        // but on other pages the "?lang=en" should be ignored.
+
+        let filteredSearch = urlObject.search.replace(/lang=.*$/, "")
+        if (filteredSearch === "?") {
+            filteredSearch = ""
+        }
+        return urlObject.origin + urlObject.pathname + filteredSearch;
     } catch (error) {
         console.error(`Can not parse as url=${url}, error=${error}`)
     }
