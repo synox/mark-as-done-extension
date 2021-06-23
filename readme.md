@@ -25,9 +25,9 @@ And then it's easy to mark it as done:
 
 # How to Install
 
-Clone repo and "load unpackaed" as descibed in https://developer.chrome.com/docs/extensions/mv3/getstarted/#manifest
+https://chrome.google.com/webstore/detail/mark-as-done/eamfmbodggklinbmhfgeogcpebhfoojb?hl=de
 
-(Submission to Chrome Web Store is awaiting review.)
+Or: Clone repo and "load unpackaed" as described in https://developer.chrome.com/docs/extensions/mv3/getstarted/#manifest
 
 # How to Use
 
