@@ -8,12 +8,27 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
             await updateAllLinksOnPage()
 
             // Some pages load content later. Need to add a trigger to process the links later.
-            if (location.href.startsWith("https://learning.oreilly.com/") != -1) {
+            if (location.href.startsWith("https://learning.oreilly.com/")) {
                 // button to show the toc
                 document.querySelectorAll("a.sbo-toc-thumb").forEach(a => {
                     a.addEventListener('click', () => updateAllLinksOnPage());
                 })
             }
+
+            if (location.href.startsWith("https://wiki.corp") != -1) {
+                const mutationObserver = new MutationObserver(function (mutationList, observer) {
+                    // Use traditional 'for loops' for IE 11
+                    for (const mutation of mutationList) {
+                        if (mutation.type === 'childList') {
+                            console.log('Wiki: Sidebar was loaded.');
+                            updateAllLinksOnPage()
+                        }
+                    }
+                })
+                mutationObserver.observe(document.querySelector("div.plugin_pagetree_children"),
+                    {childList: true, subtree: false})
+            }
+
         }
     }
 );

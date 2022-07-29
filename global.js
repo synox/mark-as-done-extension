@@ -35,6 +35,11 @@ function prepareUrl(url) {
         // but on other pages the "?lang=en" should be ignored.
 
         let filteredSearch = urlObject.search.replace(/lang=.*$/, "")
+
+        // In confluence-wiki, there is a suffix when clicking the sidebar which should be ignored.
+        // https://wiki.corp.adobe.com/display/WEM/Creating+a+Public+Share+Link?src=contextnavpagetreemode
+        filteredSearch = urlObject.search.replace(/src=contextnavpagetreemode/, "")
+
         if (filteredSearch === "?") {
             filteredSearch = ""
         }
