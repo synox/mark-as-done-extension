@@ -1,9 +1,7 @@
 // noinspection JSDeprecatedSymbols
 
-console.log("content.js was activated")
-
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
-        console.log("content: received", request)
+        // console.debug("content: received", request)
         if (request.type === "update-content") {
             await updateAllLinksOnPage()
 
@@ -20,7 +18,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
                     // Use traditional 'for loops' for IE 11
                     for (const mutation of mutationList) {
                         if (mutation.type === 'childList') {
-                            console.log('Wiki: Sidebar was loaded.');
+                            console.debug('Wiki: Sidebar was loaded.');
                             updateAllLinksOnPage()
                         }
                     }
@@ -34,7 +32,6 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 );
 
 chrome.storage.local.onChanged.addListener(async function (changes, areaName) {
-        console.log("chrome.storage.local.onChanged triggered")
         updateAllLinksOnPage();
     }
 );
@@ -70,7 +67,7 @@ function shouldMarkLink(link, url, documentUrl) {
 async function updateAllLinksOnPage() {
     let links = document.getElementsByTagName('a');
 
-    console.log("found ", links.length, "links")
+    // console.debug("found ", links.length, "links")
     for (let i = 0; i < links.length; i++) {
         const link = links[i];
         if (shouldMarkLink(link, link.href, location.href)) {

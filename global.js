@@ -1,9 +1,10 @@
 // noinspection JSDeprecatedSymbols
-
-const STATUS_DONE = "done"
-const STATUS_STARTED = "started"
-const STATUS_NONE = "none"
-const STATUS_TODO = "todo"
+if (!STATUS_DONE) {
+    const STATUS_DONE = "done"
+    const STATUS_STARTED = "started"
+    const STATUS_NONE = "none"
+    const STATUS_TODO = "todo"
+}
 
 // keep backwards compatibility
 function compatibiltyStatus(oldStatus) {
