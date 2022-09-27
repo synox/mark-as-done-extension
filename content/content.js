@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
                 })
             }
 
-            if (location.href.startsWith("https://wiki.corp") != -1) {
+            if (location.href.startsWith("https://wiki.corp")) {
                 const mutationObserver = new MutationObserver(function (mutationList, observer) {
                     // Use traditional 'for loops' for IE 11
                     for (const mutation of mutationList) {
