@@ -1,5 +1,10 @@
+var STATUS_DONE = "done"
+var STATUS_STARTED = "started"
+var STATUS_NONE = "none"
+var STATUS_TODO = "todo"
+
 function save(filename, data) {
-    var blob = new Blob([data], {type: 'text/json'});
+    const blob = new Blob([data], {type: 'text/json'});
     if (window.navigator.msSaveOrOpenBlob) {
         window.navigator.msSaveBlob(blob, filename);
     } else {
