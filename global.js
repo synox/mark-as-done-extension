@@ -37,7 +37,7 @@ function prepareUrl(url) {
         let filteredSearch = urlObject.search.replace(/lang=.*$/, "")
 
         // In confluence-wiki, there is a suffix when clicking the sidebar which should be ignored.
-        // https://wiki.corp.adobe.com/display/WEM/Creating+a+Public+Share+Link?src=contextnavpagetreemode
+        // https://wiki.corp.example.com/display/ABC/Link?src=contextnavpagetreemode
         filteredSearch = urlObject.search.replace(/src=contextnavpagetreemode/, "")
 
         if (filteredSearch === "?") {
