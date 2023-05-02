@@ -30,6 +30,7 @@ async function getStatus(url) {
     return compatibiltyStatus(value[preparedUrl])
 }
 
+
 function prepareUrl(url) {
     try {
         let urlObject = new URL(url)
@@ -52,24 +53,3 @@ function prepareUrl(url) {
         console.error(`Can not parse as url=${url}, error=${error}`)
     }
 }
-
-function promisify(api, context) {
-    return (...args) => {
-        return new Promise((resolve, reject) => {
-
-            let customCallback = (result) => {
-                if (browser.runtime.lastError) {
-                    return reject(browser.runtime.lastError);
-                } else {
-                    return resolve(result);
-                }
-            };
-
-            args.push(customCallback); // append our custom callback to the end of arguments
-            api.call(context, ...args); // call the original function
-        });
-    };
-}
-
-// the official promise version of browser.storage.local.get does not work.
-browser.storage.local.getP = promisify(browser.storage.local.get, browser.storage.local)
