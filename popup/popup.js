@@ -1,15 +1,13 @@
-document.querySelectorAll("button.changeStateButton")
-    .forEach(button => button.addEventListener('click', () => handleButtonClick(button)));
-
-document.querySelectorAll("a.changeStateButton")
-    .forEach(button => button.addEventListener('click', () => handleButtonClick(button)));
+document.querySelectorAll("button.changeStateButton, a.changeStateButton")
+    .forEach(button =>
+        button.addEventListener('click', () => handleButtonInPopupClick(button)));
 
 
-async function handleButtonClick(button) {
+async function handleButtonInPopupClick(button) {
     let status = button.getAttribute("data-status");
-    updateView(status, true)
+    updatePopup(status, true)
     let [tab] = await browser.tabs.query({active: true, currentWindow: true});
-    browser.runtime.sendMessage({type: "set-status", status, tab});
+    browser.runtime.sendMessage({type: "change-page-status", status, tab});
     if (status === "none") {
         setTimeout(window.close, 200);
     } else {
@@ -17,7 +15,7 @@ async function handleButtonClick(button) {
     }
 }
 
-function updateView(status, animate = false) {
+function updatePopup(status, animate = false) {
     console.log("update with status", status)
 
     if (animate) {
@@ -59,17 +57,16 @@ async function init() {
     let [tab] = await browser.tabs.query({active: true, currentWindow: true});
     let status = await getStatus(tab.url)
     if(status === STATUS_DISABLED) {
-        console.log("disabled on this site, ignore");
         return;
     }
-    if (status === "none") {
-        status = "todo"
-        browser.runtime.sendMessage({type: "set-status", status, tab});
-        updateView(status, true)
-    } else {
-        updateView(status, false)
+    let animate = false;
 
+    // on first click, change to initial status
+    if (status === "none") {
+        status = "todo" // TODO #1: make initial status configurable
+        browser.runtime.sendMessage({type: "change-page-status", status, tab});
     }
+    updatePopup(status, animate);
 }
 
 init()

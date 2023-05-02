@@ -42,7 +42,7 @@ browser.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
 
 browser.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
         // status changed in popup
-        if (message.type === "set-status") {
+        if (message.type === "change-page-status") {
             console.log("updating status to", message.status)
             await storePageStatus(message.tab.url, message.status);
             browser.tabs.sendMessage(message.tab.id, {type: "update-content"});
