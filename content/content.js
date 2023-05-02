@@ -1,18 +1,10 @@
+// This script is injected into every page. It is responsible for updating the links
+// on the page. It therefore needs to be as small and fast as possible.
+
 // noinspection JSDeprecatedSymbols
 
 browser.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
-        // console.debug("content: received", request)
-    if (request.type === "request-permissions") {
-        let urlOrigin = new URL(location.href).origin + "/*";
-        browser.permissions.request({ origins: [urlOrigin] }).then((granted) => {
-            if (granted) {
-                browser.runtime.sendMessage({ type: "access-granted" });
-            } else {
-                browser.runtime.sendMessage({ type: "access-denied" });
-            }
-        });
-    }
-
+        console.debug("content: received", request)
     if (request.type === "update-content") {
             await updateAllLinksOnPage()
 
@@ -48,12 +40,13 @@ browser.storage.local.onChanged.addListener(async function (changes, areaName) {
 );
 
 
-function shouldMarkLink(link, url, documentUrl) {
+function isNormalMarkableLink(linkElement, documentUrl) {
+    const url = linkElement.href;
     if (url === "") {
         return false;
     }
     // a plain '#' is often used for buttons and menubars. Can be ignored.
-    if (link.getAttribute("href") === "#") {
+    if (linkElement.getAttribute("href") === "#") {
         return false;
     }
 
@@ -63,7 +56,7 @@ function shouldMarkLink(link, url, documentUrl) {
 
     // ignore header links in the sidebar
     if (documentUrl.startsWith("https://experienceleague.adobe.com/") &&
-        link.matches('#container [data-id="toc"] a[href^="#"]')) {
+        linkElement.matches('#container [data-id="toc"] a[href^="#"]')) {
         return false;
     }
     let isSamePage = prepareUrl(url) === prepareUrl(documentUrl)
@@ -81,7 +74,7 @@ async function updateAllLinksOnPage() {
     // console.debug("found ", links.length, "links")
     for (let i = 0; i < links.length; i++) {
         const link = links[i];
-        if (shouldMarkLink(link, link.href, location.href)) {
+        if (isNormalMarkableLink(link, location.href)) {
             let status = await getStatus(link.href)
 
             link.classList.remove("marked-as-done")
