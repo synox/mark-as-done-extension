@@ -58,6 +58,10 @@ function updateView(status, animate = false) {
 async function init() {
     let [tab] = await browser.tabs.query({active: true, currentWindow: true});
     let status = await getStatus(tab.url)
+    if(status === STATUS_DISABLED) {
+        console.log("disabled on this site, ignore");
+        return;
+    }
     if (status === "none") {
         status = "todo"
         browser.runtime.sendMessage({type: "set-status", status, tab});

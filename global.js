@@ -2,6 +2,7 @@
 var STATUS_DONE = "done"
 var STATUS_STARTED = "started"
 var STATUS_NONE = "none"
+var STATUS_DISABLED = "disabled"
 var STATUS_TODO = "todo"
 
 
@@ -20,6 +21,9 @@ function compatibiltyStatus(oldStatus) {
 async function getStatus(url) {
     if (!url) {
         return STATUS_NONE
+    }
+    if(!url.startsWith("http")) {
+        return STATUS_DISABLED;
     }
     let preparedUrl = prepareUrl(url);
     const value = await chrome.storage.local.getP(preparedUrl)

@@ -27,13 +27,15 @@ async function activateTabContent(tab) {
 
 browser.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
     // tab.url will be null if the permission is missing for this domain
-    if (tab.url) {
+    if (tab.url && tab.url.startsWith("http")) {
         if (tab.status === "loading") {
             await activateIcon(tab)
         } else if (tab.status === "complete") {
             console.log("tab was updated", tab.url);
             await activateTabContent(tab);
         }
+    } else {
+        await updateIcon(tab.id, 'disabled');
     }
 })
 
@@ -46,15 +48,11 @@ browser.runtime.onMessage.addListener(async function (message, sender, sendRespo
             browser.tabs.sendMessage(message.tab.id, {type: "update-content"});
             await updateIcon(message.tab.id, message.status);
         }
-        if (message.type === "access-granted") {
-            await activateTab(message.tab)
-        }
         if (message.type === "import-data") {
             for (let entry of message.data) {
                 browser.storage.local.set({[entry.url]: entry.status});
             }
             sendResponse("success")
-
         }
     }
 );
