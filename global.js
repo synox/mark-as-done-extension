@@ -26,7 +26,7 @@ async function getStatus(url) {
         return STATUS_DISABLED;
     }
     let preparedUrl = prepareUrl(url);
-    const value = await browser.storage.local.getP(preparedUrl)
+    const value = await browser.storage.local.get(preparedUrl)
     return compatibiltyStatus(value[preparedUrl])
 }
 

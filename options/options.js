@@ -19,7 +19,7 @@ function save(filename, data) {
 
 
 document.getElementById("exportButton").addEventListener('click', async event => {
-    let allItems = await browser.storage.local.getP(null);
+    let allItems = await browser.storage.local.get(null);
     let result = Object.entries(allItems)
         .map(entry => {
             return {url: entry[0], status: compatibiltyStatus(entry[1])}
@@ -62,7 +62,7 @@ document.getElementById("deleteAllButton").addEventListener('click', async event
 });
 
 document.getElementById("listButton").addEventListener('click', async event => {
-    let allItems = await browser.storage.local.getP(null);
+    let allItems = await browser.storage.local.get(null);
     let result = Object.entries(allItems)
         .map(entry => {
             return {url: entry[0], status: compatibiltyStatus(entry[1])}
@@ -97,24 +97,3 @@ document.getElementById("listButton").addEventListener('click', async event => {
     el.innerHTML = htmlItems
 });
 
-
-function promisify(api, context) {
-    return (...args) => {
-        return new Promise((resolve, reject) => {
-
-            let customCallback = (result) => {
-                if (browser.runtime.lastError) {
-                    return reject(browser.runtime.lastError);
-                } else {
-                    return resolve(result);
-                }
-            };
-
-            args.push(customCallback); // append our custom callback to the end of arguments
-            api.call(context, ...args); // call the original function
-        });
-    };
-}
-
-// the official promise version of browser.storage.local.get does not work.
-browser.storage.local.getP = promisify(browser.storage.local.get, browser.storage.local)

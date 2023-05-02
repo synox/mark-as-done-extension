@@ -9,9 +9,10 @@ async function activateIcon(tab) {
 
 async function activateTabContent(tab) {
     console.log("activateTabContent", tab.id)
+
     await browser.tabs.executeScript(tab.id, {file: "global.js"});
-    await browser.tabs.executeScript(tab.id, {file: "content/content.js"});
-    await browser.tabs.insertCSS(tab.id, {file: "content/content.css"});
+    await browser.tabs.executeScript(tab.id, {file: "inject/inject.js"});
+    await browser.tabs.insertCSS(tab.id, {file: "inject/inject.css"});
     browser.tabs.sendMessage(tab.id, {type: 'update-content'})
 }
 
@@ -50,7 +51,7 @@ browser.runtime.onMessage.addListener(async function (message, sender, sendRespo
 
 
 async function updateIcon(tabId, status) {
-    await browser.browserAction.setIconP({tabId: tabId, path: `images/icon-${status}.png`});
+    await browser.browserAction.setIcon({tabId: tabId, path: `images/icon-${status}.png`});
 }
 
 async function storePageStatus(url, status) {
@@ -64,4 +65,3 @@ async function storePageStatus(url, status) {
     }
 }
 
-browser.browserAction.setIconP = promisify(browser.browserAction.setIcon, browser.browserAction)
