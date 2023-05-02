@@ -6,19 +6,15 @@
   "background": {
     "scripts": ["global.js", "background.js"]
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["global.js", "content/content.js"]
-    }
-  ],
   "permissions": [
     "storage",
     "tabs",
+    "activeTab",
     "scripting",
     "unlimitedStorage",
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "<all_urls>"
   ],
   "browser_action": {
     "default_popup": "popup/popup.html",

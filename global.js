@@ -26,7 +26,7 @@ async function getStatus(url) {
         return STATUS_DISABLED;
     }
     let preparedUrl = prepareUrl(url);
-    const value = await chrome.storage.local.getP(preparedUrl)
+    const value = await browser.storage.local.getP(preparedUrl)
     return compatibiltyStatus(value[preparedUrl])
 }
 
@@ -58,8 +58,8 @@ function promisify(api, context) {
         return new Promise((resolve, reject) => {
 
             let customCallback = (result) => {
-                if (chrome.runtime.lastError) {
-                    return reject(chrome.runtime.lastError);
+                if (browser.runtime.lastError) {
+                    return reject(browser.runtime.lastError);
                 } else {
                     return resolve(result);
                 }
@@ -71,5 +71,5 @@ function promisify(api, context) {
     };
 }
 
-// the official promise version of chrome.storage.local.get does not work.
-chrome.storage.local.getP = promisify(chrome.storage.local.get, chrome.storage.local)
+// the official promise version of browser.storage.local.get does not work.
+browser.storage.local.getP = promisify(browser.storage.local.get, browser.storage.local)

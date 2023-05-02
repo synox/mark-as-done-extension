@@ -2,10 +2,13 @@
 // on the page. It therefore needs to be as small and fast as possible.
 
 // noinspection JSDeprecatedSymbols
+console.log("Content script injected");
+
 
 browser.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
         console.debug("content: received", request)
     if (request.type === "update-content") {
+        console.debug("content: updating content")
             await updateAllLinksOnPage()
 
             // Some pages load content later. Need to add a trigger to process the links later.

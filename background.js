@@ -8,19 +8,10 @@ async function activateIcon(tab) {
 }
 
 async function activateTabContent(tab) {
-    // activate UI changes in content.js
-    await browser.scripting.executeScript({
-        target: {tabId: tab.id},
-        files: ["global.js"],
-    });
-    await browser.scripting.executeScript({
-        target: {tabId: tab.id},
-        files: ["content/content.js"],
-    });
-    await browser.scripting.insertCSS({
-        target: {tabId: tab.id},
-        files: ["content/content.css"],
-    });
+    console.log("activateTabContent", tab.id)
+    await browser.tabs.executeScript(tab.id, {file: "global.js"});
+    await browser.tabs.executeScript(tab.id, {file: "content/content.js"});
+    await browser.tabs.insertCSS(tab.id, {file: "content/content.css"});
     browser.tabs.sendMessage(tab.id, {type: 'update-content'})
 }
 
