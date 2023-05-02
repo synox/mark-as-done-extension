@@ -36,7 +36,7 @@ function updatePopup(status, animate = false) {
 // async function listItemsForCurrentPage() {
 //     let [tab] = await browser.tabs.query({active: true, currentWindow: true});
 //     const prefix = new URL(tab.url).origin
-//     let allItems = await browser.storage.local.getP(null);
+//     let allItems = await browser.storage.local.get(null);
 //     return Object.entries(allItems)
 //         .map(entry => {
 //             return {url: entry[0], status: compatibiltyStatus(entry[1])}
