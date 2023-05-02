@@ -1,8 +1,19 @@
 // noinspection JSDeprecatedSymbols
 
-chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
+browser.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
         // console.debug("content: received", request)
-        if (request.type === "update-content") {
+    if (request.type === "request-permissions") {
+        let urlOrigin = new URL(location.href).origin + "/*";
+        browser.permissions.request({ origins: [urlOrigin] }).then((granted) => {
+            if (granted) {
+                browser.runtime.sendMessage({ type: "access-granted" });
+            } else {
+                browser.runtime.sendMessage({ type: "access-denied" });
+            }
+        });
+    }
+
+    if (request.type === "update-content") {
             await updateAllLinksOnPage()
 
             // Some pages load content later. Need to add a trigger to process the links later.
@@ -31,7 +42,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     }
 );
 
-chrome.storage.local.onChanged.addListener(async function (changes, areaName) {
+browser.storage.local.onChanged.addListener(async function (changes, areaName) {
         updateAllLinksOnPage();
     }
 );

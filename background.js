@@ -1,8 +1,5 @@
 // noinspection JSDeprecatedSymbols
 
-importScripts("global.js")
-
-
 async function activateIcon(tab) {
     // Update Icon in toolbar
     let status = await getStatus(tab.url)

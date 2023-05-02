@@ -8,8 +8,8 @@ document.querySelectorAll("a.changeStateButton")
 async function handleButtonClick(button) {
     let status = button.getAttribute("data-status");
     updateView(status, true)
-    let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
-    chrome.runtime.sendMessage({type: "set-status", status, tab});
+    let [tab] = await browser.tabs.query({active: true, currentWindow: true});
+    browser.runtime.sendMessage({type: "set-status", status, tab});
     if (status === "none") {
         setTimeout(window.close, 200);
     } else {
@@ -36,9 +36,9 @@ function updateView(status, animate = false) {
 
 //
 // async function listItemsForCurrentPage() {
-//     let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+//     let [tab] = await browser.tabs.query({active: true, currentWindow: true});
 //     const prefix = new URL(tab.url).origin
-//     let allItems = await chrome.storage.local.getP(null);
+//     let allItems = await browser.storage.local.getP(null);
 //     return Object.entries(allItems)
 //         .map(entry => {
 //             return {url: entry[0], status: compatibiltyStatus(entry[1])}
@@ -56,11 +56,11 @@ function updateView(status, animate = false) {
 // });
 
 async function init() {
-    let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+    let [tab] = await browser.tabs.query({active: true, currentWindow: true});
     let status = await getStatus(tab.url)
     if (status === "none") {
         status = "todo"
-        chrome.runtime.sendMessage({type: "set-status", status, tab});
+        browser.runtime.sendMessage({type: "set-status", status, tab});
         updateView(status, true)
     } else {
         updateView(status, false)

@@ -4,19 +4,26 @@
   "version": "0.3.3",
   "description": "Keep track of your progress!",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["global.js", "background.js"]
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content.js"]
+    }
+  ],
   "permissions": [
     "storage",
+    "tabs",
     "scripting",
     "unlimitedStorage",
     "http://*/*",
     "https://*/*"
   ],
   "browser_action": {
-    "default_popup": "popup/popup_disabled.html",
+    "default_popup": "popup/popup.html",
     "default_icon": {
-      "128": "/images/icon-toolbar-disabled.png"
+      "128": "/images/icon-toolbar.png"
     }
   },
   "icons": {
