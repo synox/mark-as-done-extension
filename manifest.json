@@ -1,22 +1,19 @@
 {
+  "manifest_version": 2,
   "name": "Mark as done",
-  "description": "Keep track of your progress!",
   "version": "0.3.3",
-  "manifest_version": 3,
+  "description": "Keep track of your progress!",
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"]
   },
-  "incognito": "not_allowed",
   "permissions": [
     "storage",
     "scripting",
-    "unlimitedStorage"
-  ],
-  "host_permissions": [
+    "unlimitedStorage",
     "http://*/*",
     "https://*/*"
   ],
-  "action": {
+  "browser_action": {
     "default_popup": "popup/popup_disabled.html",
     "default_icon": {
       "128": "/images/icon-toolbar-disabled.png"
@@ -25,17 +22,14 @@
   "icons": {
     "128": "/images/icon-done.png"
   },
-  "options_page": "options/options.html",
+  "options_ui": {
+    "page": "options/options.html",
+    "browser_style": true
+  },
   "web_accessible_resources": [
-    {
-      "resources": [
-        "images/icon-todo.png",
-        "images/icon-started.png",
-        "images/icon-done.png"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
-  ]
+    "images/icon-todo.png",
+    "images/icon-started.png",
+    "images/icon-done.png"
+  ],
+  "incognito": "not_allowed"
 }
