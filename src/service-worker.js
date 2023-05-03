@@ -2,7 +2,7 @@
 async function activateIcon(tab) {
     // Update Icon in toolbar
     let status = await getStatus(tab.url)
-    await browser.browserAction.setPopup({popup: "popup/popup.html", tabId: tab.id})
+    await browser.browserAction.setPopup({popup: "src/popup/popup.html", tabId: tab.id})
     await updateIcon(tab.id, status)
 }
 
