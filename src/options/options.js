@@ -34,12 +34,11 @@ function handleFiles() {
 	}
 
 	const reader = new FileReader();
-	reader.onload = function fileReadCompleted() {
+	reader.onload = async function fileReadCompleted() {
 		// When the reader is done, the content is in reader.result.
 		const data = JSON.parse(reader.result);
-		browser.runtime.sendMessage({type: 'import-data', data}, response => {
-			document.getElementById('importStatus').append('import completed. status: ' + response);
-		});
+		const response = await browser.runtime.sendMessage({type: 'import-data', data});
+		document.getElementById('importStatus').append('import completed. status: ' + response);
 	};
 
 	reader.readAsText(this.files[0]);
