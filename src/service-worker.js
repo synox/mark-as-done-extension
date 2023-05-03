@@ -8,9 +8,9 @@ async function activateIcon(tab) {
 }
 
 async function activateTabContent(tab) {
-    console.log("activateTabContent", tab.id)
+    console.debug("activateTabContent", tab.id)
 
-    await browser.tabs.executeScript(tab.id, {file: "global.js"});
+    await browser.tabs.executeScript(tab.id, {file: "src/global.js"});
     await browser.tabs.executeScript(tab.id, {file: "inject/inject.js"});
     await browser.tabs.insertCSS(tab.id, {file: "inject/inject.css"});
     browser.tabs.sendMessage(tab.id, {type: 'update-content'})
@@ -18,8 +18,8 @@ async function activateTabContent(tab) {
 
 
 browser.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
-    // tab.url will be null if the permission is missing for this domain
-    if (tab.url && tab.url.startsWith("http")) {
+    // only inject script if the current domain has any status set
+    if (tab.url && tab.url.startsWith("http") && await hasAnyStatusForDomain(tab.url)) {
         if (tab.status === "loading") {
             await activateIcon(tab)
         } else if (tab.status === "complete") {
@@ -27,6 +27,7 @@ browser.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
             await activateTabContent(tab);
         }
     } else {
+        console.log("domain is disabled", tab.url)
         await updateIcon(tab.id, 'disabled');
     }
 })

@@ -18,11 +18,21 @@ function compatibiltyStatus(oldStatus) {
     return oldStatus;
 }
 
+/**
+ * @param url {string}
+ * @return {Promise<boolean>}
+ */
+async function hasAnyStatusForDomain(url) {
+    const urlObj = new URL(url);
+    let allItems = await browser.storage.local.get(null);
+    return Object.keys(allItems).some(key => key.startsWith(urlObj.protocol + "//" + urlObj.hostname));
+}
+
 async function getStatus(url) {
     if (!url) {
         return STATUS_NONE
     }
-    if(!url.startsWith("http")) {
+    if (!url.startsWith("http")) {
         return STATUS_DISABLED;
     }
     let preparedUrl = prepareUrl(url);
