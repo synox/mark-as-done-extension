@@ -1,8 +1,3 @@
-const STATUS_DONE = 'done';
-const STATUS_STARTED = 'started';
-const STATUS_NONE = 'none';
-const STATUS_TODO = 'todo';
-
 function save(filename, data) {
 	const blob = new Blob([data], {type: 'text/json'});
 	if (window.navigator.msSaveOrOpenBlob) {
