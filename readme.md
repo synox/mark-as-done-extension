@@ -1,9 +1,9 @@
 # Mark as Done (Chrome Extension)
 
-> Mark any page as Done. Then all links to that page are marked with a colorful icon.
-> This allows you to read through big documentations, while keeping track of the completed pages.
+> Mark any page as Done. All the links to that page will be automatically marked with an icon and colored.
+> This helps you keep track of your reading progress of large documentations or books.
 
-The following shows a partially read website, with some links marked as done. 
+For example, the following shows a partially read website, with some links marked as done. 
 
  ![](images/example.png) 
 
@@ -40,5 +40,6 @@ Or: Clone repo and "load unpackaed" as described in https://developer.chrome.com
 
 # Notes
 
-* Initially, the extension has no permissions. It will only update links on pages that were added by the user.
+* Only sites that have any marked pages are processed. This makes sure to not slow down the browser for sites that are 
+  not used with this extension.
 * What does the Logo 🔰 mean? : We are constantly learning. See [Source](https://emojipedia.org/japanese-symbol-for-beginner/)
