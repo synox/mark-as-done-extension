@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Mark as done",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Keep track of your progress!",
   "background": {
     "scripts": ["src/global.js", "src/service-worker.js"]
@@ -26,7 +26,7 @@
     "128": "/images/icon-done.png"
   },
   "options_ui": {
-    "page": "options/options.html",
+    "page": "src/options/options.html",
     "browser_style": true
   },
   "web_accessible_resources": [
