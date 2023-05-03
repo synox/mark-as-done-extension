@@ -44,10 +44,12 @@ function handleFiles() {
 	reader.readAsText(this.files[0]);
 }
 
-document.getElementById('deleteAllButton').addEventListener('click', async event => {
-	if (confirm('This will delete all data. First export everything!') && confirm('Really, are you ready to delete it all?')) {
+document.getElementById('resetAllDataButton').addEventListener('click', async event => {
+	if (event.target.textContent !== 'Are you sure?') {
+		event.target.textContent = 'Are you sure?'
+	} else {
 		await browser.storage.local.clear();
-		alert('done');
+		event.target.textContent = 'Done'
 	}
 });
 
