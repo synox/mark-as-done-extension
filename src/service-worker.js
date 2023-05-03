@@ -1,4 +1,3 @@
-// noinspection JSDeprecatedSymbols
 
 async function activateIcon(tab) {
     // Update Icon in toolbar
@@ -11,8 +10,8 @@ async function activateTabContent(tab) {
     console.debug("activateTabContent", tab.id)
 
     await browser.tabs.executeScript(tab.id, {file: "src/global.js"});
-    await browser.tabs.executeScript(tab.id, {file: "inject/inject.js"});
-    await browser.tabs.insertCSS(tab.id, {file: "inject/inject.css"});
+    await browser.tabs.executeScript(tab.id, {file: "src/inject/inject.js"});
+    await browser.tabs.insertCSS(tab.id, {file: "src/inject/inject.css"});
     browser.tabs.sendMessage(tab.id, {type: 'update-content'})
 }
 
