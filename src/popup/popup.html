@@ -13,7 +13,7 @@
         .controls {
             margin: 5px;
             min-width: 20rem;;
-            display: none;
+            /*display: none;*/
         }
 
         .controls.current {
@@ -36,6 +36,11 @@
             color: #444;
         }
 
+        .controls h1 img {
+            height: 1.5em;
+            vertical-align: middle;
+        }
+
         .controls a:hover {
             background-color: #eaeaea;
         }
@@ -49,6 +54,16 @@
 
         .controls .buttonDiv {
             margin: 20px 0;
+        }
+
+        .controls a img {
+            height: 1.5em;
+            vertical-align: middle;
+            filter: grayscale(1);
+        }
+
+        .controls a:hover img {
+            filter: none;
         }
 
         .appearFromTop {
@@ -67,43 +82,28 @@
             }
         }
 
-        h1 .fa-check-circle,
-        a:hover .fa-check-circle {
-            color: green;
-        }
-
-        h1 .fa-circle-notch,
-        a:hover .fa-circle-notch {
-            color: #00b7ff;
-        }
-
-        h1 .fa-clock,
-        a:hover .fa-clock {
-            color: #ff624e;
-        }
-
     </style>
 </head>
 <body>
 
 <div class="controls" id="controls-todo" data-status="todo">
 
-    <h1><i class="fas fa-clock"></i> Page saved for later.</h1>
+    <h1><img src="../../images/icon-todo.png"> Page saved for later.</h1>
 
     <div class="buttonDiv">
 
         <a href="#" class="changeStateButton" data-status="started">
-            <i class="fas fa-circle-notch"></i>
+            <img src="../../images/icon-started.png">
             <span> start progress</span>
         </a>
 
         <a href="#" class="changeStateButton" data-status="done">
-            <i class="fas fa-check-circle"></i>
+            <img src="../../images/icon-done.png">
             <span> done</span>
         </a>
 
         <a href="#" class="changeStateButton" data-status="none">
-            <i class="far fa-trash-alt"></i>
+            <img src="../../images/trash-can.svg">
             <span> Remove</span>
         </a>
     </div>
@@ -111,17 +111,17 @@
 
 <div class="controls" id="controls-started" data-status="started">
 
-    <h1><i class="fas fa-circle-notch"></i> Page is in progress.</h1>
+    <h1><img src="../../images/icon-started.png"> Page is in progress.</h1>
 
     <div class="buttonDiv">
 
         <a href="#" class="changeStateButton" data-status="done">
-            <i class="fas fa-check-circle"></i>
+            <img src="../../images/icon-done.png">
             <span> done</span>
         </a>
 
         <a href="#" class="changeStateButton" data-status="none">
-            <i class="far fa-trash-alt"></i>
+            <img src="../../images/trash-can.svg">
             <span> Remove</span>
         </a>
     </div>
@@ -129,12 +129,12 @@
 
 <div class="controls" id="controls-done" data-status="done">
 
-    <h1><i class="fas fa-check-circle"></i> Page marked as done.</h1>
+    <h1><img src="../../images/icon-done.png"> Page marked as done.</h1>
 
     <div class="buttonDiv">
 
         <a href="#" class="changeStateButton" data-status="none">
-            <i class="far fa-trash-alt"></i>
+            <img src="../../images/trash-can.svg">
             <span> Remove</span>
         </a>
     </div>
