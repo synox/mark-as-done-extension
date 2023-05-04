@@ -15,17 +15,17 @@
 }
 
 #list-result li[data-status='done'] {
-    background-image: url("../images/icon-done.png");
+    background-image: url("../../images/icon-done.png");
     color: green !important;
 }
 
 #list-result li[data-status='started'] {
-    background-image: url("../images/icon-started.png");
+    background-image: url("../../images/icon-started.png");
     color: #de9621 !important;
 }
 
 #list-result li[data-status='todo'] {
-    background-image: url("../images/icon-todo.png");
+    background-image: url("../../images/icon-todo.png");
     color: #d73700 !important;
 }
 

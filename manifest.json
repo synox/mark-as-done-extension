@@ -1,23 +1,23 @@
 {
+  "manifest_version": 2,
   "name": "Mark as done",
+  "version": "0.4.0",
   "description": "Keep track of your progress!",
-  "version": "0.3.3",
-  "manifest_version": 3,
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["3rdparty/browser-polyfill.min.js",  "src/global.js", "src/service-worker.js"]
   },
-  "incognito": "not_allowed",
   "permissions": [
     "storage",
+    "tabs",
+    "activeTab",
     "scripting",
-    "unlimitedStorage"
-  ],
-  "host_permissions": [
+    "unlimitedStorage",
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "<all_urls>"
   ],
-  "action": {
-    "default_popup": "popup/popup_disabled.html",
+  "browser_action": {
+    "default_popup": "src/popup/popup.html",
     "default_icon": {
       "128": "/images/icon-toolbar-disabled.png"
     }
@@ -25,17 +25,19 @@
   "icons": {
     "128": "/images/icon-done.png"
   },
-  "options_page": "options/options.html",
+  "options_ui": {
+    "page": "src/options/options.html",
+    "browser_style": true
+  },
   "web_accessible_resources": [
-    {
-      "resources": [
-        "images/icon-todo.png",
-        "images/icon-started.png",
-        "images/icon-done.png"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
+    "images/icon-todo.png",
+    "images/icon-started.png",
+    "images/icon-done.png"
+  ],
+  "incognito": "not_allowed",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "synox@github.com"
     }
-  ]
+  }
 }
