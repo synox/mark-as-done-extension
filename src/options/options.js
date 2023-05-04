@@ -46,10 +46,10 @@ function handleFiles() {
 
 document.getElementById('resetAllDataButton').addEventListener('click', async event => {
 	if (event.target.textContent !== 'Are you sure?') {
-		event.target.textContent = 'Are you sure?'
+		event.target.textContent = 'Are you sure?';
 	} else {
 		await browser.storage.local.clear();
-		event.target.textContent = 'Done'
+		event.target.textContent = 'Done';
 	}
 });
 

@@ -2,6 +2,7 @@ module.exports = {
 	env: {
 		browser: true,
 		es2021: true,
+		webextensions: true,
 	},
 	extends: 'xo',
 	overrides: [
@@ -12,4 +13,5 @@ module.exports = {
 	},
 	rules: {
 	},
+	ignorePatterns: ['3rdparty/**'],
 };
