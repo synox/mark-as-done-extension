@@ -8,7 +8,7 @@
   "scripts": {
     "start:firefox": "web-ext run --source-dir ./",
     "build:firefox": "web-ext build --source-dir ./",
-    "lint": "eslint .",
+    "lint": "eslint . ; web-ext lint --source-dir ./",
     "lint:fix": "eslint --fix ."
   }
 }
