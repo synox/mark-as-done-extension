@@ -74,6 +74,7 @@ document.getElementById('listButton').addEventListener('click', async event => {
 
 	const el = document.getElementById('list-result');
 
+	// TODO: don't use unsafe innerHTML. use DOM API instead. Update table automatically when data changes.
 	let htmlItems = '';
 	for (const domain of Object.keys(result).sort()) {
 		const totalCount = result[domain].length;
