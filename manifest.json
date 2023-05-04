@@ -34,5 +34,10 @@
     "images/icon-started.png",
     "images/icon-done.png"
   ],
-  "incognito": "not_allowed"
+  "incognito": "not_allowed",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "synox@github.com"
+    }
+  }
 }
