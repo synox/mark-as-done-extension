@@ -68,6 +68,19 @@ async function init() {
 	}
 
 	updatePopup(status, animate);
+
+	const relatedLinks = document.querySelector(".related-links ul");
+	let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
+	currentSiteLinks.forEach(link => {
+		const li = document.createElement("li");
+		const a = document.createElement("a");
+		a.href = link.url;
+		a.innerText = new URL(link.url).pathname
+		li.append(a);
+
+		relatedLinks.append(li);
+	});
+	await updateAllLinksOnPage(tab.url, relatedLinks);
 }
 
 init();

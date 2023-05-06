@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Mark as done",
-  "version": "0.4.0",
-  "description": "Keep track of your progress!",
+  "version": "0.4.1",
+  "description": "Easily track your reading progress with automatically marked links.",
   "background": {
     "scripts": ["3rdparty/browser-polyfill.min.js",  "src/global.js", "src/service-worker.js"]
   },
@@ -12,8 +12,6 @@
     "activeTab",
     "scripting",
     "unlimitedStorage",
-    "http://*/*",
-    "https://*/*",
     "<all_urls>"
   ],
   "browser_action": {

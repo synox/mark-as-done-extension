@@ -53,22 +53,9 @@ document.getElementById('resetAllDataButton').addEventListener('click', async ev
 	}
 });
 
-document.getElementById('listButton').addEventListener('click', async event => {
-	const allItems = await browser.storage.local.get(null);
-	const result = Object.entries(allItems)
-		.map(entry => ({url: entry[0], status: compatibiltyStatus(entry[1])}))
-		.sort()
-		.reduce((accumulator, currentValue) => {
-			let domain;
-			try {
-				domain = new URL(currentValue.url).origin;
-			} catch (error) {
-				domain = 'others';
-			}
 
-			accumulator[domain] = [...accumulator[domain] || [], currentValue];
-			return accumulator;
-		}, {});
+document.getElementById('listButton').addEventListener('click', async event => {
+	const result = await getAllLinksByeDomain();
 
 	console.log(result);
 

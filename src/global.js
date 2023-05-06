@@ -18,6 +18,68 @@ function compatibiltyStatus(oldStatus) {
 }
 
 /**
+ *
+ * @param linkElement {HTMLAnchorElement}
+ * @param documentUrl {string}
+ * @return {boolean}
+ */
+function isNormalMarkableLink(linkElement, documentUrl) {
+	const url = linkElement.href;
+	if (url === '') {
+		return false;
+	}
+
+	// A plain '#' is often used for buttons and menubars. Can be ignored.
+	if (linkElement.getAttribute('href') === '#') {
+		return false;
+	}
+
+	if (url === documentUrl) {
+		return true;
+	}
+
+	// ignore header links in the sidebar
+	if (documentUrl.startsWith('https://experienceleague.adobe.com/')
+		&& linkElement.matches('#container [data-id="toc"] a[href^="#"]')) {
+		return false;
+	}
+
+	const isSamePage = prepareUrl(url) === prepareUrl(documentUrl);
+	if (isSamePage) {
+		return true;
+	}
+
+	return true;
+}
+
+/**
+ *
+ * @param documentUrl {string}
+ * @param root {HTMLElement|Document}
+ * @return {Promise<void>}
+ */
+async function updateAllLinksOnPage(documentUrl, root= document) {
+	const links = root.querySelectorAll('a');
+
+	console.debug("found ", links.length, "links")
+	for (let i = 0; i < links.length; i++) {
+		const link = links[i];
+		if (isNormalMarkableLink(link, documentUrl)) {
+			const status = await getStatus(link.href);
+
+			link.classList.remove('marked-as-done');
+			link.classList.remove('marked-as-todo');
+			link.classList.remove('marked-as-started');
+
+			if (status !== 'none') {
+				link.classList.add('marked-as-' + status);
+			}
+		}
+	}
+}
+
+
+/**
  * @param url {string}
  * @return {Promise<boolean>}
  */
@@ -37,6 +99,9 @@ async function getStatus(url) {
 	}
 
 	const preparedUrl = prepareUrl(url);
+	if (!url) {
+		return STATUS_NONE;
+	}
 	const value = await browser.storage.local.get(preparedUrl);
 	return compatibiltyStatus(value[preparedUrl]);
 }
@@ -62,5 +127,44 @@ function prepareUrl(url) {
 		return urlObject.origin + urlObject.pathname + filteredSearch;
 	} catch (error) {
 		console.error(`Can not parse as url=${url}, error=${error}`);
+		return null;
 	}
+}
+
+/**
+ *
+ * @param origin
+ * @return {Promise<*>}
+ */
+async function getAllLinksForDomain(origin) {
+	let allLinks = await getAllLinksByDomain();
+	console.log('allLinks', allLinks);
+	return allLinks[origin];
+}
+
+/**
+
+ Retrieves all stored links by their domain from the browser's local storage.
+ The links are sorted and grouped by domain.
+
+ @return {Promise<Object>} A promise that resolves to an object containing arrays
+ of links for each domain, where each link has a `url` and `status` property.
+ If a URL cannot be parsed, it is grouped under the 'others' domain.
+ */
+async function getAllLinksByDomain() {
+	const allItems = await browser.storage.local.get(null);
+	return Object.entries(allItems)
+		.map(entry => ({url: entry[0], status: compatibiltyStatus(entry[1])}))
+		.sort()
+		.reduce((accumulator, currentValue) => {
+			let domain;
+			try {
+				domain = new URL(currentValue.url).origin;
+			} catch (error) {
+				domain = 'others';
+			}
+
+			accumulator[domain] = [...accumulator[domain] || [], currentValue];
+			return accumulator;
+		}, {});
 }
