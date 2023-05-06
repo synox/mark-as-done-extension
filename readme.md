@@ -25,7 +25,8 @@ And then it's easy to mark it as done:
 
 # How to Install
 
-https://chrome.google.com/webstore/detail/mark-as-done/eamfmbodggklinbmhfgeogcpebhfoojb?hl=de
+Chrome: https://chrome.google.com/webstore/detail/mark-as-done/eamfmbodggklinbmhfgeogcpebhfoojb?hl=de
+Firefox: https://addons.mozilla.org/en-US/firefox/addon/mark-as-done/
 
 Or: Clone repo and "load unpackaed" as described in https://developer.chrome.com/docs/extensions/mv3/getstarted/#manifest
 
@@ -43,3 +44,23 @@ Or: Clone repo and "load unpackaed" as described in https://developer.chrome.com
 * Only sites that have any marked pages are processed. This makes sure to not slow down the browser for sites that are 
   not used with this extension.
 * What does the Logo 🔰 mean? : We are constantly learning. See [Source](https://emojipedia.org/japanese-symbol-for-beginner/)
+
+# Development
+
+## Build
+
+```bash
+npm run build
+```
+
+## Run / Debug
+
+```bash
+npm run start:firefox
+```
+
+## Lint
+
+```bash
+npm run lint
+```
