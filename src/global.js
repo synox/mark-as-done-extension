@@ -52,31 +52,6 @@ function isNormalMarkableLink(linkElement, documentUrl) {
 	return true;
 }
 
-/**
- *
- * @param documentUrl {string}
- * @param root {HTMLElement|Document}
- * @return {Promise<void>}
- */
-async function updateAllLinksOnPage(documentUrl, root= document) {
-	const links = root.querySelectorAll('a');
-
-	console.debug("found ", links.length, "links")
-	for (let i = 0; i < links.length; i++) {
-		const link = links[i];
-		if (isNormalMarkableLink(link, documentUrl)) {
-			const status = await getStatus(link.href);
-
-			link.classList.remove('marked-as-done');
-			link.classList.remove('marked-as-todo');
-			link.classList.remove('marked-as-started');
-
-			if (status !== 'none') {
-				link.classList.add('marked-as-' + status);
-			}
-		}
-	}
-}
 
 
 /**

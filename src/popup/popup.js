@@ -83,7 +83,6 @@ async function init() {
 
 		relatedLinks.append(li);
 	});
-	await updateAllLinksOnPage(tab.url, relatedLinks);
 }
 
 init();
