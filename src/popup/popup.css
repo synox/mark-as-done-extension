@@ -3,6 +3,10 @@
     font-size: 12px;
 }
 
+body {
+  min-width: 350px;
+}
+
 .appear-from-top {
     position: relative;
     animation: appear-from-top 0.2s ease-in forwards;

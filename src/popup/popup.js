@@ -35,14 +35,15 @@ async function updatePopup(status, url, animate = false) {
       controls.classList.remove('current');
     }
   });
-
-  const currentSiteLinks = await getAllLinksForDomain(new URL(url).origin);
-  updateStatusForUrl(currentSiteLinks, url, status);
-  addRelatedLinks(currentSiteLinks);
 }
 
 function addRelatedLinks(currentSiteLinks) {
-  const relatedLinks = document.querySelector('.related-links ul');
+  const listElement = document.querySelector('.related-links ul');
+
+  if (currentSiteLinks.length === 0) {
+    listElement.remove();
+    return;
+  }
   sortLinksByStatus(currentSiteLinks);
   currentSiteLinks.forEach((link) => {
     const li = document.createElement('li');
@@ -54,7 +55,7 @@ function addRelatedLinks(currentSiteLinks) {
     a.prepend(icon);
     li.append(a);
 
-    relatedLinks.append(li);
+    listElement.append(li);
     a.addEventListener('click', () => {
       setTimeout(window.close, 200);
     });
@@ -80,6 +81,11 @@ async function init() {
   }
 
   await updatePopup(status, tab.url, animate);
+
+  let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
+  // Remove current page from list, only show other pages on the same domain
+  currentSiteLinks = removeUrl(currentSiteLinks, tab.url);
+  addRelatedLinks(currentSiteLinks);
 }
 
-init();
+init().catch(console.error);
