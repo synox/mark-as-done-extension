@@ -4,6 +4,16 @@ const STATUS_NONE = 'none';
 const STATUS_DISABLED = 'disabled';
 const STATUS_TODO = 'todo';
 
+/**
+ * @typedef {Object} LinkInfo
+ * @property {string} url - The URL of the link.
+ * @property {LinkStatus} status - The status of the link.
+ */
+
+/**
+ * @typedef {'done'|'started'|'none','disabled', 'todo'} LinkStatus
+ */
+
 // Keep backwards compatibility
 function compatibiltyStatus(oldStatus) {
 	if (oldStatus === true) {
@@ -107,9 +117,8 @@ function prepareUrl(url) {
 }
 
 /**
- *
- * @param origin
- * @return {Promise<*>}
+ * @param {string} origin - The origin URL to get links from.
+ * @returns {Promise<Array.<LinkInfo>>} links - A Promise that resolves to an array of LinkInfo objects.
  */
 async function getAllLinksForDomain(origin) {
 	let allLinks = await getAllLinksByDomain();
@@ -138,14 +147,25 @@ function sortLinksByStatus(links) {
 }
 
 /**
+ * change the status of one url. This is done in-place.
+ * @param links {Array<LinkInfo>}
+ * @param url {string}
+ * @param newStatus {string}
+ */
+function updateStatusForUrl(links, url, newStatus ) {
+	// the update was sent async, so the current page might not yet be in the list. But it should be.
+	links.forEach(link => {
+		if (link.url === url) {
+			link.status = newStatus;
+		}
+	});
+}
 
+/**
  Retrieves all stored links by their domain from the browser's local storage.
  The links are sorted and grouped by domain.
 
- @return {Promise<Object>} A promise that resolves to an object containing arrays
- of links for each domain, where each link has a `url` and `status` property.
- If a URL cannot be parsed, it is grouped under the 'others' domain.
- */
+ @returns {Promise<Map<string,Array.<LinkInfo>>>} links by domain. each domain contains an array of `LinkInfo`.  */
 async function getAllLinksByDomain() {
 	const allItems = await browser.storage.local.get(null);
 	return Object.entries(allItems)

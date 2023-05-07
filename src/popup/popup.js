@@ -1,12 +1,15 @@
+
 document.querySelectorAll('button.changeStateButton, a.changeStateButton')
 	.forEach(button =>
-		button.addEventListener('click', () => handleButtonInPopupClick(button)));
+		button.addEventListener('click', () => handleClickStatusButton(button)));
 
-async function handleButtonInPopupClick(button) {
+async function handleClickStatusButton(button) {
 	const status = button.getAttribute('data-status');
-	updatePopup(status, true);
 	const [tab] = await browser.tabs.query({active: true, currentWindow: true});
 	browser.runtime.sendMessage({type: 'change-page-status', status, tab});
+
+	await updatePopup(status, tab.url,true);
+
 	if (status === 'none') {
 		setTimeout(window.close, 200);
 	} else {
@@ -14,13 +17,18 @@ async function handleButtonInPopupClick(button) {
 	}
 }
 
-function updatePopup(status, animate = false) {
+/**
+ *
+ * @param status {LinkStatus}
+ * @param url {string}
+ * @param animate {boolean}
+ * @return {Promise<void>}
+ */
+async function updatePopup(status, url, animate = false) {
 	console.log('update with status', status);
 
 	if (animate) {
-		document.querySelectorAll('h1').forEach(h1 => {
-			h1.classList.add('appearFromTop');
-		});
+		document.body.classList.add('appearFromTop');
 	}
 
 	document.querySelectorAll('.controls').forEach(controls => {
@@ -30,6 +38,11 @@ function updatePopup(status, animate = false) {
 			controls.classList.remove('current');
 		}
 	});
+
+	const currentSiteLinks = await getAllLinksForDomain(new URL(url).origin);
+	updateStatusForUrl(currentSiteLinks, url, status);
+	addRelatedLinks(currentSiteLinks);
+
 }
 
 //
@@ -52,25 +65,8 @@ function updatePopup(status, animate = false) {
 //     el.innerHTML = `<ul>${htmlItems.join("")}</ul>`
 // });
 
-async function init() {
-	const [tab] = await browser.tabs.query({active: true, currentWindow: true});
-	let status = await getStatus(tab.url);
-	if (status === STATUS_DISABLED) {
-		return;
-	}
-
-	const animate = false;
-
-	// On first click, change to initial status
-	if (status === 'none') {
-		status = 'todo'; // TODO #1: make initial status configurable
-		browser.runtime.sendMessage({type: 'change-page-status', status, tab});
-	}
-
-	updatePopup(status, animate);
-
+function addRelatedLinks(currentSiteLinks) {
 	const relatedLinks = document.querySelector(".related-links ul");
-	let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
 	sortLinksByStatus(currentSiteLinks);
 	currentSiteLinks.forEach(link => {
 		const li = document.createElement("li");
@@ -87,6 +83,29 @@ async function init() {
 			setTimeout(window.close, 200);
 		});
 	});
+}
+
+
+
+async function init() {
+	const [tab] = await browser.tabs.query({active: true, currentWindow: true});
+	let status = await getStatus(tab.url);
+	if (status === STATUS_DISABLED) {
+		// don't show popup on disabled sites
+		window.close();
+		return;
+	}
+
+	let animate = false;
+
+	// On first click, change to initial status
+	if (status === 'none') {
+		status = 'todo'; // TODO #1: make initial status configurable
+		browser.runtime.sendMessage({type: 'change-page-status', status, tab});
+		animate = true;
+	}
+
+	await updatePopup(status, tab.url, animate);
 }
 
 init();

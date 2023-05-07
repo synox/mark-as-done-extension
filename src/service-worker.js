@@ -30,6 +30,11 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 	}
 });
 
+/**
+ *
+ * @param message {{status: LinkStatus, tab}}
+ * @return {Promise<void>}
+ */
 async function handleChangePageStatus(message) {
 	console.log('updating status to', message.status);
 	// Make sure the scripts are injected
@@ -65,6 +70,11 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	return true;
 });
 
+/**
+ * @param tabId {string}
+ * @param status {LinkStatus}
+ * @return {Promise<void>}
+ */
 async function updateIcon(tabId, status) {
 	await browser.browserAction.setIcon({tabId, path: `images/icon-${status}.png`});
 }

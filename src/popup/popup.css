@@ -87,7 +87,7 @@ body {
 
 .appearFromTop {
     position: relative;
-    animation: appearFromTop 0.1s ease-out forwards;
+    animation: appearFromTop 0.2s ease-in forwards;
 }
 
 @keyframes appearFromTop {
