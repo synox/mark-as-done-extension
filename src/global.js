@@ -122,7 +122,6 @@ function prepareUrl(url) {
  */
 async function getAllLinksForDomain(origin) {
 	let allLinks = await getAllLinksByDomain();
-	console.log('allLinks', allLinks);
 	return allLinks[origin];
 }
 
@@ -154,11 +153,12 @@ function sortLinksByStatus(links) {
  */
 function updateStatusForUrl(links, url, newStatus ) {
 	// the update was sent async, so the current page might not yet be in the list. But it should be.
-	links.forEach(link => {
-		if (link.url === url) {
-			link.status = newStatus;
-		}
-	});
+	const link = links.find(link => link.url === url);
+	if (link) {
+		link.status = newStatus;
+	} else {
+		links.push({url: url, status: newStatus});
+	}
 }
 
 /**

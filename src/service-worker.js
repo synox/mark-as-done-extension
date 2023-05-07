@@ -33,9 +33,10 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 /**
  *
  * @param message {{status: LinkStatus, tab}}
+ * @param sendResponse
  * @return {Promise<void>}
  */
-async function handleChangePageStatus(message) {
+async function handleChangePageStatus(message, sendResponse) {
 	console.log('updating status to', message.status);
 	// Make sure the scripts are injected
 	if (!await hasAnyStatusForDomain(message.tab.url)) {
@@ -45,6 +46,8 @@ async function handleChangePageStatus(message) {
 	await storePageStatus(message.tab.url, message.status);
 	browser.tabs.sendMessage(message.tab.id, {type: 'update-content'});
 	await updateIcon(message.tab.id, message.status);
+
+	sendResponse('change-page-status done');
 }
 
 function handleImportData(message, sendResponse) {
@@ -59,7 +62,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	// Status changed in popup
 	console.debug('background: received', message);
 	if (message.type === 'change-page-status') {
-		handleChangePageStatus(message);
+		handleChangePageStatus(message, sendResponse);
 	}
 
 	if (message.type === 'import-data') {

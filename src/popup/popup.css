@@ -21,12 +21,18 @@ body {
     max-height: 300px;
     overflow-y: auto;
 }
+
 .related-links ul li {
     list-style: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 25rem;
+    overflow-x: hidden;
+
 }
 .related-links ul img {
-    width: 1.2em;
-    margin-right: 10px;
+    height: 1.0em;
+    margin-right: 0.2em;
     vertical-align: middle;
 }
 

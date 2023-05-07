@@ -6,13 +6,12 @@ document.querySelectorAll('button.changeStateButton, a.changeStateButton')
 async function handleClickStatusButton(button) {
 	const status = button.getAttribute('data-status');
 	const [tab] = await browser.tabs.query({active: true, currentWindow: true});
-	browser.runtime.sendMessage({type: 'change-page-status', status, tab});
-
-	await updatePopup(status, tab.url,true);
+	await browser.runtime.sendMessage({type: 'change-page-status', status, tab});
 
 	if (status === 'none') {
 		setTimeout(window.close, 200);
 	} else {
+		await updatePopup(status, tab.url,true);
 		setTimeout(window.close, 1200);
 	}
 }
