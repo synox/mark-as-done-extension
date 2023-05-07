@@ -4,7 +4,7 @@ module.exports = {
 		es2021: true,
 		webextensions: true,
 	},
-	extends: 'xo',
+	extends: 'airbnb',
 	overrides: [
 	],
 	parserOptions: {
