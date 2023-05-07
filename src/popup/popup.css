@@ -3,39 +3,23 @@
     font-size: 12px;
 }
 
-
-.related-links ul {
-    padding: 0;
+.appear-from-top {
+    position: relative;
+    animation: appear-from-top 0.2s ease-in forwards;
 }
 
-.related-links h2 {
-    margin-top: 25px;
-    padding-top: 15px;
-    margin-bottom: 5px;
-    border-top: 1px solid lightblue;
-    font-size: 1rem;
-    font-weight: lighter;
+@keyframes appear-from-top {
+    from {
+        top: -30px;
+        opacity: 0;
+    }
+
+    to {
+        top: 0;
+        opacity: 1
+    }
 }
 
-.related-links ul {
-    margin: 0;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.related-links ul li {
-    list-style: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 25rem;
-    overflow-x: hidden;
-
-}
-.related-links ul img {
-    height: 1.0em;
-    margin-right: 0.2em;
-    vertical-align: middle;
-}
 
 .controls {
     margin: 5px;
@@ -72,7 +56,7 @@
     background-color: #eaeaea;
 }
 
-.controls .buttonDiv {
+.controls .state-change-buttons {
     margin: 20px 0;
 }
 
@@ -86,72 +70,35 @@
     filter: none;
 }
 
-.appearFromTop {
-    position: relative;
-    animation: appearFromTop 0.2s ease-in forwards;
+
+.related-links ul {
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-@keyframes appearFromTop {
-    from {
-        top: -30px;
-        opacity: 0;
-    }
-    to {
-        top: 0;
-        opacity: 1
-    }
+.related-links h2 {
+    margin-top: 25px;
+    padding-top: 15px;
+    margin-bottom: 5px;
+    border-top: 1px solid lightblue;
+    font-size: 1rem;
+    font-weight: lighter;
 }
 
 
-#list-result ul {
-    list-style-type: none;
-    white-space: nowrap;
-    text-align: left;
-}
-
-#list-result ul li {
-    padding: 0 0 5px 30px;
+.related-links ul li {
     list-style: none;
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 25rem;
+    overflow-x: hidden;
 
 }
 
-#list-result li[data-status='done'] {
-    background-image: url("../../images/icon-done.png");
-    color: green !important;
-}
-
-#list-result li[data-status='started'] {
-    background-image: url("../../images/icon-started.png");
-    color: #de9621 !important;
-}
-
-#list-result li[data-status='todo'] {
-    background-image: url("../../images/icon-todo.png");
-    color: #d73700 !important;
-}
-
-
-#list-result details {
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    padding: .5em .5em 0;
-    margin-top: 5px;
-}
-
-#list-result summary {
-    font-weight: bold;
-    margin: -.5em -.5em 0;
-    padding: .5em;
-}
-
-#list-result details[open] {
-    padding: .5em;
-}
-
-#list-result details[open] summary {
-    border-bottom: 1px solid #aaa;
-    margin-bottom: .5em;
+.related-links ul li img {
+    height: 1.0em;
+    margin-right: 0.2em;
+    vertical-align: middle;
 }
