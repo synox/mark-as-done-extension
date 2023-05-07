@@ -118,6 +118,26 @@ async function getAllLinksForDomain(origin) {
 }
 
 /**
+ * sort links by status in-place
+ * @param links {array}
+ * return {void}
+ */
+function sortLinksByStatus(links) {
+	links.sort((a, b) => {
+		const statusValues = {
+			[STATUS_STARTED]: 2,
+			[STATUS_TODO]: 1,
+			[STATUS_DONE]: -1,
+			'default': 0,
+		};
+
+		const getMappedValue = (status) => statusValues[status] || statusValues['default'];
+
+		return getMappedValue(b.status) - getMappedValue(a.status);
+	});
+}
+
+/**
 
  Retrieves all stored links by their domain from the browser's local storage.
  The links are sorted and grouped by domain.

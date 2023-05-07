@@ -71,6 +71,7 @@ async function init() {
 
 	const relatedLinks = document.querySelector(".related-links ul");
 	let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
+	sortLinksByStatus(currentSiteLinks);
 	currentSiteLinks.forEach(link => {
 		const li = document.createElement("li");
 		const a = document.createElement("a");
@@ -82,6 +83,9 @@ async function init() {
 		li.append(a);
 
 		relatedLinks.append(li);
+		a.addEventListener('click', () => {
+			setTimeout(window.close, 200);
+		});
 	});
 }
 
