@@ -24,9 +24,9 @@ With one click, the page is marked as Todo, Started, or Done.
 
 # Icons
 
-    <img src="images/icon-todo.png" width=20> **Todo**: Page is marked as Todo
-    <img src="images/icon-started.png" width=20> **Started**: Page is marked as Started or partially completed
-    <img src="images/icon-done.png" width=20> **Done**: Page is marked as Done
+<img src="images/icon-todo.png" width=20> **Todo**: Page is marked as Todo
+<img src="images/icon-started.png" width=20> **Started**: Page is marked as Started or partially completed
+<img src="images/icon-done.png" width=20> **Done**: Page is marked as Done
 
 # How to Install
 
