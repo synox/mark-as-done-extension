@@ -76,6 +76,9 @@ async function init() {
 		const a = document.createElement("a");
 		a.href = link.url;
 		a.innerText = new URL(link.url).pathname
+		const icon = document.createElement('img');
+		icon.src = browser.runtime.getURL('images/icon-' + link.status + '.png');
+		a.prepend(icon);
 		li.append(a);
 
 		relatedLinks.append(li);
