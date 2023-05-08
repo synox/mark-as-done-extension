@@ -55,7 +55,7 @@ document.getElementById('resetAllDataButton').addEventListener('click', async ev
 
 
 document.getElementById('listButton').addEventListener('click', async event => {
-	const result = await getAllLinksByeDomain();
+	const result = await getAllLinksByDomain();
 
 	console.log(result);
 
