@@ -30,7 +30,7 @@ async function init() {
 
       const a = document.createElement('a');
       a.href = item.url;
-      a.innerText = item.url;
+      a.innerText = item.url.replace(domain, '');
       a.target = '_blank';
 
       const cellLink = document.createElement('td');
