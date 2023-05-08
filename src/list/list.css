@@ -1,0 +1,31 @@
+:root {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+body {
+  padding: 30px;
+}
+
+
+summary h2 {
+  display: inline;
+  font-size: 1.2em;
+}
+
+
+.links ul li {
+    list-style: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 25rem;
+    overflow-x: hidden;
+    margin: 10px;
+
+}
+
+.links ul li img {
+    height: 1.0em;
+    margin-right: 0.2em;
+    vertical-align: middle;
+}
