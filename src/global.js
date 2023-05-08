@@ -11,7 +11,7 @@ const STATUS_TODO = 'todo';
  */
 
 /**
- * @typedef {'done'|'started'|'none','disabled', 'todo'} LinkStatus
+ * @typedef {'done'|'started'|'none'|'disabled'|'todo'} LinkStatus
  */
 
 // Keep backwards compatibility
