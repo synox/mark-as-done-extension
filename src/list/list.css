@@ -1,6 +1,6 @@
 :root {
     font-family: Arial, sans-serif;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 body {
@@ -26,8 +26,17 @@ summary h2 {
   border-bottom: 1px solid #e8e8e8;
 }
 
-.links table td {
-    padding: 5px;
+.links table td:nth-child(2) {
+  min-width: 550px;
+}
+
+.links table td a {
+  display: block;
+  padding: 5px;
+}
+
+.links table td a:hover {
+  background-color: #def7ff;
 }
 
 .links img {
