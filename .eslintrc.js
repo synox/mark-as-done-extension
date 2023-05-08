@@ -1,17 +1,20 @@
 module.exports = {
-	env: {
-		browser: true,
-		es2021: true,
-		webextensions: true,
-	},
-	extends: 'xo',
-	overrides: [
-	],
-	parserOptions: {
-		ecmaVersion: 'latest',
-		sourceType: 'module',
-	},
-	rules: {
-	},
-	ignorePatterns: ['3rdparty/**'],
+  env: {
+    browser: true,
+    es2021: true,
+    webextensions: true,
+  },
+  extends: 'airbnb',
+  overrides: [
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  rules: {
+    'no-use-before-define': 'off',
+    'no-undef': 'off',
+    'no-console': 'off',
+  },
+  ignorePatterns: ['3rdparty/**'],
 };

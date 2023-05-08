@@ -6,74 +6,7 @@
     <script src="../../3rdparty/browser-polyfill.min.js"></script>
     <script src="../global.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
 
-        .controls {
-            margin: 5px;
-            min-width: 20rem;;
-            display: none;
-        }
-
-        .controls.current {
-            display: block;
-            white-space: nowrap;
-        }
-
-        .controls h1 {
-            font-size: 18px;
-            padding: 5px 5px 5px 0;
-        }
-
-        .controls a {
-            margin-right: 15px;
-            padding: 10px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 12px;
-            background-color: #eee;
-            color: #444;
-        }
-
-        .controls h1 img {
-            height: 1.5em;
-            vertical-align: middle;
-        }
-
-        .controls a:hover {
-            background-color: #eaeaea;
-        }
-
-        .controls .buttonDiv {
-            margin: 20px 0;
-        }
-
-        .controls a img {
-            height: 1.5em;
-            vertical-align: middle;
-            filter: grayscale(1);
-        }
-
-        .controls a:hover img {
-            filter: none;
-        }
-
-        .appearFromTop {
-            position: relative;
-            animation: appearFromTop 0.1s ease-out forwards;
-        }
-
-        @keyframes appearFromTop {
-            from {
-                top: -30px;
-                opacity: 0;
-            }
-            to {
-                top: 0;
-                opacity: 1
-            }
-        }
 
     </style>
 </head>
@@ -83,20 +16,20 @@
 
     <h1><img src="../../images/icon-todo.png"> Page saved for later.</h1>
 
-    <div class="buttonDiv">
+    <div class="state-change-buttons">
 
         <a href="#" class="changeStateButton" data-status="started">
-            <img src="../../images/icon-started.png">
+            <img src="../../images/icon-started.png" alt="started icon">
             <span> start progress</span>
         </a>
 
         <a href="#" class="changeStateButton" data-status="done">
-            <img src="../../images/icon-done.png">
+            <img src="../../images/icon-done.png" alt="done icon">
             <span> done</span>
         </a>
 
         <a href="#" class="changeStateButton" data-status="none">
-            <img src="../../images/trash-can.svg">
+            <img src="../../images/trash-can.svg" alt="trash icon">
             <span> Remove</span>
         </a>
     </div>
@@ -104,17 +37,17 @@
 
 <div class="controls" id="controls-started" data-status="started">
 
-    <h1><img src="../../images/icon-started.png"> Page is in progress.</h1>
+    <h1><img src="../../images/icon-started.png" alt="started icon"> Page is in progress.</h1>
 
-    <div class="buttonDiv">
+    <div class="state-change-buttons">
 
         <a href="#" class="changeStateButton" data-status="done">
-            <img src="../../images/icon-done.png">
+            <img src="../../images/icon-done.png" alt="done icon">
             <span> done</span>
         </a>
 
         <a href="#" class="changeStateButton" data-status="none">
-            <img src="../../images/trash-can.svg">
+            <img src="../../images/trash-can.svg" alt="trash icon">
             <span> Remove</span>
         </a>
     </div>
@@ -124,13 +57,20 @@
 
     <h1><img src="../../images/icon-done.png"> Page marked as done.</h1>
 
-    <div class="buttonDiv">
+    <div class="state-change-buttons">
 
         <a href="#" class="changeStateButton" data-status="none">
-            <img src="../../images/trash-can.svg">
+            <img src="../../images/trash-can.svg" alt="trash icon">
             <span> Remove</span>
         </a>
     </div>
+</div>
+
+<div class="related-links">
+    <h2>more on this site:</h2>
+    <ul>
+
+    </ul>
 </div>
 
 <script src="popup.js"></script>
