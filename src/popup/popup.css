@@ -87,8 +87,8 @@ body {
     padding-top: 15px;
     margin-bottom: 5px;
     border-top: 1px solid lightblue;
-    font-size: 1rem;
-    font-weight: lighter;
+    font-size: 1.2rem;
+    font-weight: normal;
 }
 
 
@@ -98,7 +98,7 @@ body {
     white-space: nowrap;
     max-width: 25rem;
     overflow-x: hidden;
-
+    font-size: 1.1rem;
 }
 
 .related-links ul li img {
