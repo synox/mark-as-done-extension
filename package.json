@@ -9,7 +9,8 @@
     "webextension-polyfill": "^0.10.0"
   },
   "scripts": {
-    "start:firefox": "web-ext run --source-dir ./",
+    "start:firefox": "web-ext run --target firefox-desktop --source-dir ./",
+    "start:chrome": "web-ext run --target chromium --source-dir ./",
     "build": "web-ext build --source-dir ./",
     "lint:js": "eslint . ; web-ext lint --source-dir ./",
     "lint:css": "stylelint 'src/**/*.css' ",
