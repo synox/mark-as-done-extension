@@ -13,18 +13,24 @@ summary h2 {
   font-size: 1.2em;
 }
 
-
-.links ul li {
-    list-style: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 25rem;
-    overflow-x: hidden;
-    margin: 10px;
-
+.links details {
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
-.links ul li img {
+.links table  {
+  border-collapse: collapse;
+}
+
+.links table tr {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.links table td {
+    padding: 5px;
+}
+
+.links img {
     height: 1.0em;
     margin-right: 0.2em;
     vertical-align: middle;
