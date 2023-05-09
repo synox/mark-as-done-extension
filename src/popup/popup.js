@@ -14,6 +14,7 @@ async function handleClickStatusButton(button) {
   }
 }
 
+
 /**
  *
  * @param status {LinkStatus}
@@ -41,7 +42,7 @@ function addRelatedLinks(currentSiteLinks) {
   const listElement = document.querySelector('.related-links ul');
 
   if (currentSiteLinks.length === 0) {
-    listElement.remove();
+    listElement.parentElement.remove();
     return;
   }
   sortLinksByStatus(currentSiteLinks);
