@@ -56,3 +56,14 @@ document.getElementById('resetAllDataButton').addEventListener('click', async (e
 document.querySelector('button#listButton').addEventListener('click', async () => {
   window.open('../list/list.html');
 });
+
+getUserSettings().then((settings) => {
+  console.log('settings', settings);
+  document.querySelectorAll('.states-list input').forEach((input) => {
+    input.setAttribute('checked', settings.enabledStates.includes(input.dataset.status));
+  });
+});
+
+setUserSettings({ a3: ['2'] }).then(() => {
+  console.log('settings saved');
+});
