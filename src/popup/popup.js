@@ -25,7 +25,7 @@ async function handleClickStatusButton(button) {
  * @param url {string}
  * @param animate {boolean}
  */
-function updatePopup(status, url, animate = false) {
+async function updatePopup(status, url, animate = false) {
   console.debug('update with status', status);
 
   if (animate) {
@@ -37,6 +37,15 @@ function updatePopup(status, url, animate = false) {
       controls.classList.add('current');
     } else {
       controls.classList.remove('current');
+    }
+  });
+
+  // remove buttons for disabled sites
+  const settings = await getUserSettings();
+
+  document.querySelectorAll('.changeStateButton').forEach((button) => {
+    if (button.dataset.status !== 'none' && !settings.enabledStates.includes(button.dataset.status)) {
+      button.remove();
     }
   });
 }
