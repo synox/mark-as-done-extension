@@ -62,10 +62,14 @@ document.querySelector('button#listButton').addEventListener('click', async () =
 getUserSettings().then((settings) => {
   console.log('settings', settings);
   document.querySelectorAll('.states-list input').forEach((input) => {
-    input.setAttribute('checked', settings.enabledStates.includes(input.dataset.status));
+    input.checked = settings.enabledStates.includes(input.dataset.status);
   });
 });
 
-setUserSettings({ a3: ['2'] }).then(() => {
-  console.log('settings saved');
+document.querySelectorAll('.states-list input').forEach((input) => {
+  input.addEventListener('change', async () => {
+    const enabledStates = [...document.querySelectorAll('.states-list input:checked')]
+      .map((anInput) => anInput.dataset.status);
+    await setUserSettings({ enabledStates });
+  });
 });
