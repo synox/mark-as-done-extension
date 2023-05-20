@@ -5,8 +5,7 @@ module.exports = {
     webextensions: true,
   },
   extends: 'airbnb',
-  overrides: [
-  ],
+  overrides: [],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
@@ -16,6 +15,8 @@ module.exports = {
     'no-undef': 'off',
     'no-console': 'off',
     'no-return-await': 'off',
+    'no-param-reassign': 'off',
+    'import/extensions': 'off',
   },
   ignorePatterns: ['3rdparty/**'],
 };

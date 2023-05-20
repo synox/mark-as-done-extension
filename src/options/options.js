@@ -1,3 +1,5 @@
+import { getUserSettings, setUserSettings } from '../storage.js';
+
 function save(filename, data) {
   const blob = new Blob([data], { type: 'text/json' });
   if (window.navigator.msSaveOrOpenBlob) {
@@ -12,7 +14,7 @@ function save(filename, data) {
   }
 }
 
-document.getElementById('exportButton').addEventListener('click', async (event) => {
+document.getElementById('exportButton').addEventListener('click', async () => {
   const allItems = await browser.storage.local.get(null);
   const result = Object.entries(allItems)
     .map((entry) => ({ url: entry[0], status: compatibiltyStatus(entry[1]) }))
@@ -21,7 +23,7 @@ document.getElementById('exportButton').addEventListener('click', async (event) 
   save('marked-as-done-all.json', JSON.stringify(result));
 });
 
-document.getElementById('importButton').addEventListener('click', async (event) => {
+document.getElementById('importButton').addEventListener('click', async () => {
   document.getElementById('upload').click();
 });
 
