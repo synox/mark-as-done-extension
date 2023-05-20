@@ -15,6 +15,7 @@ module.exports = {
     'no-use-before-define': 'off',
     'no-undef': 'off',
     'no-console': 'off',
+    'no-return-await': 'off',
   },
   ignorePatterns: ['3rdparty/**'],
 };
