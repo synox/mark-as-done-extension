@@ -4,7 +4,8 @@
   "version": "0.4.1",
   "description": "Easily track your reading progress with automatically marked links.",
   "background": {
-    "scripts": ["3rdparty/browser-polyfill.min.js",  "src/global.js", "src/service-worker.js"]
+    "scripts": ["3rdparty/browser-polyfill.min.js",  "src/global.js", "src/service-worker.js"],
+    "type": "module"
   },
   "permissions": [
     "storage",

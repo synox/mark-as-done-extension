@@ -1,10 +1,10 @@
 const defaultSettings = {
-  enabledStates: [STATUS_TODO, STATUS_STARTED, STATUS_DONE],
+  enabledStates: ['todo', 'started', 'done'],
 };
 
 /**
  * @typedef {Object} UserSettings
- * @property {string[]} enabledStates
+ * @property {LinkStatus[]} enabledStates
  */
 
 /**

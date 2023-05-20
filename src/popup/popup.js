@@ -1,3 +1,8 @@
+import { getUserSettings } from '../storage.js';
+import {
+  getStatus, STATUS_DISABLED, removeUrl, getAllLinksForDomain, sortLinksByStatus,
+} from '../global.js';
+
 document.querySelectorAll('button.changeStateButton, a.changeStateButton')
   .forEach((button) => button.addEventListener('click', () => handleClickStatusButton(button)));
 
@@ -14,15 +19,13 @@ async function handleClickStatusButton(button) {
   }
 }
 
-
 /**
  *
  * @param status {LinkStatus}
  * @param url {string}
  * @param animate {boolean}
- * @return {Promise<void>}
  */
-async function updatePopup(status, url, animate = false) {
+function updatePopup(status, url, animate = false) {
   console.debug('update with status', status);
 
   if (animate) {
@@ -63,6 +66,13 @@ function addRelatedLinks(currentSiteLinks) {
   });
 }
 
+async function getInitialStatus() {
+  const settings = await getUserSettings();
+  if (settings.enabledStates.includes('todo')) return 'todo';
+  if (settings.enabledStates.includes('started')) return 'started';
+  return 'done';
+}
+
 async function init() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   let status = await getStatus(tab.url);
@@ -76,7 +86,7 @@ async function init() {
 
   // On first click, change to initial status
   if (status === 'none') {
-    status = 'todo'; // TODO #1: make initial status configurable
+    status = await getInitialStatus();
     browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
     animate = true;
   }

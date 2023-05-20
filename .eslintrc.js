@@ -17,6 +17,9 @@ module.exports = {
     'no-return-await': 'off',
     'no-param-reassign': 'off',
     'import/extensions': 'off',
+    'require-await': 'error',
+    'no-restricted-syntax': 'off',
+    'no-plusplus': 'off',
   },
   ignorePatterns: ['3rdparty/**'],
 };

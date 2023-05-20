@@ -1,3 +1,5 @@
+import { getStatus, prepareUrl } from './global.js';
+
 async function activateIcon(tab) {
   // Update Icon in toolbar
   const status = await getStatus(tab.url);
@@ -5,11 +7,21 @@ async function activateIcon(tab) {
   await updateIcon(tab.id, status);
 }
 
+/**
+ * @param url {string}
+ * @return {Promise<boolean>}
+ */
+async function hasAnyStatusForDomain(url) {
+  const urlObj = new URL(url);
+  const allItems = await browser.storage.local.get(null);
+  return Object.keys(allItems).some((key) => key.startsWith(`${urlObj.protocol}//${urlObj.hostname}`));
+}
+
 async function activateTabContent(tab) {
   console.debug('activateTabContent', tab.id);
 
   await browser.tabs.executeScript(tab.id, { file: '3rdparty/browser-polyfill.min.js' });
-  await browser.tabs.executeScript(tab.id, { file: 'src/global.js' });
+  // not importing global.js because node modules are not supported with executeScript()
   await browser.tabs.executeScript(tab.id, { file: 'src/inject/inject.js' });
   await browser.tabs.insertCSS(tab.id, { file: 'src/inject/inject.css' });
   browser.tabs.sendMessage(tab.id, { type: 'update-content' });
@@ -55,22 +67,31 @@ async function handleChangePageStatus(message, sendResponse) {
 }
 
 function handleImportData(message, sendResponse) {
-  for (const entry of message.data) {
+  message.data.forEach((entry) => {
     browser.storage.local.set({ [entry.url]: entry.status });
-  }
+  });
 
   sendResponse('success');
 }
 
+async function handleGetStatusMessage(message, sendResponse) {
+  const status = await getStatus(message.url);
+  sendResponse(status);
+}
+
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // Status changed in popup
-  console.debug('background: received', message);
+  // console.debug('background: received', message);
   if (message.type === 'change-page-status') {
     handleChangePageStatus(message, sendResponse);
   }
 
   if (message.type === 'import-data') {
     handleImportData(message, sendResponse);
+  }
+
+  if (message.type === 'get-status') {
+    handleGetStatusMessage(message, sendResponse);
   }
 
   // Return true to indicate that the response should be sent asynchronously
@@ -86,13 +107,19 @@ async function updateIcon(tabId, status) {
   await browser.browserAction.setIcon({ tabId, path: `images/icon-${status}.png` });
 }
 
+/**
+ *
+ * @param url
+ * @param status {LinkStatus}
+ * @return {Promise<*>}
+ */
 async function storePageStatus(url, status) {
   const preparedUrl = prepareUrl(url);
 
-  if (status === STATUS_NONE) {
-    return browser.storage.local.remove(preparedUrl);
+  if (status === 'none') {
+    return await browser.storage.local.remove(preparedUrl);
   }
 
   // This special syntax uses the value of preparedUrl as the key of the object
-  return browser.storage.local.set({ [preparedUrl]: status });
+  return await browser.storage.local.set({ [preparedUrl]: status });
 }
