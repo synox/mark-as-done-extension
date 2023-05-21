@@ -106,6 +106,10 @@ async function init() {
   // Remove current page from list, only show other pages on the same domain
   currentSiteLinks = removeUrl(currentSiteLinks, tab.url);
   addRelatedLinks(currentSiteLinks);
+
+  document.querySelector('#listButton').addEventListener('click', () => {
+    setTimeout(window.close, 200);
+  });
 }
 
 init().catch(console.error);
