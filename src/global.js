@@ -27,14 +27,18 @@ export function compatibiltyStatus(oldStatus) {
   return oldStatus;
 }
 
-
-// TODO: eliminate this duplicate function
-export function prepareUrl(url) {
+/**
+ * Normalize the url to be used as key in the storage. This removes the hash and the search parameters.
+ *
+ * @param url
+ * @return {null|string}
+ */
+export function normalizeUrl(url) {
   try {
     const urlObject = new URL(url);
     // In general, hash are ignored.
 
-    // Search must be respected for confluence-wiki. (/pages/viewpage.action?pageId=123)
+    // Search parameters must be respected for confluence-wiki. (/pages/viewpage.action?pageId=123)
     // but on other pages the "?lang=en" should be ignored.
 
     let filteredSearch = urlObject.search.replace(/lang=.*$/, '');
@@ -67,12 +71,12 @@ export async function getStatus(url) {
     return STATUS_DISABLED;
   }
 
-  const preparedUrl = prepareUrl(url);
+  const normalizedUrl = normalizeUrl(url);
   if (!url) {
     return STATUS_NONE;
   }
-  const value = await browser.storage.local.get(preparedUrl);
-  return compatibiltyStatus(value[preparedUrl]);
+  const value = await browser.storage.local.get(normalizedUrl);
+  return compatibiltyStatus(value[normalizedUrl]);
 }
 
 /**
