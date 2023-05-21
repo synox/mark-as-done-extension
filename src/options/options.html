@@ -9,8 +9,15 @@
   <script src="../global.js" type="module"></script>
 </head>
 <body class="options">
-<div class="states">
-  <h1>States</h1>
+<h1>Mark as done | Options</h1>
+<button id="listButton">
+  List pages
+</button>
+
+<hr>
+
+<div class="section states">
+  <h2>Activated States</h2>
   <p>
     You can deactivate states that you don't need. This will remove the state from the popup menu and skip it
     when you open the popup.
@@ -21,36 +28,25 @@
     <label><input type="checkbox" data-status="done"><span>Done</span></label>
   </div>
 </div>
+
 <hr>
+
+<h2>Operations</h2>
 <p>
   <button id="exportButton">
     <span>Export as JSON</span>
   </button>
-</p>
-<p>
+
   <button id="importButton">
     <span>Import JSON</span>
   </button>
   <input type="file" id="upload" hidden/>
   <span id="importStatus"></span>
 
-</p>
-<div>
-  <button id="listButton">
-    List pages
+  <button id="resetAllDataButton" class="danger">
+    <span>reset all data</span>
   </button>
-  <div id="list-result"></div>
-</div>
-<details class="danger">
-  <summary>
-    Danger zone
-  </summary>
-  <p>
-    <button id="resetAllDataButton">
-      <span>reset all data</span>
-    </button>
-  </p>
-</details>
+</p>
 
 </body>
 <script src="options.js" type="module"></script>
