@@ -17,6 +17,18 @@ async function hasAnyStatusForDomain(url) {
   return Object.keys(allItems).some((key) => key.startsWith(`${urlObj.protocol}//${urlObj.hostname}`));
 }
 
+async function isAllowedDomain(url) {
+  return url && url.startsWith('http') && await hasAnyStatusForDomain(url);
+}
+
+// eslint-disable-next-line no-unused-vars
+browser.storage.local.onChanged.addListener(async (changes, areaName) => {
+  const tabs = await browser.tabs.query({});
+  tabs
+    .filter((tab) => isAllowedDomain(tab.url))
+    .forEach((tab) => browser.tabs.sendMessage(tab.id, { type: 'update-content' }));
+});
+
 async function activateTabContent(tab) {
   console.debug('activateTabContent', tab.id);
 
@@ -29,7 +41,7 @@ async function activateTabContent(tab) {
 
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   // Only inject script if the current domain has any status set
-  if (tab.url && tab.url.startsWith('http') && await hasAnyStatusForDomain(tab.url)) {
+  if (await isAllowedDomain(tab.url)) {
     if (tab.status === 'loading') {
       await activateIcon(tab);
     } else if (tab.status === 'complete') {
@@ -37,7 +49,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       await activateTabContent(tab);
     }
   } else {
-    console.log('domain is disabled', tab.url);
+    console.log('domain is ignored', tab.url);
     await updateIcon(tab.id, 'disabled');
   }
 });

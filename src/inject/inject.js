@@ -5,6 +5,8 @@
 
 console.log('Content script injected');
 
+// TODO: move all storage access into the service worker
+
 // eslint-disable-next-line no-unused-vars
 browser.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   console.debug('content: received', request);
@@ -131,7 +133,3 @@ function prepareUrl(url) {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
-browser.storage.local.onChanged.addListener(async (changes, areaName) => {
-  await updateAllLinksOnPage(window.location.href);
-});
