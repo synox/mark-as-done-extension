@@ -74,6 +74,9 @@ body {
     filter: none;
 }
 
+#controls-disabled h1 {
+  color: darkgray;
+}
 
 .related-links ul {
     padding: 0;

@@ -3,10 +3,38 @@ import {
   getStatus, STATUS_DISABLED, removeUrl, getAllLinksForDomain, sortLinksByStatus,
 } from '../global.js';
 
-document.querySelectorAll('button.changeStateButton, a.changeStateButton')
-  .forEach((button) => button.addEventListener('click', () => handleClickStatusButton(button)));
+async function init() {
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  let status = await getStatus(tab.url);
+  if (status === STATUS_DISABLED) {
+    // show reduced popup on disabled sites
+  }
 
-async function handleClickStatusButton(button) {
+  let animate = false;
+
+  // On first click, change to initial status
+  if (status === 'none') {
+    status = await getInitialStatus();
+    browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
+    animate = true;
+  }
+
+  await updatePopup(status, tab.url, animate);
+
+  let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
+  // Remove current page from list, only show other pages on the same domain
+  currentSiteLinks = removeUrl(currentSiteLinks, tab.url);
+  addRelatedLinks(currentSiteLinks);
+
+  document.querySelector('#listButton').addEventListener('click', () => {
+    setTimeout(window.close, 200);
+  });
+
+  document.querySelectorAll('button.changeStateButton, a.changeStateButton')
+    .forEach((button) => button.addEventListener('click', () => handleChangeStatus(button)));
+}
+
+async function handleChangeStatus(button) {
   const status = button.getAttribute('data-status');
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   await browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
@@ -40,9 +68,8 @@ async function updatePopup(status, url, animate = false) {
     }
   });
 
-  // remove buttons for disabled sites
+  // remove buttons for disabled states
   const settings = await getUserSettings();
-
   document.querySelectorAll('.changeStateButton').forEach((button) => {
     if (button.dataset.status !== 'none' && !settings.enabledStates.includes(button.dataset.status)) {
       button.remove();
@@ -80,36 +107,6 @@ async function getInitialStatus() {
   if (settings.enabledStates.includes('todo')) return 'todo';
   if (settings.enabledStates.includes('started')) return 'started';
   return 'done';
-}
-
-async function init() {
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-  let status = await getStatus(tab.url);
-  if (status === STATUS_DISABLED) {
-    // don't show popup on disabled sites
-    window.close();
-    return;
-  }
-
-  let animate = false;
-
-  // On first click, change to initial status
-  if (status === 'none') {
-    status = await getInitialStatus();
-    browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
-    animate = true;
-  }
-
-  await updatePopup(status, tab.url, animate);
-
-  let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
-  // Remove current page from list, only show other pages on the same domain
-  currentSiteLinks = removeUrl(currentSiteLinks, tab.url);
-  addRelatedLinks(currentSiteLinks);
-
-  document.querySelector('#listButton').addEventListener('click', () => {
-    setTimeout(window.close, 200);
-  });
 }
 
 init().catch(console.error);
