@@ -150,7 +150,8 @@ export async function getAllLinksByDomain() {
       try {
         domain = new URL(currentValue.url).origin;
       } catch (error) {
-        domain = 'others';
+        // ignore bad urls
+        return accumulator;
       }
 
       accumulator[domain] = [...accumulator[domain] || [], currentValue];
