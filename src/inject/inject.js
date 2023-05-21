@@ -3,13 +3,12 @@
 
 // JS-Modules cannot be injected, so we cannot export and import anything.
 
-console.log('Content script injected');
+console.debug('mark-as-done script added');
 
 // eslint-disable-next-line no-unused-vars
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.debug('content: received', request);
   if (request.type === 'update-content') {
-    console.debug('content: updating content');
     updateAllLinksOnPage(window.location.href).then(() => watchPageForDynamicallyAddedLinks());
   }
 });
@@ -27,7 +26,7 @@ async function getStatusFromServiceWorker(url) {
 async function updateAllLinksOnPage(documentUrl, root = document) {
   const links = root.querySelectorAll('a');
 
-  console.debug('content: found ', links.length, 'links');
+  // console.debug('content: found ', links.length, 'links');
   await Promise.all([...links].map(async (link) => {
     if (isNormalLink(link, documentUrl)) {
       const status = await getStatusFromServiceWorker(link.href);

@@ -23,6 +23,7 @@ async function isAllowedDomain(url) {
 
 // eslint-disable-next-line no-unused-vars
 browser.storage.local.onChanged.addListener(async (changes, areaName) => {
+  console.log('storage changed', changes, areaName);
   const tabs = await browser.tabs.query({});
   tabs
     .filter((tab) => isAllowedDomain(tab.url))
@@ -44,8 +45,8 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (await isAllowedDomain(tab.url)) {
     if (tab.status === 'loading') {
       await activateIcon(tab);
-    } else if (tab.status === 'complete') {
-      console.log('tab was updated', tab.url);
+    } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
+      console.log('tab was updated', tab.url, changeInfo);
       await activateTabContent(tab);
     }
   } else {
