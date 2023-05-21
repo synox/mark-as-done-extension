@@ -76,3 +76,10 @@ npm run start:firefox
 ```bash
 npm run lint
 ```
+
+## Deploy
+
+Sign for Firefox: 
+```bash
+web-ext sign --api-key "user:xxx" --api-secret "xxxx"
+```
