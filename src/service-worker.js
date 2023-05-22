@@ -27,9 +27,18 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 async function updateLinksInAllTabs() {
   console.log('storage changed, updating all tabs');
   const tabs = await browser.tabs.query({});
+  // don't wait until update is complete
   tabs
     .filter((tab) => isAllowedDomain(tab.url))
-    .forEach((tab) => browser.tabs.sendMessage(tab.id, { type: 'update-content' }));
+    .map(async (tab) => {
+      try {
+        await browser.tabs.sendMessage(tab.id, { type: 'update-content' });
+      } catch (e) {
+        if (e.message !== 'Could not establish connection. Receiving end does not exist.') {
+          console.warn('error updating tab', tab.url, e);
+        }
+      }
+    });
 }
 
 /**
@@ -76,7 +85,7 @@ async function injectContentScripts(tab) {
   // not importing global.js because node modules are not supported with executeScript()
   await browser.tabs.executeScript(tab.id, { file: 'src/inject/inject.js' });
   await browser.tabs.insertCSS(tab.id, { file: 'src/inject/inject.css' });
-  browser.tabs.sendMessage(tab.id, { type: 'update-content' });
+  await browser.tabs.sendMessage(tab.id, { type: 'update-content' });
 }
 
 /**
@@ -90,15 +99,18 @@ async function handleChangePageStatus(message, sendResponse) {
 
   await storePageStatus(message.tab.url, message.status);
   try {
-    browser.tabs.sendMessage(message.tab.id, { type: 'update-content' });
+    await browser.tabs.sendMessage(message.tab.id, { type: 'update-content' });
   } catch (e) {
-    console.error('error while sending "update-content" message', e);
+    if (e.message !== 'Could not establish connection. Receiving end does not exist.') {
+      console.error('error while sending "update-content" message', e);
+    }
   }
   await updateIcon(message.tab.id, message.status);
 
   // Make sure the scripts are injected
   if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.tab.url)) {
-    await injectContentScripts(message.tab);
+    // not waiting for the injection to complete:
+    injectContentScripts(message.tab).catch(console.log);
   }
   sendResponse('change-page-status done');
 }

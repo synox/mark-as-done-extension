@@ -40,10 +40,10 @@ async function handleChangeStatus(button) {
   await browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
 
   if (status === 'none') {
-    setTimeout(window.close, 200);
+    window.close();
   } else {
-    await updatePopup(status, tab.url, true);
     setTimeout(window.close, 1200);
+    await updatePopup(status, tab.url, true);
   }
 }
 
