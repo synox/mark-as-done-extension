@@ -88,20 +88,18 @@ async function injectContentScripts(tab) {
 async function handleChangePageStatus(message, sendResponse) {
   console.log('updating status to', message.status);
 
-  // Make sure the scripts are injected
-  if (!await hasAnyEntriesForDomain(message.tab.url)) {
-    await injectContentScripts(message.tab);
-  }
-
   await storePageStatus(message.tab.url, message.status);
   try {
-    // todo: only update the changed url, no need to get all the urls from the storage
     browser.tabs.sendMessage(message.tab.id, { type: 'update-content' });
   } catch (e) {
     console.error('error while sending "update-content" message', e);
   }
   await updateIcon(message.tab.id, message.status);
 
+  // Make sure the scripts are injected
+  if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.tab.url)) {
+    await injectContentScripts(message.tab);
+  }
   sendResponse('change-page-status done');
 }
 
@@ -138,10 +136,10 @@ async function storePageStatus(url, newStatus) {
 
   if (newStatus === 'none') {
     await browser.storage.local.remove(normalizedUrl);
+  } else {
+    // This special syntax uses the value of normalizedUrl as the key of the object
+    await browser.storage.local.set({ [normalizedUrl]: newStatus });
   }
-
-  // This special syntax uses the value of normalizedUrl as the key of the object
-  await browser.storage.local.set({ [normalizedUrl]: newStatus });
 
   await updateLinksInAllTabs();
 }
