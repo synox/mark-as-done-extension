@@ -5,8 +5,8 @@ import { getStatus, normalizeUrl } from './global.js';
  */
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   // Only inject script if there are already any entries for the  current domain
-  if (!await isAllowedDomain(tab.url)) {
-    console.log('domain is ignored', tab.url);
+  if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
+    console.log('extension is disabled on domain', tab.url);
     await updateIcon(tab.id, 'disabled');
     return;
   }
@@ -24,14 +24,13 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 /**
  * react to changes in the storage: update all tabs
  */
-// eslint-disable-next-line no-unused-vars
-browser.storage.local.onChanged.addListener(async (changes, areaName) => {
-  console.log('storage changed, updating all tabs', changes);
+async function updateLinksInAllTabs() {
+  console.log('storage changed, updating all tabs');
   const tabs = await browser.tabs.query({});
   tabs
     .filter((tab) => isAllowedDomain(tab.url))
     .forEach((tab) => browser.tabs.sendMessage(tab.id, { type: 'update-content' }));
-});
+}
 
 /**
  * react to messages from the popup, settings and content scripts
@@ -68,8 +67,8 @@ async function hasAnyEntriesForDomain(url) {
   return Object.keys(allItems).some((key) => key.startsWith(urlObj.origin));
 }
 
-async function isAllowedDomain(url) {
-  return url && url.startsWith('http') && await hasAnyEntriesForDomain(url);
+function isAllowedDomain(url) {
+  return url && url.startsWith('http');
 }
 
 async function injectContentScripts(tab) {
@@ -119,7 +118,6 @@ async function handleGetStatusMessage(message, sendResponse) {
   sendResponse(status);
 }
 
-
 /**
  * @param tabId {string}
  * @param status {LinkStatus}
@@ -139,9 +137,11 @@ async function storePageStatus(url, newStatus) {
   const normalizedUrl = normalizeUrl(url);
 
   if (newStatus === 'none') {
-    return await browser.storage.local.remove(normalizedUrl);
+    await browser.storage.local.remove(normalizedUrl);
   }
 
-  // This special syntax uses the value of preparedUrl as the key of the object
-  return await browser.storage.local.set({ [normalizedUrl]: newStatus });
+  // This special syntax uses the value of normalizedUrl as the key of the object
+  await browser.storage.local.set({ [normalizedUrl]: newStatus });
+
+  await updateLinksInAllTabs();
 }

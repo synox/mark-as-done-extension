@@ -12,7 +12,7 @@ module.exports = {
   },
   rules: {
     'no-use-before-define': 'off',
-    'no-undef': 'off',
+    'no-undef': 'error',
     'no-console': 'off',
     'no-return-await': 'off',
     'no-param-reassign': 'off',
