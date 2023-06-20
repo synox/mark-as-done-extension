@@ -37,7 +37,9 @@ async function init() {
 async function handleChangeStatus(button) {
   const status = button.getAttribute('data-status');
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-  await browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
+
+  // not waiting for response to not block user interaction
+  browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
 
   if (status === 'none') {
     window.close();

@@ -1,7 +1,7 @@
 // This script is injected into every page. It is responsible for updating the links
 // on the page. It therefore needs to be as small and fast as possible.
 
-// JS-Modules cannot be injected, so we cannot export and import anything.
+// JS-Modules cannot be injected, so we cannot export or import anything.
 
 console.debug('mark-as-done script added');
 
