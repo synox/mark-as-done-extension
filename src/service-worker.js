@@ -6,7 +6,7 @@ import { getStatus, normalizeUrl } from './global.js';
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   // Only inject script if there are already any entries for the  current domain
   if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
-    console.log('extension is disabled on domain', tab.url);
+    console.debug('extension is disabled on domain', tab.url);
     await updateIcon(tab.id, 'disabled');
     return;
   }
@@ -16,7 +16,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const status = await getStatus(tab.url);
     await updateIcon(tab.id, status);
   } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
-    console.log('tab was updated', tab.url, changeInfo);
+    console.debug('tab was updated', tab.url, changeInfo);
     await injectContentScripts(tab);
   }
 });
@@ -25,7 +25,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
  * react to changes in the storage: update all tabs
  */
 async function updateLinksInAllTabs() {
-  console.log('storage changed, updating all tabs');
+  console.debug('storage changed, updating all tabs');
   const tabs = await browser.tabs.query({});
   // don't wait until update is complete
   tabs
@@ -110,7 +110,7 @@ async function handleChangePageStatus(message, sendResponse) {
   // Make sure the scripts are injected
   if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.tab.url)) {
     // not waiting for the injection to complete:
-    injectContentScripts(message.tab).catch(console.log);
+    injectContentScripts(message.tab).catch(console.error);
   }
   sendResponse('change-page-status done');
 }

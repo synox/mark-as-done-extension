@@ -32,7 +32,7 @@ document.getElementById('upload').addEventListener('change', handleFiles, false)
 
 function handleFiles() {
   if (this.files.length === 0) {
-    console.log('No file selected.');
+    console.error('No file selected.');
     return;
   }
 
@@ -57,7 +57,6 @@ document.getElementById('resetAllDataButton').addEventListener('click', async (e
 });
 
 getUserSettings().then((settings) => {
-  console.log('settings', settings);
   document.querySelectorAll('.states-list input').forEach((input) => {
     input.checked = settings.enabledStates.includes(input.dataset.status);
   });
