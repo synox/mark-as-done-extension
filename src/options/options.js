@@ -1,4 +1,5 @@
 import { getUserSettings, setUserSettings } from '../storage.js';
+import { compatibiltyStatus } from '../global.js';
 
 function save(filename, data) {
   const blob = new Blob([data], { type: 'text/json' });
@@ -23,7 +24,7 @@ document.getElementById('exportButton').addEventListener('click', async () => {
   save('marked-as-done-all.json', JSON.stringify(result));
 });
 
-document.getElementById('importButton').addEventListener('click', async () => {
+document.getElementById('importButton').addEventListener('click', () => {
   document.getElementById('upload').click();
 });
 
