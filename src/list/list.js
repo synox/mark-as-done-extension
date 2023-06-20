@@ -1,3 +1,4 @@
+import { getAllLinksByDomain, sortLinksByStatus, STATUS_DONE } from '../global.js';
 
 async function init() {
   const linksByDomain = await getAllLinksByDomain();
@@ -36,7 +37,6 @@ async function init() {
       const cellLink = document.createElement('td');
       cellLink.append(a);
       row.append(cellLink);
-
 
       table.append(row);
     }

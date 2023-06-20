@@ -1,8 +1,8 @@
-const STATUS_DONE = 'done';
-const STATUS_STARTED = 'started';
-const STATUS_NONE = 'none';
-const STATUS_DISABLED = 'disabled';
-const STATUS_TODO = 'todo';
+export const STATUS_DONE = 'done';
+export const STATUS_STARTED = 'started';
+export const STATUS_NONE = 'none';
+export const STATUS_DISABLED = 'disabled';
+export const STATUS_TODO = 'todo';
 
 /**
  * @typedef {Object} LinkInfo
@@ -11,11 +11,11 @@ const STATUS_TODO = 'todo';
  */
 
 /**
- * @typedef {'done'|'started'|'none'|'disabled'|'todo'} LinkStatus
+ * @typedef {'todo','started','done'|'none'|'disabled'} LinkStatus
  */
 
 // Keep backwards compatibility
-function compatibiltyStatus(oldStatus) {
+export function compatibiltyStatus(oldStatus) {
   if (oldStatus === true) {
     return STATUS_DONE;
   }
@@ -28,73 +28,17 @@ function compatibiltyStatus(oldStatus) {
 }
 
 /**
+ * Normalize the url to be used as key in the storage. This removes the hash and the search parameters.
  *
- * @param linkElement {HTMLAnchorElement}
- * @param documentUrl {string}
- * @return {boolean}
+ * @param url
+ * @return {null|string}
  */
-function isNormalMarkableLink(linkElement, documentUrl) {
-  const url = linkElement.href;
-  if (url === '') {
-    return false;
-  }
-
-  // A plain '#' is often used for buttons and menubars. Can be ignored.
-  if (linkElement.getAttribute('href') === '#') {
-    return false;
-  }
-
-  if (url === documentUrl) {
-    return true;
-  }
-
-  // ignore header links in the sidebar
-  if (documentUrl.startsWith('https://experienceleague.adobe.com/')
-		&& linkElement.matches('#container [data-id="toc"] a[href^="#"]')) {
-    return false;
-  }
-
-  const isSamePage = prepareUrl(url) === prepareUrl(documentUrl);
-  if (isSamePage) {
-    return true;
-  }
-
-  return true;
-}
-
-/**
- * @param url {string}
- * @return {Promise<boolean>}
- */
-async function hasAnyStatusForDomain(url) {
-  const urlObj = new URL(url);
-  const allItems = await browser.storage.local.get(null);
-  return Object.keys(allItems).some((key) => key.startsWith(`${urlObj.protocol}//${urlObj.hostname}`));
-}
-
-async function getStatus(url) {
-  if (!url) {
-    return STATUS_NONE;
-  }
-
-  if (!url.startsWith('http')) {
-    return STATUS_DISABLED;
-  }
-
-  const preparedUrl = prepareUrl(url);
-  if (!url) {
-    return STATUS_NONE;
-  }
-  const value = await browser.storage.local.get(preparedUrl);
-  return compatibiltyStatus(value[preparedUrl]);
-}
-
-function prepareUrl(url) {
+export function normalizeUrl(url) {
   try {
     const urlObject = new URL(url);
     // In general, hash are ignored.
 
-    // Search must be respected for confluence-wiki. (/pages/viewpage.action?pageId=123)
+    // Search parameters must be respected for confluence-wiki. (/pages/viewpage.action?pageId=123)
     // but on other pages the "?lang=en" should be ignored.
 
     let filteredSearch = urlObject.search.replace(/lang=.*$/, '');
@@ -115,12 +59,33 @@ function prepareUrl(url) {
 }
 
 /**
- * @param {string} origin - The origin URL to get links from.
- * @returns {Promise<Array.<LinkInfo>>} links - A Promise that resolves to an array of LinkInfo objects.
+ * @param url
+ * @return {Promise<LinkStatus>}
  */
-async function getAllLinksForDomain(origin) {
+export async function getStatus(url) {
+  if (!url) {
+    return STATUS_NONE;
+  }
+
+  if (!url.startsWith('http')) {
+    return STATUS_DISABLED;
+  }
+
+  const normalizedUrl = normalizeUrl(url);
+  if (!url) {
+    return STATUS_NONE;
+  }
+  const value = await browser.storage.local.get(normalizedUrl);
+  return compatibiltyStatus(value[normalizedUrl]);
+}
+
+/**
+ * @param {string} origin - The origin URL to get links from.
+ * @returns {Promise<Array.<LinkInfo>>} links
+ */
+export async function getAllLinksForDomain(origin) {
   const allLinks = await getAllLinksByDomain();
-  return allLinks[origin];
+  return allLinks[origin] || [];
 }
 
 /**
@@ -128,7 +93,7 @@ async function getAllLinksForDomain(origin) {
  * @param links {array}
  * return {void}
  */
-function sortLinksByStatus(links) {
+export function sortLinksByStatus(links) {
   links.sort((a, b) => {
     const statusValues = {
       [STATUS_STARTED]: 2,
@@ -148,7 +113,7 @@ function sortLinksByStatus(links) {
  * @param links {Array<LinkInfo>}
  * @param url {string}
  */
-function removeUrl(links, url) {
+export function removeUrl(links, url) {
   // the update was sent async, so the current page might not yet be in the list. But it should be.
   return links.filter((link) => link.url !== url);
 }
@@ -159,9 +124,9 @@ function removeUrl(links, url) {
  * @param url {string}
  * @param newStatus {string}
  */
-function updateStatusForUrl(links, url, newStatus) {
+export function updateStatusForUrl(links, url, newStatus) {
   // the update was sent async, so the current page might not yet be in the list. But it should be.
-  const link = links.find((link) => link.url === url);
+  const link = links.find((aLink) => aLink.url === url);
   if (link) {
     link.status = newStatus;
   } else {
@@ -172,9 +137,10 @@ function updateStatusForUrl(links, url, newStatus) {
 /**
  Retrieves all stored links by their domain from the browser's local storage.
  The links are sorted and grouped by domain.
-
- @returns {Promise<Map<string,Array.<LinkInfo>>>} links by domain. each domain contains an array of `LinkInfo`.  */
-async function getAllLinksByDomain() {
+ @returns {Promise<Map<string,Array.<LinkInfo>>>} links by domain.
+     each domain contains an array of `LinkInfo`.
+ */
+export async function getAllLinksByDomain() {
   const allItems = await browser.storage.local.get(null);
   return Object.entries(allItems)
     .map((entry) => ({ url: entry[0], status: compatibiltyStatus(entry[1]) }))
@@ -184,7 +150,8 @@ async function getAllLinksByDomain() {
       try {
         domain = new URL(currentValue.url).origin;
       } catch (error) {
-        domain = 'others';
+        // ignore bad urls
+        return accumulator;
       }
 
       accumulator[domain] = [...accumulator[domain] || [], currentValue];

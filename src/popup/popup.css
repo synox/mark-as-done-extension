@@ -74,6 +74,9 @@ body {
     filter: none;
 }
 
+#controls-disabled h1 {
+  color: darkgray;
+}
 
 .related-links ul {
     padding: 0;
@@ -82,11 +85,13 @@ body {
     overflow-y: auto;
 }
 
+hr {
+  border:none;
+  border-top: 1px solid lightblue;
+}
+
 .related-links h2 {
-    margin-top: 25px;
-    padding-top: 15px;
     margin-bottom: 5px;
-    border-top: 1px solid lightblue;
     font-size: 1.2rem;
     font-weight: normal;
 }

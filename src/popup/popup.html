@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="popup.css">
     <script src="../../3rdparty/browser-polyfill.min.js"></script>
-    <script src="../global.js"></script>
     <style>
 
 
     </style>
 </head>
 <body>
+
+<div class="controls" id="controls-disabled" data-status="disabled">
+  <h1><img src="../../images/icon-disabled.png"> Extension is disabled on this site.</h1>
+</div>
 
 <div class="controls" id="controls-todo" data-status="todo">
 
@@ -66,13 +69,18 @@
     </div>
 </div>
 
+
+<hr>
+  <a id="listButton" href="../list/list.html" target="_blank">show all links</a>
+<hr>
 <div class="related-links">
+
     <h2>more on this site:</h2>
     <ul>
 
     </ul>
 </div>
 
-<script src="popup.js"></script>
+<script src="popup.js" type="module"></script>
 </body>
 </html>

@@ -1,3 +1,6 @@
+import { getUserSettings, setUserSettings } from '../storage.js';
+import { compatibiltyStatus } from '../global.js';
+
 function save(filename, data) {
   const blob = new Blob([data], { type: 'text/json' });
   if (window.navigator.msSaveOrOpenBlob) {
@@ -12,7 +15,7 @@ function save(filename, data) {
   }
 }
 
-document.getElementById('exportButton').addEventListener('click', async (event) => {
+document.getElementById('exportButton').addEventListener('click', async () => {
   const allItems = await browser.storage.local.get(null);
   const result = Object.entries(allItems)
     .map((entry) => ({ url: entry[0], status: compatibiltyStatus(entry[1]) }))
@@ -21,7 +24,7 @@ document.getElementById('exportButton').addEventListener('click', async (event) 
   save('marked-as-done-all.json', JSON.stringify(result));
 });
 
-document.getElementById('importButton').addEventListener('click', async (event) => {
+document.getElementById('importButton').addEventListener('click', () => {
   document.getElementById('upload').click();
 });
 
@@ -29,7 +32,7 @@ document.getElementById('upload').addEventListener('change', handleFiles, false)
 
 function handleFiles() {
   if (this.files.length === 0) {
-    console.log('No file selected.');
+    console.error('No file selected.');
     return;
   }
 
@@ -53,6 +56,16 @@ document.getElementById('resetAllDataButton').addEventListener('click', async (e
   }
 });
 
-document.querySelector('button#listButton').addEventListener('click', async () => {
-  window.open('../list/list.html');
+getUserSettings().then((settings) => {
+  document.querySelectorAll('.states-list input').forEach((input) => {
+    input.checked = settings.enabledStates.includes(input.dataset.status);
+  });
+});
+
+document.querySelectorAll('.states-list input').forEach((input) => {
+  input.addEventListener('change', async () => {
+    const enabledStates = [...document.querySelectorAll('.states-list input:checked')]
+      .map((anInput) => anInput.dataset.status);
+    await setUserSettings({ enabledStates });
+  });
 });

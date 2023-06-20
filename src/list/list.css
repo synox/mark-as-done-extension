@@ -35,7 +35,7 @@ summary h2 {
   padding: 5px;
 }
 
-.links table td a:hover {
+.links table tr:hover {
   background-color: #def7ff;
 }
 
