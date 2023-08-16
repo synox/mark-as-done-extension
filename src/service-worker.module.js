@@ -21,7 +21,7 @@ async function updateLinksInAllTabs() {
 }
 
 async function activatePopup(tab) {
-  await browser.browserAction.setPopup({ popup: 'src/popup/popup.html', tabId: tab.id });
+  await browser.action.setPopup({ popup: 'src/popup/popup.html', tabId: tab.id });
 }
 
 /**
@@ -39,11 +39,11 @@ function isAllowedDomain(url) {
 }
 
 async function injectContentScripts(tab) {
-  await browser.tabs.executeScript(tab.id, { file: '3rdparty/browser-polyfill.min.js' });
+  await browser.scripting.executeScript(tab.id, { file: '3rdparty/browser-polyfill.min.js' });
   // not importing global.js because node modules are not supported with executeScript()
-  await browser.tabs.executeScript(tab.id, { file: 'src/inject/inject.js' });
-  await browser.tabs.insertCSS(tab.id, { file: 'src/inject/inject.css' });
-  await browser.tabs.sendMessage(tab.id, { type: 'update-content' });
+  await browser.scripting.executeScript(tab.id, { file: 'src/inject/inject.js' });
+  await browser.scripting.insertCSS(tab.id, { file: 'src/inject/inject.css' });
+  await browser.scripting.sendMessage(tab.id, { type: 'update-content' });
 }
 
 /**
@@ -92,7 +92,7 @@ async function handleGetStatusMessage(message, sendResponse) {
  * @return {Promise<void>}
  */
 async function updateIcon(tabId, status) {
-  await browser.browserAction.setIcon({ tabId, path: `images/icon-${status}.png` });
+  await browser.action.setIcon({ tabId, path: `images/icon-${status}.png` });
 }
 
 /**

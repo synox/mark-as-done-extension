@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Mark as done",
   "version": "0.4.5",
   "description": "Easily track your reading progress with automatically marked links.",
@@ -7,7 +7,15 @@
     "scripts": ["3rdparty/browser-polyfill.min.js", "src/service-worker.js"]
   },
   "web_accessible_resources": [
-    "src/service-worker.module.js"
+    {
+      "resources": [
+        "src/service-worker.module.js",
+        "images/icon-todo.png",
+        "images/icon-started.png",
+        "images/icon-done.png"
+      ],
+      "extension_ids": []
+    }
   ],
   "permissions": [
     "storage",
@@ -17,7 +25,7 @@
     "unlimitedStorage",
     "<all_urls>"
   ],
-  "browser_action": {
+  "action": {
     "default_popup": "src/popup/popup.html",
     "default_icon": {
       "128": "/images/icon-toolbar-disabled.png"
@@ -27,14 +35,8 @@
     "128": "/images/icon-done.png"
   },
   "options_ui": {
-    "page": "src/options/options.html",
-    "browser_style": true
+    "page": "src/options/options.html"
   },
-  "web_accessible_resources": [
-    "images/icon-todo.png",
-    "images/icon-started.png",
-    "images/icon-done.png"
-  ],
   "incognito": "not_allowed",
   "browser_specific_settings": {
     "gecko": {
