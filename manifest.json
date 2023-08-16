@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Mark as done",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "description": "Easily track your reading progress with automatically marked links.",
   "background": {
-    "scripts": ["3rdparty/browser-polyfill.min.js", "src/service-worker.js"]
+    "service_worker": "src/service-worker.module.js",
+    "type": "module"
   },
   "web_accessible_resources": [
     {
