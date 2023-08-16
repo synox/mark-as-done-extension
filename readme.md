@@ -71,6 +71,12 @@ npm run build
 npm run start:firefox
 ```
 
+or 
+
+```bash
+npm run start:chrome
+```
+
 ## Lint
 
 ```bash
