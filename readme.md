@@ -77,9 +77,17 @@ npm run start:firefox
 npm run lint
 ```
 
-## Deploy
+## Deploy to Firefox Store
 
-Sign for Firefox: 
+Sign and upload to Firefox store: 
 ```bash
 web-ext sign --api-key "user:xxx" --api-secret "xxxx"
 ```
+
+## Deploy to Chrome Store
+
+```bash
+npm run build
+```
+
+and upload to https://chrome.google.com/webstore/developer/dashboard?hl=en
