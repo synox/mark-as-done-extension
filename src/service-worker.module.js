@@ -125,7 +125,7 @@ export function main() {
     try {
       chrome.permissions.request({ origins: [tab.url] });
     } catch (e) {
-      console.error(e);
+      console.error('error requesting permision', e);
       throw e;
     }
   });
