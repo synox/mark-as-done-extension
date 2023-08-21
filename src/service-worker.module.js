@@ -112,30 +112,6 @@ async function storePageStatus(url, newStatus) {
   await updateLinksInAllTabs();
 }
 
-async function tabUpdated(tab, changeInfo) {
-  try {
-    // Only inject script if there are already any entries for the current domain
-    if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
-      console.debug('extension is disabled on domain', tab.url);
-      await updateIcon(tab.id, 'disabled');
-      chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
-      return;
-    }
-
-    chrome.action.setTitle({ title: '' });
-    if (tab.status === 'loading') {
-      await activatePopup(tab);
-      const status = await getStatus(tab.url);
-      await updateIcon(tab.id, status);
-    } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
-      console.debug('tab was updated', tab.url, changeInfo);
-      await injectContentScripts(tab);
-    }
-  } catch (e) {
-    console.error(e);
-    throw e;
-  }
-}
 
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
@@ -158,7 +134,28 @@ export function main() {
    * react to tab activation: update popup and icon, and inject scripts
    */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    await tabUpdated(tab, changeInfo);
+    try {
+      // Only inject script if there are already any entries for the current domain
+      if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
+        console.debug('extension is disabled on domain', tab.url);
+        await updateIcon(tab.id, 'disabled');
+        chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
+        return;
+      }
+
+      chrome.action.setTitle({ title: '' });
+      if (tab.status === 'loading') {
+        await activatePopup(tab);
+        const status = await getStatus(tab.url);
+        await updateIcon(tab.id, status);
+      } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
+        console.debug('tab was updated', tab.url, changeInfo);
+        await injectContentScripts(tab);
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
   });
 
   /**
