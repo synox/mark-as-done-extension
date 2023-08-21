@@ -39,9 +39,7 @@ function isAllowedDomain(url) {
 }
 
 async function injectContentScripts(tab) {
-  console.log('injecting script in all frames');
   await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/inject.js'] });
-  console.log('script injected in all frames');
   await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/inject.css'] });
   await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
 }
