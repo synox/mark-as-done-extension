@@ -1,4 +1,3 @@
-// import './3rdparty/browser-polyfill.min.js';
 import { getStatus, normalizeUrl } from './global.js';
 
 /**
@@ -40,9 +39,11 @@ function isAllowedDomain(url) {
 }
 
 async function injectContentScripts(tab) {
-  await chrome.scripting.executeScript({ target : {tabId : tab.id}, files: ['src/inject/inject.js'] });
-  await chrome.scripting.insertCSS( {target : {tabId : tab.id}, files: ['src/inject/inject.css'] });
-  await chrome.tabs.sendMessage(tab.id, {type: 'update-content' });
+  console.log('injecting script in all frames');
+  await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => console.error('mark-as-done script added') });
+  console.log('script injected in all frames');
+  await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/inject.css'] });
+  await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
 }
 
 /**
@@ -115,25 +116,32 @@ async function storePageStatus(url, newStatus) {
 
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
+  chrome.permissions.onAdded.addListener((ev) => {
+    console.log(`Permissions added: [${ev.permissions}] with origins [${ev.origins}]`);
+    chrome.action.setPopup({ popup: 'src/popup/popup.html' });
+  });
+
+  chrome.action.onClicked.addListener((tab) => {
+    try {
+      chrome.permissions.request({ origins: [tab.url] });
+      chrome.action.setPopup({ popup: 'src/popup/popup.html' });
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  });
   /**
    * react to tab activation: update popup and icon, and inject scripts
    */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     try {
-    // Only inject script if there are already any entries for the  current domain
+      // Only inject script if there are already any entries for the  current domain
       if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
         console.debug('extension is disabled on domain', tab.url);
         await updateIcon(tab.id, 'disabled');
         return;
       }
 
-    if (tab.status === 'loading') {
-      await activatePopup(tab);
-      const status = await getStatus(tab.url);
-      await updateIcon(tab.id, status);
-    } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
-      console.debug('tab was updated', tab.url, changeInfo);
-      await injectContentScripts(tab);
       if (tab.status === 'loading') {
         await activatePopup(tab);
         const status = await getStatus(tab.url);
