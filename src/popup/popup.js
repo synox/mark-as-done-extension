@@ -10,16 +10,7 @@ async function init() {
     // show reduced popup on disabled sites
   }
 
-  let animate = false;
-
-  // On first click, change to initial status
-  if (status === 'none') {
-    status = await getInitialStatus();
-    chrome.runtime.sendMessage({ type: 'change-page-status', status, tab });
-    animate = true;
-  }
-
-  await updatePopup(status, tab.url, animate);
+  await updatePopup(status, tab.url, false);
 
   let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
   // Remove current page from list, only show other pages on the same domain
