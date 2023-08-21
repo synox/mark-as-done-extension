@@ -3,5 +3,6 @@
 /node_modules
 /web-ext-artifacts
 /dist/
-artifacts-*
+artifcats-chrome
+artifcats-firefox
 
