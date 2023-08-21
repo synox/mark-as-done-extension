@@ -4,7 +4,7 @@ import {
 } from '../global.js';
 
 async function init() {
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   let status = await getStatus(tab.url);
   if (status === STATUS_DISABLED) {
     // show reduced popup on disabled sites
@@ -15,7 +15,7 @@ async function init() {
   // On first click, change to initial status
   if (status === 'none') {
     status = await getInitialStatus();
-    browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
+    chrome.runtime.sendMessage({ type: 'change-page-status', status, tab });
     animate = true;
   }
 
@@ -36,10 +36,10 @@ async function init() {
 
 async function handleChangeStatus(button) {
   const status = button.getAttribute('data-status');
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
   // not waiting for response to not block user interaction
-  browser.runtime.sendMessage({ type: 'change-page-status', status, tab });
+  chrome.runtime.sendMessage({ type: 'change-page-status', status, tab });
 
   if (status === 'none') {
     window.close();
@@ -93,7 +93,7 @@ function addRelatedLinks(currentSiteLinks) {
     a.href = link.url;
     a.innerText = new URL(link.url).pathname;
     const icon = document.createElement('img');
-    icon.src = browser.runtime.getURL(`images/icon-${link.status}.png`);
+    icon.src = chrome.runtime.getURL(`images/icon-${link.status}.png`);
     a.prepend(icon);
     li.append(a);
 

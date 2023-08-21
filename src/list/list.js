@@ -25,7 +25,7 @@ async function init() {
       const cellStatus = document.createElement('td');
       cellStatus.innerText = item.status;
       const icon = document.createElement('img');
-      icon.src = browser.runtime.getURL(`images/icon-${item.status}.png`);
+      icon.src = chrome.runtime.getURL(`images/icon-${item.status}.png`);
       cellStatus.prepend(icon);
       row.append(cellStatus);
 

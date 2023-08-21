@@ -6,7 +6,7 @@
 console.debug('mark-as-done script added');
 
 // eslint-disable-next-line no-unused-vars
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.debug('content: received', request);
   if (request.type === 'update-content') {
     updateAllLinksOnPage(window.location.href).then(() => watchPageForDynamicallyAddedLinks());
@@ -14,7 +14,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 async function getStatusFromServiceWorker(url) {
-  return await browser.runtime.sendMessage({ type: 'get-status', url });
+  return await chrome.runtime.sendMessage({ type: 'get-status', url });
 }
 
 /**

@@ -12,7 +12,7 @@ const defaultSettings = {
  * @return {UserSettings}
  */
 export async function getUserSettings() {
-  const result = await browser.storage.local.get('userSettings');
+  const result = await chrome.storage.local.get('userSettings');
   return {
     ...defaultSettings,
     ...result.userSettings,
@@ -26,7 +26,7 @@ export async function getUserSettings() {
 export async function setUserSettings(userSettings) {
   // eslint-disable-next-line no-return-await
   const currentUserSettings = await getUserSettings();
-  return await browser.storage.local.set({
+  return await chrome.storage.local.set({
     userSettings: {
       ...currentUserSettings, ...userSettings,
     },
