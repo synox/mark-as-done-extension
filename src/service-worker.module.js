@@ -124,7 +124,6 @@ export function main() {
   chrome.action.onClicked.addListener((tab) => {
     try {
       chrome.permissions.request({ origins: [tab.url] });
-      chrome.action.setPopup({ popup: 'src/popup/popup.html' });
     } catch (e) {
       console.error(e);
       throw e;
