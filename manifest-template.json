@@ -32,8 +32,8 @@
     "scripting",
     "unlimitedStorage"
   ],
-  "host_permissions": ["https://example.com/*"],
-  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "host_permissions.firefox": ["http://*/*", "https://*/*"],
+  "optional_host_permissions.chrome": ["http://*/*", "https://*/*"],
   "action": {
     "default_icon": {
       "128": "images/icon-toolbar-disabled.png"
