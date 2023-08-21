@@ -40,7 +40,7 @@ function isAllowedDomain(url) {
 
 async function injectContentScripts(tab) {
   console.log('injecting script in all frames');
-  await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => console.error('mark-as-done script added') });
+  await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/inject.js'] });
   console.log('script injected in all frames');
   await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/inject.css'] });
   await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
@@ -114,6 +114,31 @@ async function storePageStatus(url, newStatus) {
   await updateLinksInAllTabs();
 }
 
+async function tabUpdated(tab, changeInfo) {
+  try {
+    // Only inject script if there are already any entries for the current domain
+    if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
+      console.debug('extension is disabled on domain', tab.url);
+      await updateIcon(tab.id, 'disabled');
+      chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
+      return;
+    }
+
+    chrome.action.setTitle({ title: '' });
+    if (tab.status === 'loading') {
+      await activatePopup(tab);
+      const status = await getStatus(tab.url);
+      await updateIcon(tab.id, status);
+    } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
+      console.debug('tab was updated', tab.url, changeInfo);
+      await injectContentScripts(tab);
+    }
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+}
+
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
   chrome.permissions.onAdded.addListener((ev) => {
@@ -121,6 +146,7 @@ export function main() {
     chrome.action.setPopup({ popup: 'src/popup/popup.html' });
   });
 
+  chrome.action.setTitle({ title: 'disabled for this site. Click to request permissions' });
   chrome.action.onClicked.addListener((tab) => {
     try {
       chrome.permissions.request({ origins: [tab.url] });
@@ -134,26 +160,7 @@ export function main() {
    * react to tab activation: update popup and icon, and inject scripts
    */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    try {
-      // Only inject script if there are already any entries for the  current domain
-      if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
-        console.debug('extension is disabled on domain', tab.url);
-        await updateIcon(tab.id, 'disabled');
-        return;
-      }
-
-      if (tab.status === 'loading') {
-        await activatePopup(tab);
-        const status = await getStatus(tab.url);
-        await updateIcon(tab.id, status);
-      } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
-        console.debug('tab was updated', tab.url, changeInfo);
-        await injectContentScripts(tab);
-      }
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
+    await tabUpdated(tab, changeInfo);
   });
 
   /**
