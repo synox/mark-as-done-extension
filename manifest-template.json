@@ -8,7 +8,7 @@
     "type": "module"
   },
   "background.firefox": {
-    "scripts": "src/service-worker.module.js",
+    "scripts": ["src/service-worker.module.js"],
     "type": "module"
   },
   "web_accessible_resources": [
@@ -40,7 +40,7 @@
     }
   },
   "icons": {
-    "128": "images/icon-done.png"
+    "128": "/images/icon-done.png"
   },
   "options_ui": {
     "page": "src/options/options.html"
