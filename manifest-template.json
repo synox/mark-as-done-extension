@@ -3,8 +3,12 @@
   "name": "Mark as done",
   "version": "0.5.0",
   "description": "Easily track your reading progress with automatically marked links.",
-  "background": {
+  "background.chrome": {
     "service_worker": "src/service-worker.module.js",
+    "type": "module"
+  },
+  "background.firefox": {
+    "scripts": "src/service-worker.module.js",
     "type": "module"
   },
   "web_accessible_resources": [
