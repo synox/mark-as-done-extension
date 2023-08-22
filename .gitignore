@@ -7,3 +7,4 @@ artifcats-chrome
 artifcats-firefox
 
 /manifest.json
+/.web-extension-id
