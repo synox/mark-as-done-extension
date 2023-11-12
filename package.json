@@ -45,7 +45,7 @@
             },
             {
               "path": "web-ext-artifacts/chrome/mark_as_done.xpi",
-              "name": "mark_as_done-firefox.xpi",
+              "name": "mark_as_done-chrome.xpi",
               "label": "Chrome extension"
             }
           ]
