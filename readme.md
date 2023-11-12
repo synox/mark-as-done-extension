@@ -59,7 +59,7 @@ If you find our extension useful, please consider leaving a review on the
 
 # Development
 
-Please use  Commit Message Format: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#-commit-message-format
+Please use  Commit Message Format: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#-commit-message-format and https://semantic-release.gitbook.io/semantic-release/#commit-message-format
 
 ## Build
 
