@@ -22,7 +22,7 @@ jobs:
         if: github.event.inputs.browser == 'firefox' || github.event.inputs.browser == 'both'
         uses: trmcnvn/firefox-addon@v1
         with:
-          uuid: 'synox@github.com'
+          uuid: '{7a38b7e1-ba04-47c7-8998-ad10388b1dcf}'
           xpi: web-ext-artifacts/firefox/mark_as_done.xpi
           manifest: dist/firefox/manifest.json
           api-key: ${{ secrets.FIREFOX_API_KEY }}
