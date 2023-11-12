@@ -1,40 +1,36 @@
-name: Build and Publish
-
+name: Release
 on:
-  workflow_dispatch:
-    inputs:
-      browser:
-        description: 'Publish <firefox>, <chrome> or <both>.'
-        required: true
-        default: 'both'
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read # for checkout
 
 jobs:
-  publish:
+  release:
+    name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          node-version: 18
-      - run: npm install
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
       - run: npm run build
-      - name: Publish Firefox
-        if: github.event.inputs.browser == 'firefox' || github.event.inputs.browser == 'both'
-        uses: trmcnvn/firefox-addon@v1
-        with:
-          uuid: '{7a38b7e1-ba04-47c7-8998-ad10388b1dcf}'
-          xpi: web-ext-artifacts/firefox/mark_as_done.xpi
-          manifest: dist/firefox/manifest.json
-          api-key: ${{ secrets.FIREFOX_API_KEY }}
-          api-secret: ${{ secrets.FIREFOX_API_SECRET }}
-
-      - name: Publish Chrome
-        if: github.event.inputs.browser == 'chrome' || github.event.inputs.browser == 'both'
-
-        uses: trmcnvn/chrome-addon@v2
-        with:
-          extension: eamfmbodggklinbmhfgeogcpebhfoojb
-          zip: web-ext-artifacts/chrome/mark_as_done.xpi
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release

@@ -1,11 +1,13 @@
 {
   "name": "mark-as-done-extension",
   "type": "module",
+  "version": "0.5.0",
   "devDependencies": {
     "eslint": "^8.39.0",
     "eslint-config-airbnb": "^19.0.4",
     "semantic-release": "^22.0.7",
     "semantic-release-chrome": "^3.2.0",
+    "semantic-release-firefox-add-on": "^0.2.8",
     "stylelint": "14.16.1",
     "stylelint-config-prettier": "9.0.4",
     "stylelint-config-standard": "29.0.0",
@@ -22,7 +24,8 @@
     "lint:js": "eslint . ; npm run build:firefox && web-ext lint --source-dir ./dist/firefox",
     "lint:css": "stylelint 'src/**/*.css' ",
     "lint": "npm run lint:js && npm run lint:css",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "release": "npm run build && semantic-release"
   },
   "release": {
     "branches": [
@@ -51,6 +54,14 @@
         {
           "extensionId": "eamfmbodggklinbmhfgeogcpebhfoojb",
           "asset": "web-ext-artifacts/chrome/mark_as_done.xpi"
+        }
+      ],
+      [
+        "semantic-release-firefox-add-on",
+        {
+          "extensionId": "{7a38b7e1-ba04-47c7-8998-ad10388b1dcf}",
+          "targetXpi": "web-ext-artifacts/firefox/mark_as_done.xpi",
+          "sourceDir": "dist/firefox"
         }
       ]
     ]
