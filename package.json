@@ -4,6 +4,8 @@
   "devDependencies": {
     "eslint": "^8.39.0",
     "eslint-config-airbnb": "^19.0.4",
+    "semantic-release": "^22.0.7",
+    "semantic-release-chrome": "^3.2.0",
     "stylelint": "14.16.1",
     "stylelint-config-prettier": "9.0.4",
     "stylelint-config-standard": "29.0.0",
@@ -21,5 +23,36 @@
     "lint:css": "stylelint 'src/**/*.css' ",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:fix": "eslint --fix ."
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "web-ext-artifacts/firefox/mark_as_done.xpi",
+              "label": "Firefox extension"
+            },
+            {
+              "path": "web-ext-artifacts/chrome/mark_as_done.xpi",
+              "label": "Chrome extension"
+            }
+          ]
+        }
+      ],
+      [
+        "semantic-release-chrome",
+        {
+          "extensionId": "eamfmbodggklinbmhfgeogcpebhfoojb",
+          "asset": "web-ext-artifacts/chrome/mark_as_done.xpi"
+        }
+      ]
+    ]
   }
 }
