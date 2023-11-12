@@ -1,7 +1,7 @@
 /.idea/
 .DS_Store
 /node_modules
-/artifacts-*
+/web-ext-artifacts
 /dist/
 artifcats-chrome
 artifcats-firefox
