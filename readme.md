@@ -59,6 +59,8 @@ If you find our extension useful, please consider leaving a review on the
 
 # Development
 
+Please use  Commit Message Format: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#-commit-message-format
+
 ## Build
 
 ```bash
@@ -84,6 +86,8 @@ npm run lint
 ```
 
 ## Release
+
+Releases are triggered automatically. To release manually, run:
 
 ```bash
 npm run release
