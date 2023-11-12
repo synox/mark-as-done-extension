@@ -5,7 +5,7 @@ import {
 
 async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  let status = await getStatus(tab.url);
+  const status = await getStatus(tab.url);
   if (status === STATUS_DISABLED) {
     // show reduced popup on disabled sites
   }
@@ -83,6 +83,9 @@ function addRelatedLinks(currentSiteLinks) {
     const a = document.createElement('a');
     a.href = link.url;
     a.innerText = new URL(link.url).pathname;
+    // open in new tab, otherwise it does not work in Google Chrome
+    a.target = '_blank';
+
     const icon = document.createElement('img');
     icon.src = chrome.runtime.getURL(`images/icon-${link.status}.png`);
     a.prepend(icon);
