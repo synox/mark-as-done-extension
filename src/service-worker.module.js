@@ -5,13 +5,13 @@ import { getStatus, normalizeUrl } from './global.js';
  */
 async function updateLinksInAllTabs() {
   console.debug('storage changed, updating all tabs');
-  const tabs = await browser.tabs.query({});
+  const tabs = await chrome.tabs.query({});
   // don't wait until update is complete
   tabs
     .filter((tab) => isAllowedDomain(tab.url))
     .map(async (tab) => {
       try {
-        await browser.tabs.sendMessage(tab.id, { type: 'update-content' });
+        await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
       } catch (e) {
         if (e.message !== 'Could not establish connection. Receiving end does not exist.') {
           console.warn('error updating tab', tab.url, e);
@@ -21,7 +21,7 @@ async function updateLinksInAllTabs() {
 }
 
 async function activatePopup(tab) {
-  await browser.browserAction.setPopup({ popup: 'src/popup/popup.html', tabId: tab.id });
+  await chrome.action.setPopup({ popup: 'src/popup/popup.html', tabId: tab.id });
 }
 
 /**
@@ -30,7 +30,7 @@ async function activatePopup(tab) {
  */
 async function hasAnyEntriesForDomain(url) {
   const urlObj = new URL(url);
-  const allItems = await browser.storage.local.get(null);
+  const allItems = await chrome.storage.local.get(null);
   return Object.keys(allItems).some((key) => key.startsWith(urlObj.origin));
 }
 
@@ -39,11 +39,9 @@ function isAllowedDomain(url) {
 }
 
 async function injectContentScripts(tab) {
-  await browser.tabs.executeScript(tab.id, { file: '3rdparty/browser-polyfill.min.js' });
-  // not importing global.js because node modules are not supported with executeScript()
-  await browser.tabs.executeScript(tab.id, { file: 'src/inject/inject.js' });
-  await browser.tabs.insertCSS(tab.id, { file: 'src/inject/inject.css' });
-  await browser.tabs.sendMessage(tab.id, { type: 'update-content' });
+  await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/inject.js'] });
+  await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/inject.css'] });
+  await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
 }
 
 /**
@@ -57,7 +55,7 @@ async function handleChangePageStatus(message, sendResponse) {
 
   await storePageStatus(message.tab.url, message.status);
   try {
-    await browser.tabs.sendMessage(message.tab.id, { type: 'update-content' });
+    await chrome.tabs.sendMessage(message.tab.id, { type: 'update-content' });
   } catch (e) {
     if (e.message !== 'Could not establish connection. Receiving end does not exist.') {
       console.error('error while sending "update-content" message', e);
@@ -75,7 +73,7 @@ async function handleChangePageStatus(message, sendResponse) {
 
 function handleImportData(message, sendResponse) {
   message.data.forEach((entry) => {
-    browser.storage.local.set({ [entry.url]: entry.status });
+    chrome.storage.local.set({ [entry.url]: entry.status });
   });
 
   sendResponse('success');
@@ -92,7 +90,7 @@ async function handleGetStatusMessage(message, sendResponse) {
  * @return {Promise<void>}
  */
 async function updateIcon(tabId, status) {
-  await browser.browserAction.setIcon({ tabId, path: `images/icon-${status}.png` });
+  await chrome.action.setIcon({ tabId, path: `/images/icon-${status}.png` });
 }
 
 /**
@@ -105,10 +103,10 @@ async function storePageStatus(url, newStatus) {
   const normalizedUrl = normalizeUrl(url);
 
   if (newStatus === 'none') {
-    await browser.storage.local.remove(normalizedUrl);
+    await chrome.storage.local.remove(normalizedUrl);
   } else {
     // This special syntax uses the value of normalizedUrl as the key of the object
-    await browser.storage.local.set({ [normalizedUrl]: newStatus });
+    await chrome.storage.local.set({ [normalizedUrl]: newStatus });
   }
 
   await updateLinksInAllTabs();
@@ -116,31 +114,52 @@ async function storePageStatus(url, newStatus) {
 
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
+  chrome.permissions.onAdded.addListener((ev) => {
+    console.log(`Permissions added: [${ev.permissions}] with origins [${ev.origins}]`);
+    chrome.action.setPopup({ popup: 'src/popup/popup.html' });
+  });
+
+  chrome.action.setTitle({ title: 'disabled for this site. Click to request permissions' });
+  chrome.action.onClicked.addListener((tab) => {
+    try {
+      chrome.permissions.request({ origins: [tab.url] });
+    } catch (e) {
+      console.error('error requesting permision', e);
+      throw e;
+    }
+  });
   /**
    * react to tab activation: update popup and icon, and inject scripts
    */
-  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    // Only inject script if there are already any entries for the  current domain
-    if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
-      console.debug('extension is disabled on domain', tab.url);
-      await updateIcon(tab.id, 'disabled');
-      return;
-    }
+  chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    try {
+      // Only inject script if there are already any entries for the current domain
+      if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
+        console.debug('extension is disabled on domain', tab.url);
+        await updateIcon(tab.id, 'disabled');
+        chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
+        return;
+      }
 
-    if (tab.status === 'loading') {
-      await activatePopup(tab);
-      const status = await getStatus(tab.url);
-      await updateIcon(tab.id, status);
-    } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
-      console.debug('tab was updated', tab.url, changeInfo);
-      await injectContentScripts(tab);
+      chrome.action.setTitle({ title: '' });
+      if (tab.status === 'loading') {
+        await activatePopup(tab);
+        const status = await getStatus(tab.url);
+        await updateIcon(tab.id, status);
+      } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
+        console.debug('tab was updated', tab.url, changeInfo);
+        await injectContentScripts(tab);
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
     }
   });
 
   /**
    * react to messages from the popup, settings and content scripts
    */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Status changed in popup
     if (message.type === 'change-page-status') {
       handleChangePageStatus(message, sendResponse);
@@ -158,3 +177,4 @@ export function main() {
     return true;
   });
 }
+main();

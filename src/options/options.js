@@ -16,7 +16,7 @@ function save(filename, data) {
 }
 
 document.getElementById('exportButton').addEventListener('click', async () => {
-  const allItems = await browser.storage.local.get(null);
+  const allItems = await chrome.storage.local.get(null);
   const result = Object.entries(allItems)
     .map((entry) => ({ url: entry[0], status: compatibiltyStatus(entry[1]) }))
     .sort();
@@ -40,7 +40,7 @@ function handleFiles() {
   reader.onload = async function fileReadCompleted() {
     // When the reader is done, the content is in reader.result.
     const data = JSON.parse(reader.result);
-    const response = await browser.runtime.sendMessage({ type: 'import-data', data });
+    const response = await chrome.runtime.sendMessage({ type: 'import-data', data });
     document.getElementById('importStatus').append(`import completed. status: ${response}`);
   };
 
@@ -51,7 +51,7 @@ document.getElementById('resetAllDataButton').addEventListener('click', async (e
   if (event.target.textContent !== 'Are you sure?') {
     event.target.textContent = 'Are you sure?';
   } else {
-    await browser.storage.local.clear();
+    await chrome.storage.local.clear();
     event.target.textContent = 'Done';
   }
 });

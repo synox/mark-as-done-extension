@@ -75,7 +75,7 @@ export async function getStatus(url) {
   if (!url) {
     return STATUS_NONE;
   }
-  const value = await browser.storage.local.get(normalizedUrl);
+  const value = await chrome.storage.local.get(normalizedUrl);
   return compatibiltyStatus(value[normalizedUrl]);
 }
 
@@ -141,7 +141,7 @@ export function updateStatusForUrl(links, url, newStatus) {
      each domain contains an array of `LinkInfo`.
  */
 export async function getAllLinksByDomain() {
-  const allItems = await browser.storage.local.get(null);
+  const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
     .map((entry) => ({ url: entry[0], status: compatibiltyStatus(entry[1]) }))
     .sort()
