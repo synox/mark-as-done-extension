@@ -52,19 +52,19 @@
         }
       ],
       [
-        "semantic-release-chrome",
-        {
-          "extensionId": "eamfmbodggklinbmhfgeogcpebhfoojb",
-          "asset": "web-ext-artifacts/chrome/mark_as_done.xpi",
-          "distFolder": "dist/chrome"
-        }
-      ],
-      [
         "semantic-release-firefox-add-on",
         {
           "extensionId": "{7a38b7e1-ba04-47c7-8998-ad10388b1dcf}",
           "targetXpi": "web-ext-artifacts/firefox/mark_as_done.xpi",
           "sourceDir": "dist/firefox"
+        }
+      ],
+      [
+        "semantic-release-chrome",
+        {
+          "extensionId": "eamfmbodggklinbmhfgeogcpebhfoojb",
+          "asset": "web-ext-artifacts/chrome/mark_as_done.xpi",
+          "distFolder": "dist/chrome"
         }
       ]
     ]
