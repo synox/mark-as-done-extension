@@ -40,10 +40,12 @@
           "assets": [
             {
               "path": "web-ext-artifacts/firefox/mark_as_done.xpi",
+              "name": "mark_as_done-firefox.xpi",
               "label": "Firefox extension"
             },
             {
               "path": "web-ext-artifacts/chrome/mark_as_done.xpi",
+              "name": "mark_as_done-firefox.xpi",
               "label": "Chrome extension"
             }
           ]
