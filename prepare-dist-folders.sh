@@ -3,12 +3,11 @@ set -e
 
 mkdir -p dist
 rm -rf dist/*
-mkdir -p dist/firefox dist/chrome
 
-cp -r src/* dist/firefox
-cp -r src/* dist/chrome
+for browser in chrome firefox; do
+  mkdir -p dist/$browser/src
 
-cp manifest-template.json dist/firefox/manifest.json
-cp manifest-template.json dist/chrome/manifest.json
-node update_manifest.mjs firefox dist/firefox/manifest.json
-node update_manifest.mjs chrome dist/chrome/manifest.json
+  cp -r src images dist/$browser/
+  cp manifest-template.json dist/$browser/manifest.json
+  node update_manifest.mjs $browser dist/$browser/manifest.json
+done
