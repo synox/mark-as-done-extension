@@ -83,6 +83,12 @@ npm run start:chrome
 npm run lint
 ```
 
+## Release
+
+```bash
+npm run release
+```
+
 ## Deploy to Firefox Store
 
 Build, sign and upload to Firefox store: 
