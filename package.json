@@ -52,19 +52,19 @@
         }
       ],
       [
-        "semantic-release-firefox-add-on",
-        {
-          "targetXpi": "mark_as_done-firefox.xpi",
-          "sourceDir": "dist/firefox",
-          "channel": "listed"
-        }
-      ],
-      [
         "semantic-release-chrome",
         {
           "extensionId": "eamfmbodggklinbmhfgeogcpebhfoojb",
           "asset": "web-ext-artifacts/chrome/mark_as_done.xpi",
           "distFolder": "dist/chrome"
+        }
+      ],
+      [
+        "semantic-release-firefox-add-on",
+        {
+          "targetXpi": "mark_as_done-firefox.xpi",
+          "sourceDir": "dist/firefox",
+          "channel": "listed"
         }
       ]
     ]
