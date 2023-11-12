@@ -1,4 +1,4 @@
-import { getStatus, normalizeUrl } from './global.js';
+import {getEntriesForDomain, getPageInfo, storePageStatus} from './storage.js';
 
 /**
  * react to changes in the storage: update all tabs
@@ -29,9 +29,7 @@ async function activatePopup(tab) {
  * @return {Promise<boolean>}
  */
 async function hasAnyEntriesForDomain(url) {
-  const urlObj = new URL(url);
-  const allItems = await chrome.storage.local.get(null);
-  return Object.keys(allItems).some((key) => key.startsWith(urlObj.origin));
+  return await getEntriesForDomain(new URL(url).origin).length > 0;
 }
 
 function isAllowedDomain(url) {
@@ -54,6 +52,7 @@ async function handleChangePageStatus(message, sendResponse) {
   console.log('updating status to', message.status);
 
   await storePageStatus(message.tab.url, message.status);
+  await updateLinksInAllTabs();
   try {
     await chrome.tabs.sendMessage(message.tab.id, { type: 'update-content' });
   } catch (e) {
@@ -71,17 +70,18 @@ async function handleChangePageStatus(message, sendResponse) {
   sendResponse('change-page-status done');
 }
 
-function handleImportData(message, sendResponse) {
-  message.data.forEach((entry) => {
-    chrome.storage.local.set({ [entry.url]: entry.status });
-  });
+async function handleImportData(message, sendResponse) {
+  for (const entry of message.data) {
+    // eslint-disable-next-line no-await-in-loop
+    await storePageStatus(entry.url, entry.title, entry.status);
+  }
 
   sendResponse('success');
 }
 
 async function handleGetStatusMessage(message, sendResponse) {
-  const status = await getStatus(message.url);
-  sendResponse(status);
+  const pageInfo = await getPageInfo(message.url);
+  sendResponse(pageInfo);
 }
 
 /**
@@ -91,25 +91,6 @@ async function handleGetStatusMessage(message, sendResponse) {
  */
 async function updateIcon(tabId, status) {
   await chrome.action.setIcon({ tabId, path: `/images/icon-${status}.png` });
-}
-
-/**
- *
- * @param url
- * @param newStatus {LinkStatus}
- * @return {Promise<*>}
- */
-async function storePageStatus(url, newStatus) {
-  const normalizedUrl = normalizeUrl(url);
-
-  if (newStatus === 'none') {
-    await chrome.storage.local.remove(normalizedUrl);
-  } else {
-    // This special syntax uses the value of normalizedUrl as the key of the object
-    await chrome.storage.local.set({ [normalizedUrl]: newStatus });
-  }
-
-  await updateLinksInAllTabs();
 }
 
 // eslint-disable-next-line import/prefer-default-export
@@ -133,19 +114,21 @@ export function main() {
    */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     try {
+      console.log('isAllowedDomain(tab.url)', isAllowedDomain(tab.url));
+      console.log('hasAnyEntriesForDomain(tab.url)', await hasAnyEntriesForDomain(tab.url));
       // Only inject script if there are already any entries for the current domain
-      if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
-        console.debug('extension is disabled on domain', tab.url);
-        await updateIcon(tab.id, 'disabled');
-        chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
-        return;
-      }
+      // if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
+      //   console.debug('extension is disabled on domain', tab.url);
+      //   await updateIcon(tab.id, 'disabled');
+      //   chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
+      //   // return;
+      // }
 
       chrome.action.setTitle({ title: '' });
       if (tab.status === 'loading') {
         await activatePopup(tab);
-        const status = await getStatus(tab.url);
-        await updateIcon(tab.id, status);
+        const pageInfo = await getPageInfo(tab.url);
+        await updateIcon(tab.id, pageInfo.status);
       } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
         console.debug('tab was updated', tab.url, changeInfo);
         await injectContentScripts(tab);

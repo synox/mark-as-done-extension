@@ -1,16 +1,16 @@
-import { getUserSettings } from '../storage.js';
+import {getPageInfo, getUserSettings} from '../storage.js';
 import {
-  getStatus, STATUS_DISABLED, removeUrl, getAllLinksForDomain, sortLinksByStatus,
+  STATUS_DISABLED, removeUrl, getAllLinksForDomain, sortLinksByStatus,
 } from '../global.js';
 
 async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  const status = await getStatus(tab.url);
-  if (status === STATUS_DISABLED) {
+  const pageInfo = await getPageInfo(tab.url);
+  if (!pageInfo || pageInfo.status === STATUS_DISABLED) {
     // show reduced popup on disabled sites
   }
 
-  await updatePopup(status, tab.url, false);
+  await updatePopup(pageInfo, tab.url, false);
 
   let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
   // Remove current page from list, only show other pages on the same domain
@@ -29,6 +29,9 @@ async function handleChangeStatus(button) {
   const status = button.getAttribute('data-status');
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
+  const updatedPageInfo = await getPageInfo(tab.url);
+  updatedPageInfo.status = status;
+
   // not waiting for response to not block user interaction
   chrome.runtime.sendMessage({ type: 'change-page-status', status, tab });
 
@@ -36,25 +39,25 @@ async function handleChangeStatus(button) {
     window.close();
   } else {
     setTimeout(window.close, 1200);
-    await updatePopup(status, tab.url, true);
+    await updatePopup(updatedPageInfo, tab.url, true);
   }
 }
 
 /**
  *
- * @param status {LinkStatus}
+ * @param pageInfo {PageInfo}
  * @param url {string}
  * @param animate {boolean}
  */
-async function updatePopup(status, url, animate = false) {
-  console.debug('update with status', status);
+async function updatePopup(pageInfo, url, animate = false) {
+  console.debug('update with status', pageInfo);
 
   if (animate) {
     document.body.classList.add('appear-from-top');
   }
 
   document.querySelectorAll('.controls').forEach((controls) => {
-    if (controls.getAttribute('data-status') === status) {
+    if (controls.getAttribute('data-status') === pageInfo.status) {
       controls.classList.add('current');
     } else {
       controls.classList.remove('current');
@@ -70,24 +73,24 @@ async function updatePopup(status, url, animate = false) {
   });
 }
 
-function addRelatedLinks(currentSiteLinks) {
+function addRelatedLinks(currentDomainEntries) {
   const listElement = document.querySelector('.related-links ul');
 
-  if (currentSiteLinks.length === 0) {
+  if (currentDomainEntries.length === 0) {
     listElement.parentElement.remove();
     return;
   }
-  sortLinksByStatus(currentSiteLinks);
-  currentSiteLinks.forEach((link) => {
+  sortLinksByStatus(currentDomainEntries);
+  currentDomainEntries.forEach((entry) => {
     const li = document.createElement('li');
     const a = document.createElement('a');
-    a.href = link.url;
-    a.innerText = new URL(link.url).pathname;
+    a.href = entry.url;
+    a.innerText = entry.title || new URL(entry.url).pathname;
     // open in new tab, otherwise it does not work in Google Chrome
     a.target = '_blank';
 
     const icon = document.createElement('img');
-    icon.src = chrome.runtime.getURL(`images/icon-${link.status}.png`);
+    icon.src = chrome.runtime.getURL(`images/icon-${entry.status}.png`);
     a.prepend(icon);
     li.append(a);
 

@@ -1,7 +1,8 @@
-import { getAllLinksByDomain, sortLinksByStatus, STATUS_DONE } from '../global.js';
+import { sortLinksByStatus, STATUS_DONE } from '../global.js';
+import { getAllLinksGroupedByDomain } from '../storage.js';
 
 async function init() {
-  const linksByDomain = await getAllLinksByDomain();
+  const linksByDomain = await getAllLinksGroupedByDomain();
   const listElement = document.querySelector('.links');
 
   // eslint-disable-next-line no-restricted-syntax
@@ -31,7 +32,7 @@ async function init() {
 
       const a = document.createElement('a');
       a.href = item.url;
-      a.innerText = item.url.replace(domain, '');
+      a.innerText = item.title || item.url.replace(domain, '');
       a.target = '_blank';
 
       const cellLink = document.createElement('td');

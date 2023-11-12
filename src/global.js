@@ -1,3 +1,5 @@
+import { getAllLinksGroupedByDomain } from './storage.js';
+
 export const STATUS_DONE = 'done';
 export const STATUS_STARTED = 'started';
 export const STATUS_NONE = 'none';
@@ -59,32 +61,11 @@ export function normalizeUrl(url) {
 }
 
 /**
- * @param url
- * @return {Promise<LinkStatus>}
- */
-export async function getStatus(url) {
-  if (!url) {
-    return STATUS_NONE;
-  }
-
-  if (!url.startsWith('http')) {
-    return STATUS_DISABLED;
-  }
-
-  const normalizedUrl = normalizeUrl(url);
-  if (!url) {
-    return STATUS_NONE;
-  }
-  const value = await chrome.storage.local.get(normalizedUrl);
-  return compatibiltyStatus(value[normalizedUrl]);
-}
-
-/**
  * @param {string} origin - The origin URL to get links from.
  * @returns {Promise<Array.<LinkInfo>>} links
  */
 export async function getAllLinksForDomain(origin) {
-  const allLinks = await getAllLinksByDomain();
+  const allLinks = await getAllLinksGroupedByDomain();
   return allLinks[origin] || [];
 }
 
@@ -132,29 +113,4 @@ export function updateStatusForUrl(links, url, newStatus) {
   } else {
     links.push({ url, status: newStatus });
   }
-}
-
-/**
- Retrieves all stored links by their domain from the browser's local storage.
- The links are sorted and grouped by domain.
- @returns {Promise<Map<string,Array.<LinkInfo>>>} links by domain.
-     each domain contains an array of `LinkInfo`.
- */
-export async function getAllLinksByDomain() {
-  const allItems = await chrome.storage.local.get(null);
-  return Object.entries(allItems)
-    .map((entry) => ({ url: entry[0], status: compatibiltyStatus(entry[1]) }))
-    .sort()
-    .reduce((accumulator, currentValue) => {
-      let domain;
-      try {
-        domain = new URL(currentValue.url).origin;
-      } catch (error) {
-        // ignore bad urls
-        return accumulator;
-      }
-
-      accumulator[domain] = [...accumulator[domain] || [], currentValue];
-      return accumulator;
-    }, {});
 }

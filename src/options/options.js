@@ -1,7 +1,7 @@
-import { getUserSettings, setUserSettings } from '../storage.js';
+import {getDataExport, getUserSettings, setUserSettings} from '../storage.js';
 import { compatibiltyStatus } from '../global.js';
 
-function save(filename, data) {
+function startFileDownload(filename, data) {
   const blob = new Blob([data], { type: 'text/json' });
   if (window.navigator.msSaveOrOpenBlob) {
     window.navigator.msSaveBlob(blob, filename);
@@ -16,36 +16,35 @@ function save(filename, data) {
 }
 
 document.getElementById('exportButton').addEventListener('click', async () => {
-  const allItems = await chrome.storage.local.get(null);
-  const result = Object.entries(allItems)
-    .map((entry) => ({ url: entry[0], status: compatibiltyStatus(entry[1]) }))
-    .sort();
+  const result = await getDataExport();
 
-  save('marked-as-done-all.json', JSON.stringify(result));
+  startFileDownload('marked-as-done-all.json', JSON.stringify(result));
 });
 
 document.getElementById('importButton').addEventListener('click', () => {
   document.getElementById('upload').click();
 });
 
-document.getElementById('upload').addEventListener('change', handleFiles, false);
+document.getElementById('upload').addEventListener(
+  'change',
+  function handleFiles() {
+    if (this.files.length === 0) {
+      console.error('No file selected.');
+      return;
+    }
 
-function handleFiles() {
-  if (this.files.length === 0) {
-    console.error('No file selected.');
-    return;
-  }
+    const reader = new FileReader();
+    reader.onload = async function fileReadCompleted() {
+      // When the reader is done, the content is in reader.result.
+      const data = JSON.parse(reader.result);
+      const response = await chrome.runtime.sendMessage({ type: 'import-data', data });
+      document.getElementById('importStatus').append(`import completed. status: ${response}`);
+    };
 
-  const reader = new FileReader();
-  reader.onload = async function fileReadCompleted() {
-    // When the reader is done, the content is in reader.result.
-    const data = JSON.parse(reader.result);
-    const response = await chrome.runtime.sendMessage({ type: 'import-data', data });
-    document.getElementById('importStatus').append(`import completed. status: ${response}`);
-  };
-
-  reader.readAsText(this.files[0]);
-}
+    reader.readAsText(this.files[0]);
+  },
+  false,
+);
 
 document.getElementById('resetAllDataButton').addEventListener('click', async (event) => {
   if (event.target.textContent !== 'Are you sure?') {

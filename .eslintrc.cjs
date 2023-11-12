@@ -20,6 +20,7 @@ module.exports = {
     'require-await': 'error',
     'no-restricted-syntax': 'off',
     'no-plusplus': 'off',
+    'no-else-return': 'off',
     'max-len': ['warn', { code: 120 }],
   },
   ignorePatterns: [
