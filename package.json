@@ -16,8 +16,8 @@
   "scripts": {
     "start:firefox": "cp manifest-template.json manifest.json && node update_manifest.mjs firefox manifest.json && web-ext run --target firefox-desktop --source-dir ./",
     "start:chrome": "cp  manifest-template.json manifest.json && node update_manifest.mjs chrome  manifest.json && web-ext run --target chromium        --source-dir ./",
-    "prebuild:firefox": "bash prepare-dist-folders.sh",
-    "prebuild:chrome": "bash prepare-dist-folders.sh",
+    "prebuild:firefox": "bash prepare-dist-folders.sh firefox",
+    "prebuild:chrome": "bash prepare-dist-folders.sh chrome",
     "build": "npm run lint && npm run build:firefox && npm run build:chrome",
     "build:firefox": "web-ext build --overwrite-dest  --source-dir ./dist/firefox  --artifacts-dir web-ext-artifacts/firefox --filename mark_as_done.xpi",
     "build:chrome": "web-ext  build --overwrite-dest  --source-dir ./dist/chrome   --artifacts-dir web-ext-artifacts/chrome  --filename mark_as_done.xpi",
