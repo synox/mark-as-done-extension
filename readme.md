@@ -93,7 +93,9 @@ web-ext sign --api-key "user:xxx" --api-secret "xxxx"
 ## Deploy to Chrome Store
 
 ```bash
-npm run build
+npm run build:firefox 
+
+npm run build:chrome
 ```
 
 and upload to https://chrome.google.com/webstore/developer/dashboard?hl=en

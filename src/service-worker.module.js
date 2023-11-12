@@ -112,7 +112,6 @@ async function storePageStatus(url, newStatus) {
   await updateLinksInAllTabs();
 }
 
-
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
   chrome.permissions.onAdded.addListener((ev) => {

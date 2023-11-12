@@ -20,6 +20,10 @@ module.exports = {
     'require-await': 'error',
     'no-restricted-syntax': 'off',
     'no-plusplus': 'off',
+    'max-len': ['warn', { code: 120 }],
   },
-  ignorePatterns: ['3rdparty/**'],
+  ignorePatterns: [
+    '3rdparty/**',
+    'dist/**'
+  ],
 };
