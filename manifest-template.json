@@ -45,10 +45,5 @@
   "options_ui": {
     "page": "src/options/options.html"
   },
-  "incognito": "not_allowed",
-  "browser_specific_settings.firefox": {
-    "gecko": {
-      "id": "{7a38b7e1-ba04-47c7-8998-ad10388b1dcf}"
-    }
-  }
+  "incognito": "not_allowed"
 }
