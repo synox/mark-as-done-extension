@@ -98,11 +98,4 @@ function addRelatedLinks(currentSiteLinks) {
   });
 }
 
-async function getInitialStatus() {
-  const settings = await getUserSettings();
-  if (settings.enabledStates.includes('todo')) return 'todo';
-  if (settings.enabledStates.includes('started')) return 'started';
-  return 'done';
-}
-
 init().catch(console.error);
