@@ -1,5 +1,3 @@
-import { listPageStateGroupedByDomain } from './storage.js';
-
 export const STATUS_DONE = 'done';
 export const STATUS_STARTED = 'started';
 export const STATUS_NONE = 'none';

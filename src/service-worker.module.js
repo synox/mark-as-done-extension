@@ -1,5 +1,5 @@
 import {
-  listPageStateForDomain, getPageState, updatePageState, removePageState,
+  listPagesForDomain, getPageState, updatePageState, removePageState,
 } from './storage.js';
 import { normalizeUrl } from './global.js';
 
@@ -32,7 +32,7 @@ async function activatePopup(tab) {
  * @return {Promise<boolean>}
  */
 async function hasAnyEntriesForDomain(url) {
-  return await listPageStateForDomain(new URL(url).origin).length > 0;
+  return await listPagesForDomain(new URL(url).origin).length > 0;
 }
 
 function isAllowedDomain(url) {

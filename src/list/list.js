@@ -1,8 +1,8 @@
 import { sortLinksByStatus, STATUS_DONE } from '../global.js';
-import { listPageStateGroupedByDomain } from '../storage.js';
+import { listPagesGroupedByDomain } from '../storage.js';
 
 async function init() {
-  const linksByDomain = await listPageStateGroupedByDomain();
+  const linksByDomain = await listPagesGroupedByDomain();
   const listElement = document.querySelector('.links');
 
   // eslint-disable-next-line no-restricted-syntax

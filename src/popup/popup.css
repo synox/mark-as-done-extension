@@ -72,8 +72,12 @@ main .pages .page {
   align-items: center;
 }
 
-main .pages .page.current-unread {
+main section.unread .pages .page.current {
   background-color: #d4f5ff;
+}
+
+main section.finished .pages .page.current {
+  background-color: #ecffb6;
 }
 
 main .pages .page a {
