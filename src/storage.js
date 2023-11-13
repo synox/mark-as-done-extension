@@ -1,11 +1,4 @@
-import { compatibiltyStatus, normalizeUrl } from './global.js';
-
-function _readPageStateFromStorageValue(url, value) {
-  if (!value) {
-    return null;
-  }
-  return new PageInfo(url, value);
-}
+import { compatibiltyStatus } from './global.js';
 
 /**
  * get state of a page
@@ -21,7 +14,7 @@ export async function getPageState(url) {
   if (!valueWrapper) {
     return null;
   }
-  return _readPageStateFromStorageValue(url, valueWrapper[url]);
+  return readPageStateFromStorageValue(url, valueWrapper[url]);
 }
 
 /**
@@ -53,6 +46,13 @@ export async function updatePageState(url, properties) {
 
 export async function removePageState(url) {
   await chrome.storage.local.remove(url);
+}
+
+function readPageStateFromStorageValue(url, value) {
+  if (!value) {
+    return null;
+  }
+  return new PageInfo(url, value);
 }
 
 const defaultSettings = {
@@ -132,5 +132,5 @@ export async function listPageStateForDomain(origin) {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
     .filter(([key]) => key.startsWith(origin))
-    .map(([key, value]) => _readPageStateFromStorageValue(key, value));
+    .map(([key, value]) => readPageStateFromStorageValue(key, value));
 }

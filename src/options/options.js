@@ -1,5 +1,4 @@
-import {getDataExport, getUserSettings, setUserSettings} from '../storage.js';
-import { compatibiltyStatus } from '../global.js';
+import { getDataExport, getUserSettings, setUserSettings } from '../storage.js';
 
 function startFileDownload(filename, data) {
   const blob = new Blob([data], { type: 'text/json' });

@@ -1,4 +1,6 @@
-import { listPageStateForDomain, getPageState, updatePageState } from './storage.js';
+import {
+  listPageStateForDomain, getPageState, updatePageState, removePageState,
+} from './storage.js';
 import { normalizeUrl } from './global.js';
 
 /**
