@@ -1,108 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="popup.css">
-    <style>
-
-
-    </style>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="../3rdparty/pico.min.css">
+  <title>Popup</title>
 </head>
-<body>
+<body class="popup">
 
-<div class="controls" id="controls-disabled" data-status="disabled">
-  <h1><img src="../../images/icon-disabled.png"> Extension is disabled on this site.</h1>
-</div>
+<header>
+  <img class="logo"
+       src="../../images/icon-none.png" alt="logo">
+  <h1>Reading List</h1>
+  <div class="header-buttons">
+    <a role="button" class="outline" href="#">
+      <img class="icon" src="../../images/chevron.png"> add as unread</a>
+    <a role="button" class="outline" href="#">
+      <img class="icon" src="../../images/icon-done.png"> mark as finished</a>
+    <a href="#" class="settings" title="settings">
+      <img src="../../images/icons8-settings.svg" alt="settings">
+    </a>
+  </div>
+</header>
 
-<div class="controls" id="controls-none" data-status="none">
+<aside>
+  <div class="filters">
+    Filters:
+    <label>
+      <input type="checkbox" name="filter" value="asdf.com" checked>
+      asdf.com
+    </label>
+  </div>
+</aside>
 
-    <div class="state-change-buttons">
+<main>
+  <section class="unread">
+    <h2>
+      <a href="../list/list.html?filter=unread" target="_blank">Unread</a>
+    </h2>
 
-      <h1>Page is not marked yet.</h1>
-
-
-      <a href="#" class="changeStateButton" data-status="todo">
-            <img src="../../images/icon-todo.png" alt="todo icon">
-            <span> mark as todo</span>
+    <div class="pages">
+      <div class="page not-current-unread">
+        <a href="some page">
+          <p class="title">The Account and profile</p>
+          <p class="metadata">asdf.com - Nov 12</p>
         </a>
-
-        <a href="#" class="changeStateButton" data-status="started">
-            <img src="../../images/icon-started.png" alt="started icon">
-            <span> start progress</span>
-        </a>
-
-        <a href="#" class="changeStateButton" data-status="done">
-            <img src="../../images/icon-done.png" alt="done icon">
-            <span> done</span>
-        </a>
+          <button class="outline">remove</button>
+      </div>
     </div>
-</div>
+  </section>
 
-<div class="controls" id="controls-todo" data-status="todo">
-
-    <h1><img src="../../images/icon-todo.png"> Page saved for later.</h1>
-
-    <div class="state-change-buttons">
-
-        <a href="#" class="changeStateButton" data-status="started">
-            <img src="../../images/icon-started.png" alt="started icon">
-            <span> start progress</span>
-        </a>
-
-        <a href="#" class="changeStateButton" data-status="done">
-            <img src="../../images/icon-done.png" alt="done icon">
-            <span> done</span>
-        </a>
-
-        <a href="#" class="changeStateButton" data-status="none">
-            <img src="../../images/trash-can.svg" alt="trash icon">
-            <span> Remove</span>
-        </a>
-    </div>
-</div>
-
-<div class="controls" id="controls-started" data-status="started">
-
-    <h1><img src="../../images/icon-started.png" alt="started icon"> Page is in progress.</h1>
-
-    <div class="state-change-buttons">
-
-        <a href="#" class="changeStateButton" data-status="done">
-            <img src="../../images/icon-done.png" alt="done icon">
-            <span> done</span>
-        </a>
-
-        <a href="#" class="changeStateButton" data-status="none">
-            <img src="../../images/trash-can.svg" alt="trash icon">
-            <span> Remove</span>
-        </a>
-    </div>
-</div>
-
-<div class="controls" id="controls-done" data-status="done">
-
-    <h1><img src="../../images/icon-done.png"> Page marked as done.</h1>
-
-    <div class="state-change-buttons">
-
-        <a href="#" class="changeStateButton" data-status="none">
-            <img src="../../images/trash-can.svg" alt="trash icon">
-            <span> Remove</span>
-        </a>
-    </div>
-</div>
-
-
-<hr>
-  <a id="listButton" href="../list/list.html" target="_blank">show all links</a>
-<hr>
-<div class="related-links">
-
-    <h2>more on this site:</h2>
-    <ul>
-
-    </ul>
-</div>
+  <section class="finished">
+    <h2>
+      <a id="listButton" href="../list/list.html?filter=finished" target="_blank">Finished</a>
+    </h2>
+  </section>
+</main>
 
 <script src="popup.js" type="module"></script>
 </body>

@@ -105,11 +105,13 @@ const defaultSettings = {
 /**
  * @typedef {Object} UserSettings
  * @property {LinkStatus[]} enabledStates
+ * @deprecated
  */
 
 /**
  *
  * @return {UserSettings}
+ * @deprecated
  */
 export async function getUserSettings() {
   const result = await chrome.storage.local.get('userSettings');
@@ -122,6 +124,7 @@ export async function getUserSettings() {
 /**
  * @typedef {UserSettings} userSettings (merged with existing settings)
  * @return {Promise<any>}
+ * @deprecated
  */
 export async function setUserSettings(userSettings) {
   // eslint-disable-next-line no-return-await

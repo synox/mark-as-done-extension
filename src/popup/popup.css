@@ -1,113 +1,92 @@
-:root {
-    font-family: Arial, sans-serif;
-    font-size: 12px;
+html {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
 }
 
 body {
   min-width: 350px;
+  background-color: #e6e6e6;
+  padding: 10px;
 }
 
-.appear-from-top {
-    position: relative;
-    animation: appear-from-top 0.2s ease-in forwards;
+body.popup > header {
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-@keyframes appear-from-top {
-    from {
-        top: -30px;
-        opacity: 0;
-    }
-
-    to {
-        top: 0;
-        opacity: 1
-    }
+header h1 {
+  flex-grow: 1;
+  font-weight: 200;
+  font-size: 30px;
+  margin-bottom: 0;
 }
 
-
-.controls {
-    margin: 5px;
-    min-width: 20rem;;
-    display: none;
+header .logo {
+  height: 40px;
 }
 
-.controls.current {
-    display: block;
-    white-space: nowrap;
+header .header-buttons .icon {
+  height: 20px;
 }
 
-.controls h1 {
-    font-size: 1.5rem;
-    padding: 5px 5px 5px 0;
+header .settings img {
+  height: 40px;
+  filter: opacity(70%);
 }
 
-.controls a {
-    margin-right: 15px;
-    padding: 10px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-size: 1rem;
-    background-color: #eee;
-    color: #444;
+aside .filters {
+  display: flex;
+  gap: 20px;
 }
 
-.controls h1 img {
-    height: 1.5em;
-    vertical-align: middle;
+body.popup > main {
+  padding: 0;
 }
 
-.controls a:hover {
-    background-color: #eaeaea;
+main h2 {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-.controls .state-change-buttons {
-    margin: 20px 0;
+main section {
+  margin: 20px 0;
 }
 
-.controls a img {
-    height: 1.5em;
-    vertical-align: middle;
-    filter: grayscale(1);
+main .pages .page {
+  border-radius: 10px;
+  background-color: white;
+  margin: 2px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
 }
 
-.controls a:hover img {
-    filter: none;
+main .pages .page.current-unread {
+  background-color: #d4f5ff;
 }
 
-#controls-disabled h1 {
-  color: darkgray;
+main .pages .page a {
+  flex: 1 0 auto;
+  display: block;
 }
 
-.related-links ul {
-    padding: 0;
-    margin: 0;
-    max-height: 300px;
-    overflow-y: auto;
+main .pages .page a p {
+  margin: 0;
 }
 
-hr {
-  border:none;
-  border-top: 1px solid lightblue;
+main .pages .page a .title {
+  font-weight: bold;
 }
 
-.related-links h2 {
-    margin-bottom: 5px;
-    font-size: 1.2rem;
-    font-weight: normal;
+main .pages .page a .metadata {
+  font-size: 0.8em;
 }
 
-
-.related-links ul li {
-    list-style: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 25rem;
-    overflow-x: hidden;
-    font-size: 1.1rem;
+main .pages .page button {
+  width: initial;
+  padding: 5px;
+  margin: 0;
 }
 
-.related-links ul li img {
-    height: 1.0em;
-    margin-right: 0.2em;
-    vertical-align: middle;
-}

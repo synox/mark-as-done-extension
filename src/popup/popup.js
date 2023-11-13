@@ -6,23 +6,24 @@ import {
 async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const pageInfo = await getPageState(normalizeUrl(tab.url));
+  console.log('pageInfo', pageInfo);
   if (!pageInfo || pageInfo.status === STATUS_DISABLED) {
     // show reduced popup on disabled sites
   }
 
-  await updatePopup(pageInfo, tab.url, false);
-
-  let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
-  // Remove current page from list, only show other pages on the same domain
-  currentSiteLinks = removeUrl(currentSiteLinks, tab.url);
-  addRelatedLinks(currentSiteLinks);
-
-  document.querySelector('#listButton').addEventListener('click', () => {
-    setTimeout(window.close, 200);
-  });
-
-  document.querySelectorAll('button.changeStateButton, a.changeStateButton')
-    .forEach((button) => button.addEventListener('click', () => handleChangeStatus(button)));
+  // await updatePopup(pageInfo, tab.url, false);
+  //
+  // let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
+  // // Remove current page from list, only show other pages on the same domain
+  // currentSiteLinks = removeUrl(currentSiteLinks, tab.url);
+  // addRelatedLinks(currentSiteLinks);
+  //
+  // document.querySelector('#listButton').addEventListener('click', () => {
+  //   setTimeout(window.close, 200);
+  // });
+  //
+  // document.querySelectorAll('button.changeStateButton, a.changeStateButton')
+  //   .forEach((button) => button.addEventListener('click', () => handleChangeStatus(button)));
 }
 
 async function handleChangeStatus(button) {
