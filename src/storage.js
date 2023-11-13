@@ -95,7 +95,7 @@ export async function setUserSettings(userSettings) {
 export async function getDataExport() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
-    .map((entry) => ({ url: entry[0], title: entry.title, status: compatibiltyStatus(entry[1]) }))
+    .map(([url, value]) => ({ url, ...value }))
     .sort();
 }
 

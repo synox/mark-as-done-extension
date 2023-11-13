@@ -1,7 +1,12 @@
 // eslint-disable-next-line no-unused-vars,import/no-extraneous-dependencies
-import { expect, jest, test } from '@jest/globals';
+import { expect, test } from '@jest/globals';
 import {
-  listPageStateForDomain, getPageState, removePageState, updatePageState, listPageStateGroupedByDomain,
+  getDataExport,
+  getPageState,
+  listPageStateForDomain,
+  listPageStateGroupedByDomain,
+  removePageState,
+  updatePageState,
 } from './storage.js';
 
 test('getPageState exixts', async () => {
@@ -114,4 +119,41 @@ test('listPageStateGroupedByDomain', async () => {
   expect(entriesByDomain['https://www.facebook.com']).toHaveLength(1);
   expect(entriesByDomain['https://www.facebook.com'][0].url).toBe('https://www.facebook.com/maps');
   expect(entriesByDomain['https://www.facebook.com'][0].properties.status).toBe('todo');
+});
+
+test('getDataExport', async () => {
+  chrome.storage.local.get.mockReturnValueOnce({
+    'https://www.google.com/home': {
+      status: 'todo',
+      title: 'Google',
+    },
+    'https://www.google.com/search': {
+      status: 'done',
+      title: 'Google Search',
+    },
+    'https://www.facebook.com/maps': {
+      status: 'todo',
+      title: 'Facebook Maps',
+    },
+  });
+
+  const result = await getDataExport();
+
+  expect(result).toStrictEqual([
+    {
+      url: 'https://www.google.com/home',
+      status: 'todo',
+      title: 'Google',
+    },
+    {
+      url: 'https://www.google.com/search',
+      status: 'done',
+      title: 'Google Search',
+    },
+    {
+      url: 'https://www.facebook.com/maps',
+      status: 'todo',
+      title: 'Facebook Maps',
+    },
+  ]);
 });

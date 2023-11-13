@@ -1,6 +1,6 @@
-import { getPageState, getUserSettings } from '../storage.js';
+import { getPageState, getUserSettings, listPageStateGroupedByDomain } from '../storage.js';
 import {
-  STATUS_DISABLED, removeUrl, getAllLinksForDomain, sortLinksByStatus, normalizeUrl,
+  STATUS_DISABLED, removeUrl, sortLinksByStatus, normalizeUrl,
 } from '../global.js';
 
 async function init() {
@@ -99,6 +99,15 @@ function addRelatedLinks(currentDomainEntries) {
       setTimeout(window.close, 200);
     });
   });
+}
+
+/**
+ * @param {string} origin - The origin URL to get links from.
+ * @returns {Promise<Array.<LinkInfo>>} links
+ */
+async function getAllLinksForDomain(origin) {
+  const allLinks = await listPageStateGroupedByDomain();
+  return allLinks[origin] || [];
 }
 
 init().catch(console.error);

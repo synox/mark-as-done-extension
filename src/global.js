@@ -61,15 +61,6 @@ export function normalizeUrl(url) {
 }
 
 /**
- * @param {string} origin - The origin URL to get links from.
- * @returns {Promise<Array.<LinkInfo>>} links
- */
-export async function getAllLinksForDomain(origin) {
-  const allLinks = await listPageStateGroupedByDomain();
-  return allLinks[origin] || [];
-}
-
-/**
  * sort links by status in-place
  * @param links {array}
  * return {void}
