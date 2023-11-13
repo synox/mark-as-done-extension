@@ -28,6 +28,18 @@ test('getPageState exixts', async () => {
   expect(state.properties.created).toBe('2021-02-21T12:00:00.000Z');
 });
 
+test('getPageState invalid url', async () => {
+  const state = await getPageState('file://a/b/c');
+
+  expect(state).toBeNull();
+});
+
+test('getPageState not found', async () => {
+  const state = await getPageState('https://www.facebook.com/');
+
+  expect(state).toBeNull();
+});
+
 test('updatePageState: create new', async () => {
   await updatePageState('https://www.google.com/', {
     status: 'done',
