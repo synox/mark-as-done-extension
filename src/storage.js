@@ -4,6 +4,7 @@
  * @return {Promise<PageInfo>}
  */
 export async function getPageState(url) {
+  console.log('getPageState', url);
   if (!url || !url.startsWith('http')) {
     return null;
   }
@@ -81,6 +82,23 @@ export async function listPageStateGroupedByDomain() {
       }
 
       accumulator[domain] = [...accumulator[domain] || [], currentValue];
+      return accumulator;
+    }, {});
+}
+
+/**
+ Retrieves all stored links by their domain from the browser's local storage.
+ The links are sorted and grouped by domain.
+ @returns {Promise<Map<string,Array.<PageInfo>>>} links by domain.
+  each domain contains an array of `LinkInfo`.
+ */
+export async function listPageStateGroupedByStatus() {
+  const allItems = await chrome.storage.local.get(null);
+  return Object.entries(allItems)
+    .map(([url, value]) => new PageInfo(url, value))
+    .sort()
+    .reduce((accumulator, currentValue) => {
+      accumulator[currentValue.properties.status] = [...accumulator[currentValue.properties.status] || [], currentValue];
       return accumulator;
     }, {});
 }

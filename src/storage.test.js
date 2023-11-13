@@ -4,7 +4,7 @@ import {
   getDataExport,
   getPageState,
   listPageStateForDomain,
-  listPageStateGroupedByDomain,
+  listPageStateGroupedByDomain, listPageStateGroupedByStatus,
   removePageState,
   updatePageState,
 } from './storage.js';
@@ -131,6 +131,33 @@ test('listPageStateGroupedByDomain', async () => {
   expect(entriesByDomain['https://www.facebook.com']).toHaveLength(1);
   expect(entriesByDomain['https://www.facebook.com'][0].url).toBe('https://www.facebook.com/maps');
   expect(entriesByDomain['https://www.facebook.com'][0].properties.status).toBe('todo');
+});
+
+test('listPageStateGroupedByStatus', async () => {
+  chrome.storage.local.get.mockReturnValueOnce({
+    'https://www.google.com/home': {
+      status: 'todo',
+      title: 'Google',
+    },
+    'https://www.google.com/search': {
+      status: 'done',
+      title: 'Google Search',
+    },
+    'https://www.facebook.com/maps': {
+      status: 'todo',
+      title: 'Facebook Maps',
+    },
+  });
+
+  const entriesByStatus = await listPageStateGroupedByStatus();
+
+  expect(Object.keys(entriesByStatus)).toHaveLength(2);
+  expect(entriesByStatus.todo).toHaveLength(2);
+  expect(entriesByStatus.todo[0].url).toBe('https://www.google.com/home');
+  expect(entriesByStatus.todo[1].url).toBe('https://www.facebook.com/maps');
+
+  expect(entriesByStatus.done).toHaveLength(1);
+  expect(entriesByStatus.done[0].url).toBe('https://www.google.com/search');
 });
 
 test('getDataExport', async () => {
