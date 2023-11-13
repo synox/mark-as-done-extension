@@ -1,5 +1,3 @@
-import { compatibiltyStatus } from './global.js';
-
 /**
  * get state of a page
  * @param url
@@ -55,43 +53,6 @@ function readPageStateFromStorageValue(url, value) {
   return new PageInfo(url, value);
 }
 
-const defaultSettings = {
-  enabledStates: ['todo', 'started', 'done'],
-};
-
-// TODO: do automatic data migrations on first load
-
-/**
- * @typedef {Object} UserSettings
- * @property {LinkStatus[]} enabledStates
- */
-
-/**
- *
- * @return {UserSettings}
- */
-export async function getUserSettings() {
-  const result = await chrome.storage.local.get('userSettings');
-  return {
-    ...defaultSettings,
-    ...result.userSettings,
-  };
-}
-
-/**
- * @typedef {UserSettings} userSettings (merged with existing settings)
- * @return {Promise<any>}
- */
-export async function setUserSettings(userSettings) {
-  // eslint-disable-next-line no-return-await
-  const currentUserSettings = await getUserSettings();
-  return await chrome.storage.local.set({
-    userSettings: {
-      ...currentUserSettings, ...userSettings,
-    },
-  });
-}
-
 export async function getDataExport() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
@@ -133,4 +94,41 @@ export async function listPageStateForDomain(origin) {
   return Object.entries(allItems)
     .filter(([key]) => key.startsWith(origin))
     .map(([key, value]) => readPageStateFromStorageValue(key, value));
+}
+
+// TODO: do automatic data migrations on first load
+
+const defaultSettings = {
+  enabledStates: ['todo', 'started', 'done'],
+};
+
+/**
+ * @typedef {Object} UserSettings
+ * @property {LinkStatus[]} enabledStates
+ */
+
+/**
+ *
+ * @return {UserSettings}
+ */
+export async function getUserSettings() {
+  const result = await chrome.storage.local.get('userSettings');
+  return {
+    ...defaultSettings,
+    ...result.userSettings,
+  };
+}
+
+/**
+ * @typedef {UserSettings} userSettings (merged with existing settings)
+ * @return {Promise<any>}
+ */
+export async function setUserSettings(userSettings) {
+  // eslint-disable-next-line no-return-await
+  const currentUserSettings = await getUserSettings();
+  return await chrome.storage.local.set({
+    userSettings: {
+      ...currentUserSettings, ...userSettings,
+    },
+  });
 }
