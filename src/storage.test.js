@@ -3,8 +3,8 @@ import { expect, test } from '@jest/globals';
 import {
   getDataExport,
   getPageState,
-  listPageStateForDomain,
-  listPageStateGroupedByDomain, listPageStateGroupedByStatus,
+  listPagesForDomain,
+  listPagesGroupedByDomain, listPagesGroupedByStatus,
   removePageState,
   updatePageState,
 } from './storage.js';
@@ -78,7 +78,7 @@ test('removePageState', async () => {
   expect(chrome.storage.local.remove).toHaveBeenCalledWith('https://www.google.com/');
 });
 
-test('getEntriesForDomain', async () => {
+test('listPagesForDomain', async () => {
   chrome.storage.local.get.mockReturnValueOnce({
     'https://www.google.com/': {
       status: 'todo',
@@ -94,7 +94,7 @@ test('getEntriesForDomain', async () => {
     },
   });
 
-  const entries = await listPageStateForDomain('https://www.google.com/');
+  const entries = await listPagesForDomain('https://www.google.com/');
 
   expect(entries).toHaveLength(2);
   expect(entries[0].url).toBe('https://www.google.com/');
@@ -103,7 +103,7 @@ test('getEntriesForDomain', async () => {
   expect(entries[1].properties.status).toBe('done');
 });
 
-test('listPageStateGroupedByDomain', async () => {
+test('listPagesGroupedByDomain', async () => {
   chrome.storage.local.get.mockReturnValueOnce({
     'https://www.google.com/home': {
       status: 'todo',
@@ -119,7 +119,7 @@ test('listPageStateGroupedByDomain', async () => {
     },
   });
 
-  const entriesByDomain = await listPageStateGroupedByDomain();
+  const entriesByDomain = await listPagesGroupedByDomain();
 
   expect(Object.keys(entriesByDomain)).toHaveLength(2);
   expect(entriesByDomain['https://www.google.com']).toHaveLength(2);
@@ -133,7 +133,7 @@ test('listPageStateGroupedByDomain', async () => {
   expect(entriesByDomain['https://www.facebook.com'][0].properties.status).toBe('todo');
 });
 
-test('listPageStateGroupedByStatus', async () => {
+test('listPagesGroupedByStatus', async () => {
   chrome.storage.local.get.mockReturnValueOnce({
     'https://www.google.com/home': {
       status: 'todo',
@@ -149,7 +149,7 @@ test('listPageStateGroupedByStatus', async () => {
     },
   });
 
-  const entriesByStatus = await listPageStateGroupedByStatus();
+  const entriesByStatus = await listPagesGroupedByStatus();
 
   expect(Object.keys(entriesByStatus)).toHaveLength(2);
   expect(entriesByStatus.todo).toHaveLength(2);

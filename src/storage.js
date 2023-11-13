@@ -67,7 +67,7 @@ export async function getDataExport() {
  @returns {Promise<Map<string,Array.<PageInfo>>>} links by domain.
   each domain contains an array of `LinkInfo`.
  */
-export async function listPageStateGroupedByDomain() {
+export async function listPagesGroupedByDomain() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
     .map(([url, value]) => new PageInfo(url, value))
@@ -92,7 +92,7 @@ export async function listPageStateGroupedByDomain() {
  @returns {Promise<Map<string,Array.<PageInfo>>>} links by domain.
   each domain contains an array of `LinkInfo`.
  */
-export async function listPageStateGroupedByStatus() {
+export async function listPagesGroupedByStatus() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
     .map(([url, value]) => new PageInfo(url, value))
@@ -107,7 +107,7 @@ export async function listPageStateGroupedByStatus() {
  * @param origin {string} e.g. new URL(url).origin
  * @return {Promise<PageInfo[]>}
  */
-export async function listPageStateForDomain(origin) {
+export async function listPagesForDomain(origin) {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
     .filter(([key]) => key.startsWith(origin))
