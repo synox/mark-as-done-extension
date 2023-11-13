@@ -1,11 +1,11 @@
-import {getPageInfo, getUserSettings} from '../storage.js';
+import { getPageState, getUserSettings } from '../storage.js';
 import {
-  STATUS_DISABLED, removeUrl, getAllLinksForDomain, sortLinksByStatus,
+  STATUS_DISABLED, removeUrl, getAllLinksForDomain, sortLinksByStatus, normalizeUrl,
 } from '../global.js';
 
 async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  const pageInfo = await getPageInfo(tab.url);
+  const pageInfo = await getPageState(normalizeUrl(tab.url));
   if (!pageInfo || pageInfo.status === STATUS_DISABLED) {
     // show reduced popup on disabled sites
   }
@@ -29,7 +29,7 @@ async function handleChangeStatus(button) {
   const status = button.getAttribute('data-status');
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  const updatedPageInfo = await getPageInfo(tab.url);
+  const updatedPageInfo = await getPageState(normalizeUrl(tab.url));
   updatedPageInfo.status = status;
 
   // not waiting for response to not block user interaction

@@ -1,10 +1,62 @@
-import {
-  compatibiltyStatus, normalizeUrl, STATUS_DISABLED, STATUS_DONE, STATUS_NONE,
-} from './global.js';
+import { compatibiltyStatus, normalizeUrl } from './global.js';
+
+/**
+ * get state of a page
+ * @param url
+ * @return {Promise<PageInfo>}
+ */
+export async function getPageState(url) {
+  if (!url || !url.startsWith('http')) {
+    return null;
+  }
+
+  const valueWrapper = await chrome.storage.local.get(url);
+  if (!valueWrapper) {
+    return null;
+  }
+  const value = valueWrapper[url];
+  if (!value) {
+    return null;
+  }
+  return new PageInfo(url, value);
+}
+
+/**
+ * @param url {string}
+ * @property {LinkStatus} status
+ * @property {string} title
+ * @property {string} lastModified
+ * @property {string} created
+ */
+class PageInfo {
+  constructor(url, properties) {
+    this.url = url;
+    this.properties = properties;
+  }
+}
+
+/**
+ * Update the status of a page
+ * @param url {string}
+ * @param properties {object}
+ * @return {Promise<*>}
+ */
+export async function updatePageState(url, properties) {
+  const state = await getPageState(url);
+  const existingProperties = state?.properties || {};
+  const mergedProperties = { ...existingProperties, ...properties };
+  await chrome.storage.local.set({ [url]: mergedProperties });
+}
+
+export async function removePageState(url) {
+  await chrome.storage.local.remove(url);
+}
 
 const defaultSettings = {
   enabledStates: ['todo', 'started', 'done'],
 };
+
+// TODO: do automatic data migrations on first load
 
 /**
  * @typedef {Object} UserSettings
@@ -37,78 +89,6 @@ export async function setUserSettings(userSettings) {
   });
 }
 
-/**
- * Update the status of a page
- * @param url {string}
- * @param title {string}
- * @param newStatus {LinkStatus}
- * @return {Promise<*>}
- */
-export async function storePageStatus(url, title, newStatus) {
-  const normalizedUrl = normalizeUrl(url);
-  console.log('storePageStatus', normalizedUrl, title, newStatus);
-  if (newStatus === 'none') {
-    await chrome.storage.local.remove(normalizedUrl);
-  } else {
-    // This special syntax uses the value of normalizedUrl as the key of the object
-    await chrome.storage.local.set({ [normalizedUrl]: { status: newStatus, title } });
-  }
-}
-
-class PageInfo {
-  constructor(status, title, url) {
-    this.status = status;
-    this.title = title;
-    this.url = url;
-  }
-}
-
-function readEntry(value, url) {
-  if (!value) {
-    return new PageInfo(STATUS_NONE, null, url);
-  }
-
-  // read with backward compatibility
-  if (value.status) {
-    // v3 format
-    return new PageInfo(value.status, value.title, url);
-  } else if (value === true) {
-    // v1 format  (boolean)
-    return new PageInfo(STATUS_DONE, null, url);
-  } else if (value === undefined) {
-    // v1 format (boolean)
-    return new PageInfo(STATUS_NONE);
-  } else if (value instanceof String) {
-    // v2 (status as string)
-    return new PageInfo(value, null, url);
-  } else {
-    console.error('unknown format', value);
-    return new PageInfo(STATUS_NONE, null, url);
-  }
-}
-
-/**
- * @param url
- * @return {Promise<PageInfo>}
- */
-export async function getPageInfo(url) {
-  if (!url) {
-    return new PageInfo(STATUS_NONE);
-  }
-
-  if (!url.startsWith('http')) {
-    return new PageInfo(STATUS_DISABLED);
-  }
-
-  const normalizedUrl = normalizeUrl(url);
-  if (!url) {
-    return new PageInfo(STATUS_NONE);
-  }
-  const valueWrapper = await chrome.storage.local.get(normalizedUrl);
-  const value = valueWrapper[normalizedUrl];
-  return readEntry(value);
-}
-
 export async function getDataExport() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
@@ -125,7 +105,7 @@ export async function getDataExport() {
 export async function getAllLinksGroupedByDomain() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
-    .map(([url, value]) => readEntry(value, url))
+    .map(([url, value]) => new PageInfo(url, value))
     .sort()
     .reduce((accumulator, currentValue) => {
       let domain;
@@ -149,5 +129,5 @@ export async function getEntriesForDomain(origin) {
   const allItems = await chrome.storage.local.get(null);
   return Object.keys(allItems)
     .filter((key) => key.startsWith(origin))
-    .map((key) => getPageInfo(key));
+    .map((key) => getPageState(key));
 }

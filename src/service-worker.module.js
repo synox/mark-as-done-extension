@@ -1,4 +1,5 @@
-import {getEntriesForDomain, getPageInfo, storePageStatus} from './storage.js';
+import { getEntriesForDomain, getPageState, updatePageState } from './storage.js';
+import { normalizeUrl } from './global.js';
 
 /**
  * react to changes in the storage: update all tabs
@@ -51,7 +52,11 @@ async function injectContentScripts(tab) {
 async function handleChangePageStatus(message, sendResponse) {
   console.log('updating status to', message.status);
 
-  await storePageStatus(message.tab.url, message.status);
+  if (message.status === 'none') {
+    await removePageState(normalizeUrl(message.tab.url));
+  } else {
+    await updatePageState(normalizeUrl(message.tab.url), { status: message.status });
+  }
   await updateLinksInAllTabs();
   try {
     await chrome.tabs.sendMessage(message.tab.id, { type: 'update-content' });
@@ -72,15 +77,15 @@ async function handleChangePageStatus(message, sendResponse) {
 
 async function handleImportData(message, sendResponse) {
   for (const entry of message.data) {
+    const { url, properties } = entry;
     // eslint-disable-next-line no-await-in-loop
-    await storePageStatus(entry.url, entry.title, entry.status);
+    await updatePageState(url, properties);
   }
-
   sendResponse('success');
 }
 
 async function handleGetStatusMessage(message, sendResponse) {
-  const pageInfo = await getPageInfo(message.url);
+  const pageInfo = await getPageState(normalizeUrl(message.url));
   sendResponse(pageInfo);
 }
 
@@ -127,7 +132,7 @@ export function main() {
       chrome.action.setTitle({ title: '' });
       if (tab.status === 'loading') {
         await activatePopup(tab);
-        const pageInfo = await getPageInfo(tab.url);
+        const pageInfo = await getPageState(normalizeUrl(tab.url));
         await updateIcon(tab.id, pageInfo.status);
       } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
         console.debug('tab was updated', tab.url, changeInfo);
