@@ -7,6 +7,9 @@ async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const pageInfo = await getPageState(normalizeUrl(tab.url));
   console.log('pageInfo', pageInfo);
+
+  document.getElementById('mark-as-unread-button').classList.add('hidden');
+
   if (!pageInfo || pageInfo.status === STATUS_DISABLED) {
     // show reduced popup on disabled sites
   }
