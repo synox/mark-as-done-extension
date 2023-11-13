@@ -8,3 +8,4 @@ artifcats-firefox
 
 /manifest.json
 /.web-extension-id
+/coverage/
