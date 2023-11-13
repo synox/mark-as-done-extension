@@ -1,4 +1,4 @@
-import { getAllLinksGroupedByDomain } from './storage.js';
+import { listPageStateGroupedByDomain } from './storage.js';
 
 export const STATUS_DONE = 'done';
 export const STATUS_STARTED = 'started';
@@ -65,7 +65,7 @@ export function normalizeUrl(url) {
  * @returns {Promise<Array.<LinkInfo>>} links
  */
 export async function getAllLinksForDomain(origin) {
-  const allLinks = await getAllLinksGroupedByDomain();
+  const allLinks = await listPageStateGroupedByDomain();
   return allLinks[origin] || [];
 }
 

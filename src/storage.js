@@ -1,5 +1,12 @@
 import { compatibiltyStatus, normalizeUrl } from './global.js';
 
+function _readPageStateFromStorageValue(url, value) {
+  if (!value) {
+    return null;
+  }
+  return new PageInfo(url, value);
+}
+
 /**
  * get state of a page
  * @param url
@@ -14,11 +21,7 @@ export async function getPageState(url) {
   if (!valueWrapper) {
     return null;
   }
-  const value = valueWrapper[url];
-  if (!value) {
-    return null;
-  }
-  return new PageInfo(url, value);
+  return _readPageStateFromStorageValue(url, valueWrapper[url]);
 }
 
 /**
@@ -102,7 +105,7 @@ export async function getDataExport() {
  @returns {Promise<Map<string,Array.<PageInfo>>>} links by domain.
   each domain contains an array of `LinkInfo`.
  */
-export async function getAllLinksGroupedByDomain() {
+export async function listPageStateGroupedByDomain() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
     .map(([url, value]) => new PageInfo(url, value))
@@ -122,12 +125,12 @@ export async function getAllLinksGroupedByDomain() {
 }
 
 /**
- * @param origin {string} e.g. new URL().origin
+ * @param origin {string} e.g. new URL(url).origin
  * @return {Promise<PageInfo[]>}
  */
-export async function getEntriesForDomain(origin) {
+export async function listPageStateForDomain(origin) {
   const allItems = await chrome.storage.local.get(null);
-  return Object.keys(allItems)
-    .filter((key) => key.startsWith(origin))
-    .map((key) => getPageState(key));
+  return Object.entries(allItems)
+    .filter(([key]) => key.startsWith(origin))
+    .map(([key, value]) => _readPageStateFromStorageValue(key, value));
 }
