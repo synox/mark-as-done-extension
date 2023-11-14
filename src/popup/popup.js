@@ -104,8 +104,8 @@ function createPageElement(page, tabUrl) {
   button.classList.add('outline');
   button.textContent = 'remove';
   button.addEventListener('click', async () => {
-    await handleChangeState(page.url, STATUS_NONE);
     div.remove();
+    await handleChangeState(page.url, STATUS_NONE);
   });
   a.append(title);
   a.append(metadata);
@@ -153,11 +153,19 @@ async function updatePopup(pageInfo, tabUrl) {
     document.getElementById('mark-as-finished-button').classList.add('hidden');
   }
 
-  const currentDomainFilter = document.getElementById('current-domain-filter');
-  currentDomainFilter.closest('label').querySelector('span').textContent = new URL(tabUrl).hostname;
-  currentDomainFilter.addEventListener('change', async () => {
-    await replacePagesInPopup(currentDomainFilter.checked, tabUrl);
-  });
-  await replacePagesInPopup(currentDomainFilter.checked, tabUrl);
+  let showOnlyCurrentDomain;
+  if (isValidUrl(tabUrl)) {
+    const currentDomainFilter = document.getElementById('current-domain-filter');
+    currentDomainFilter.closest('label').querySelector('span').textContent = new URL(tabUrl).hostname;
+    currentDomainFilter.addEventListener('change', async () => {
+      await replacePagesInPopup(currentDomainFilter.checked, tabUrl);
+    });
+    showOnlyCurrentDomain = currentDomainFilter.checked;
+  } else {
+    document.querySelector('aside .filters').remove();
+    showOnlyCurrentDomain = false;
+  }
+
+  await replacePagesInPopup(showOnlyCurrentDomain, tabUrl);
 }
 init().catch(console.error);
