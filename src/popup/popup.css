@@ -87,6 +87,10 @@ main .pages .page a {
 
 main .pages .page a p {
   margin: 0;
+  max-width: 450px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 main .pages .page a .title {
