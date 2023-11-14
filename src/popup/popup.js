@@ -7,6 +7,7 @@ import {
   updatePageState,
 } from '../storage.js';
 import {
+  getOrigin, isValidUrl,
   normalizeUrl, sortLinksByStatus, STATUS_DONE, STATUS_NONE, STATUS_TODO,
 } from '../global.js';
 
@@ -117,7 +118,7 @@ async function replacePagesInPopup(onlyShowCurrentDomain, tabUrl) {
   document.querySelector('main section.unread .pages').innerHTML = '';
   document.querySelector('main section.finished .pages').innerHTML = '';
   const pages = onlyShowCurrentDomain
-    ? await listPagesForDomain(new URL(tabUrl).origin)
+    ? await listPagesForDomain(getOrigin(tabUrl))
     : await listPages();
 
   for (const page of pages) {
@@ -138,7 +139,10 @@ async function replacePagesInPopup(onlyShowCurrentDomain, tabUrl) {
 async function updatePopup(pageInfo, tabUrl) {
   console.debug('update with status', pageInfo);
 
-  if (pageInfo && pageInfo.properties.status === 'todo') {
+  if (!isValidUrl(tabUrl)) {
+    document.getElementById('mark-as-unread-button').classList.add('hidden');
+    document.getElementById('mark-as-finished-button').classList.add('hidden');
+  } else if (pageInfo && pageInfo.properties.status === 'todo') {
     document.getElementById('mark-as-unread-button').classList.add('hidden');
     document.getElementById('mark-as-finished-button').classList.remove('hidden');
   } else if (pageInfo && pageInfo.properties.status === 'done') {

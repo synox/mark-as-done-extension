@@ -5,8 +5,14 @@ html {
 
 body {
   min-width: 420px;
-  background-color: #e6e6e6;
   padding: 10px;
+  background-color: #e6e6e6;
+}
+
+@media only screen and (prefers-color-scheme: dark) {
+  body {
+    background-color: #333;
+  }
 }
 
 body.popup > header {
@@ -72,6 +78,12 @@ main .pages .page {
   align-items: center;
 }
 
+@media only screen and (prefers-color-scheme: dark) {
+  main .pages .page {
+    background-color: #1a1a1a;
+  }
+}
+
 main section.unread .pages .page.current {
   background-color: #d4f5ff;
 }
@@ -80,9 +92,21 @@ main section.finished .pages .page.current {
   background-color: #ecffb6;
 }
 
-main .pages .page a {
+@media only screen and (prefers-color-scheme: dark) {
+  main section.unread .pages .page.current {
+    background-color: #001c23;
+  }
+
+  main section.finished .pages .page.current {
+    background-color: #363d23;
+  }
+}
+
+main .pages .page a:any-link {
   flex: 1 0 auto;
   display: block;
+
+  --primary: var(--color);
 }
 
 main .pages .page a p {

@@ -1,7 +1,7 @@
 import {
   listPagesForDomain, getPageState, updatePageState, removePageState,
 } from './storage.js';
-import { normalizeUrl } from './global.js';
+import { getOrigin, normalizeUrl } from './global.js';
 
 /**
  * react to changes in the storage: update all tabs
@@ -32,7 +32,7 @@ async function activatePopup(tab) {
  * @return {Promise<boolean>}
  */
 async function hasAnyEntriesForDomain(url) {
-  return await listPagesForDomain(new URL(url).origin).length > 0;
+  return await listPagesForDomain(getOrigin(url)).length > 0;
 }
 
 function isAllowedDomain(url) {
@@ -110,10 +110,11 @@ export function main() {
   chrome.action.setTitle({ title: 'disabled for this site. Click to request permissions' });
   chrome.action.onClicked.addListener((tab) => {
     try {
-      chrome.permissions.request({ origins: [tab.url] });
+      if (getOrigin(tab.url)) {
+        chrome.permissions.request({ origins: [tab.url] });
+      }
     } catch (e) {
       console.error('error requesting permision', e);
-      throw e;
     }
   });
   /**

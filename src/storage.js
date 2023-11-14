@@ -115,6 +115,9 @@ export async function listPages() {
  * @return {Promise<PageInfo[]>}
  */
 export async function listPagesForDomain(origin) {
+  if (!origin) {
+    return [];
+  }
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
     .filter(([key]) => key.startsWith(origin))

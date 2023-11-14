@@ -103,3 +103,22 @@ export function updateStatusForUrl(links, url, newStatus) {
     links.push({ url, status: newStatus });
   }
 }
+
+export function isValidUrl(url) {
+  if (!url || !url.startsWith('http')) {
+    return false;
+  }
+  try {
+    return new URL(url).origin;
+  } catch (error) {
+    return false;
+  }
+}
+
+export function getOrigin(url) {
+  if (isValidUrl(url)) {
+    return new URL(url).origin;
+  } else {
+    return null;
+  }
+}
