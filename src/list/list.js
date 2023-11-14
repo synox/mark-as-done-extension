@@ -24,15 +24,15 @@ async function init() {
       const row = document.createElement('tr');
 
       const cellStatus = document.createElement('td');
-      cellStatus.innerText = item.status;
+      cellStatus.innerText = item.properties.status;
       const icon = document.createElement('img');
-      icon.src = chrome.runtime.getURL(`images/icon-${item.status}.png`);
+      icon.src = chrome.runtime.getURL(`images/icon-${item.properties.status}.png`);
       cellStatus.prepend(icon);
       row.append(cellStatus);
 
       const a = document.createElement('a');
       a.href = item.url;
-      a.innerText = item.title || item.url.replace(domain, '');
+      a.innerText = item.properties.title || item.url.replace(domain, '');
       a.target = '_blank';
 
       const cellLink = document.createElement('td');

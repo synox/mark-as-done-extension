@@ -79,7 +79,7 @@ async function handleChangePageStatus(message, sendResponse) {
 
 async function handleImportData(message, sendResponse) {
   for (const entry of message.data) {
-    const { url, properties } = entry;
+    const { url, ...properties } = entry;
     // eslint-disable-next-line no-await-in-loop
     await updatePageState(url, properties);
   }
@@ -121,22 +121,21 @@ export function main() {
    */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     try {
-      // // Only inject script if there are already any entries for the current domain
-      // if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
-      //   console.debug('extension is disabled on domain', tab.url);
-      //   await updateIcon(tab.id, 'disabled');
-      //   chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
-      //   // return;
-      // }
+      // Only inject script if there are already any entries for the current domain
+      if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
+        await injectContentScripts(tab);
+        chrome.action.setTitle({ title: '' });
+      } else {
+        chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
+        await updateIcon(tab.id, 'disabled');
+      }
 
-      // chrome.action.setTitle({ title: '' });
       if (tab.status === 'loading') {
         await activatePopup(tab);
         // const pageInfo = await getPageState(normalizeUrl(tab.url));
         // await updateIcon(tab.id, pageInfo.status);
       } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
         // console.debug('tab was updated', tab.url, changeInfo);
-        // await injectContentScripts(tab);
       }
     } catch (e) {
       console.error(e);
