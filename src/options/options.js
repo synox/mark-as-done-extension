@@ -1,4 +1,4 @@
-import { getDataExport, getUserSettings, setUserSettings } from '../storage.js';
+import { getDataExport } from '../storage.js';
 
 function startFileDownload(filename, data) {
   const blob = new Blob([data], { type: 'text/json' });
@@ -52,18 +52,4 @@ document.getElementById('resetAllDataButton').addEventListener('click', async (e
     await chrome.storage.local.clear();
     event.target.textContent = 'Done';
   }
-});
-
-getUserSettings().then((settings) => {
-  document.querySelectorAll('.states-list input').forEach((input) => {
-    input.checked = settings.enabledStates.includes(input.dataset.status);
-  });
-});
-
-document.querySelectorAll('.states-list input').forEach((input) => {
-  input.addEventListener('change', async () => {
-    const enabledStates = [...document.querySelectorAll('.states-list input:checked')]
-      .map((anInput) => anInput.dataset.status);
-    await setUserSettings({ enabledStates });
-  });
 });
