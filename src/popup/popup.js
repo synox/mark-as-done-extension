@@ -121,14 +121,21 @@ async function replacePagesInPopup(onlyShowCurrentDomain, tabUrl) {
     ? await listPagesForDomain(getOrigin(tabUrl))
     : await listPages();
 
+  let unreadCount = 0;
+  let finishedCount = 0;
   for (const page of pages) {
     const pageElement = createPageElement(page, tabUrl);
     if (page.properties.status === 'todo') {
       document.querySelector('main section.unread .pages').append(pageElement);
+      unreadCount += 1;
     } else {
       document.querySelector('main section.finished .pages').append(pageElement);
+      finishedCount += 1;
     }
   }
+
+  document.querySelector('main section.unread h2 .counter').textContent = `(${unreadCount})`;
+  document.querySelector('main section.finished h2 .counter').textContent = `(${finishedCount})`;
 }
 
 /**
