@@ -2,7 +2,7 @@
 import { expect, test } from '@jest/globals';
 import {
   getDataExport,
-  getPageState,
+  getPageState, listPages,
   listPagesForDomain,
   listPagesGroupedByDomain, listPagesGroupedByStatus,
   removePageState,
@@ -158,6 +158,30 @@ test('listPagesGroupedByStatus', async () => {
 
   expect(entriesByStatus.done).toHaveLength(1);
   expect(entriesByStatus.done[0].url).toBe('https://www.google.com/search');
+});
+
+test('listPages', async () => {
+  chrome.storage.local.get.mockReturnValueOnce({
+    'https://www.google.com/home': {
+      status: 'todo',
+      title: 'Google',
+    },
+    'https://www.google.com/search': {
+      status: 'done',
+      title: 'Google Search',
+    },
+    'https://www.facebook.com/maps': {
+      status: 'todo',
+      title: 'Facebook Maps',
+    },
+  });
+
+  const pages = await listPages();
+
+  expect(Object.keys(pages)).toHaveLength(3);
+  expect(pages[0].url).toBe('https://www.google.com/home');
+  expect(pages[1].url).toBe('https://www.google.com/search');
+  expect(pages[2].url).toBe('https://www.facebook.com/maps');
 });
 
 test('getDataExport', async () => {

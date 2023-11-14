@@ -1,18 +1,23 @@
 import {
-  getPageState, listPagesForDomain, listPagesGroupedByDomain, removePageState, updatePageState,
+  getPageState,
+  listPages,
+  listPagesForDomain,
+  listPagesGroupedByDomain,
+  removePageState,
+  updatePageState,
 } from '../storage.js';
 import {
-  sortLinksByStatus, normalizeUrl,
+  normalizeUrl, sortLinksByStatus, STATUS_DONE, STATUS_NONE, STATUS_TODO,
 } from '../global.js';
 
-function addButtonHandlers() {
+function initEventButtonHandlers(tabUrl) {
   document.getElementById('mark-as-unread-button').addEventListener('click', (event) => {
     event.preventDefault();
-    handleChangeState('todo');
+    handleChangeState(tabUrl, STATUS_TODO);
   });
   document.getElementById('mark-as-finished-button').addEventListener('click', (event) => {
     event.preventDefault();
-    handleChangeState('done');
+    handleChangeState(tabUrl, STATUS_DONE);
   });
 }
 
@@ -20,7 +25,7 @@ async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const pageInfo = await getPageState(normalizeUrl(tab.url));
 
-  addButtonHandlers();
+  initEventButtonHandlers(tab.url);
   await updatePopup(pageInfo, tab.url);
   //
   // let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
@@ -36,24 +41,24 @@ async function init() {
   //   .forEach((button) => button.addEventListener('click', () => handleChangeState(button)));
 }
 
-async function handleChangeState(status) {
+async function handleChangeState(url, status) {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  await updatePageState(tab.url, { status });
-
-  const updatedPageInfo = await getPageState(normalizeUrl(tab.url));
-  updatedPageInfo.status = status;
+  let updatedPageInfo;
+  if (status === STATUS_NONE) {
+    await removePageState(normalizeUrl(url));
+    updatedPageInfo = null;
+  } else {
+    await updatePageState(url, { status, title: tab.title });
+    updatedPageInfo = await getPageState(normalizeUrl(url));
+    updatedPageInfo.status = status;
+  }
 
   await updatePopup(updatedPageInfo, tab.url);
 
   // not waiting for response to not block user interaction
   chrome.runtime.sendMessage({ type: 'change-page-status', status, tab });
 
-  // if (status === 'none') {
-  //   window.close();
-  // } else {
-  //   setTimeout(window.close, 1200);
-  //   await updatePopup(updatedPageInfo, tab.url, true);
-  // }
+  setTimeout(window.close, 800);
 }
 
 /**
@@ -63,6 +68,7 @@ async function handleChangeState(status) {
  */
 function createPageElement(page, tabUrl) {
   /**
+   * example:
    * <div class="page not-current-unread">
    *         <a href="some page">
    *           <p class="title">The Account and profile</p>
@@ -80,6 +86,7 @@ function createPageElement(page, tabUrl) {
 
   const a = document.createElement('a');
   a.href = page.url;
+  a.target = '_blank';
   const title = document.createElement('p');
   title.classList.add('title');
   title.textContent = page.properties.title || new URL(page.url).pathname;
@@ -92,7 +99,7 @@ function createPageElement(page, tabUrl) {
   button.classList.add('outline');
   button.textContent = 'remove';
   button.addEventListener('click', async () => {
-    await removePageState(page.url);
+    await handleChangeState(page.url, STATUS_NONE);
     div.remove();
   });
   a.append(title);
@@ -102,10 +109,27 @@ function createPageElement(page, tabUrl) {
   return div;
 }
 
+async function replacePagesInPopup(onlyShowCurrentDomain, tabUrl) {
+  document.querySelector('main section.unread .pages').innerHTML = '';
+  document.querySelector('main section.finished .pages').innerHTML = '';
+  const pages = onlyShowCurrentDomain
+    ? await listPagesForDomain(new URL(tabUrl).origin)
+    : await listPages();
+
+  for (const page of pages) {
+    const pageElement = createPageElement(page, tabUrl);
+    if (page.properties.status === 'todo') {
+      document.querySelector('main section.unread .pages').append(pageElement);
+    } else {
+      document.querySelector('main section.finished .pages').append(pageElement);
+    }
+  }
+}
+
 /**
  *
  * @param pageInfo {PageInfo}
- * @param url {string}
+ * @param tabUrl {string}
  */
 async function updatePopup(pageInfo, tabUrl) {
   console.debug('update with status', pageInfo);
@@ -123,59 +147,9 @@ async function updatePopup(pageInfo, tabUrl) {
 
   const currentDomainFilter = document.getElementById('current-domain-filter');
   currentDomainFilter.closest('label').querySelector('span').textContent = new URL(tabUrl).hostname;
-  const onlyShowCurrentDomain = currentDomainFilter.checked;
-
-  document.querySelector('main section.unread .pages').innerHTML = '';
-  document.querySelector('main section.finished .pages').innerHTML = '';
-
-  if (onlyShowCurrentDomain) {
-    const pages = await listPagesForDomain(new URL(tabUrl).origin);
-    for (const page of pages) {
-      const pageElement = createPageElement(page, tabUrl);
-      if (page.properties.status === 'todo') {
-        document.querySelector('main section.unread .pages').append(pageElement);
-      } else {
-        document.querySelector('main section.finished .pages').append(pageElement);
-      }
-    }
-  }
-}
-
-function addRelatedLinks(currentDomainEntries) {
-  const listElement = document.querySelector('.related-links ul');
-
-  if (currentDomainEntries.length === 0) {
-    listElement.parentElement.remove();
-    return;
-  }
-  sortLinksByStatus(currentDomainEntries);
-  currentDomainEntries.forEach((entry) => {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = entry.url;
-    a.innerText = entry.title || new URL(entry.url).pathname;
-    // open in new tab, otherwise it does not work in Google Chrome
-    a.target = '_blank';
-
-    const icon = document.createElement('img');
-    icon.src = chrome.runtime.getURL(`images/icon-${entry.status}.png`);
-    a.prepend(icon);
-    li.append(a);
-
-    listElement.append(li);
-    a.addEventListener('click', () => {
-      setTimeout(window.close, 200);
-    });
+  currentDomainFilter.addEventListener('change', async () => {
+    await replacePagesInPopup(currentDomainFilter.checked, tabUrl);
   });
+  await replacePagesInPopup(currentDomainFilter.checked, tabUrl);
 }
-
-/**
- * @param {string} origin - The origin URL to get links from.
- * @returns {Promise<Array.<LinkInfo>>} links
- */
-async function getAllLinksForDomain(origin) {
-  const allLinks = await listPagesGroupedByDomain();
-  return allLinks[origin] || [];
-}
-
 init().catch(console.error);
