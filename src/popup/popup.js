@@ -19,6 +19,10 @@ function initEventButtonHandlers(tabUrl) {
     event.preventDefault();
     handleChangeState(tabUrl, STATUS_DONE);
   });
+  document.getElementById('settings-button').addEventListener('click', (event) => {
+    event.preventDefault();
+    chrome.runtime.openOptionsPage();
+  });
 }
 
 async function init() {
