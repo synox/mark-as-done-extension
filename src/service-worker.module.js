@@ -126,7 +126,7 @@ export function main() {
         await injectContentScripts(tab);
         chrome.action.setTitle({ title: '' });
       } else {
-        chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
+        chrome.action.setTitle({ title: 'mark as done: disabled for this domain' });
         await updateIcon(tab.id, 'disabled');
       }
 
