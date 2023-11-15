@@ -1,3 +1,5 @@
+import { normalizeUrl } from './global.js';
+
 /**
  * get state of a page
  * @param url
@@ -7,6 +9,7 @@ export async function getPageState(url) {
   if (!url || !url.startsWith('http')) {
     return null;
   }
+  url = normalizeUrl(url);
 
   const valueWrapper = await chrome.storage.local.get(url);
   if (!valueWrapper || Object.keys(valueWrapper).length === 0) {
@@ -36,6 +39,7 @@ class PageInfo {
  * @return {Promise<*>}
  */
 export async function updatePageState(url, properties) {
+  url = normalizeUrl(url);
   const state = await getPageState(url);
   const existingProperties = state?.properties || {};
   const mergedProperties = { ...existingProperties, ...properties };
@@ -43,6 +47,7 @@ export async function updatePageState(url, properties) {
 }
 
 export async function removePageState(url) {
+  url = normalizeUrl(url);
   await chrome.storage.local.remove(url);
 }
 
