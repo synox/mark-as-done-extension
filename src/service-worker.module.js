@@ -35,6 +35,9 @@ export function main() {
     if (message.type === 'change-page-status') {
       handleChangePageStatus(message, sendResponse);
     }
+    if (message.type === 'remove-page') {
+      handleRemovePageStatus(message, sendResponse);
+    }
 
     if (message.type === 'import-data') {
       handleImportData(message, sendResponse);
@@ -70,7 +73,7 @@ async function injectContentScripts(tab) {
 
 /**
  *
- * @param message {{status: LinkStatus, url, tab}}
+ * @param message {{status: LinkStatus, url, title, tab}} Note that the url and title can be different from the tab.
  * @param sendResponse
  * @return {Promise<void>}
  */
@@ -80,7 +83,7 @@ async function handleChangePageStatus(message, sendResponse) {
   if (message.status === 'none') {
     await removePageState(normalizeUrl(message.url));
   } else {
-    await updatePageState(normalizeUrl(message.url), { status: message.status });
+    await updatePageState(normalizeUrl(message.url), { status: message.status, title: message.title });
   }
   await updateLinksInAllTabs();
   // TODO: is this needed? don't we already update the current tab above?
@@ -99,6 +102,26 @@ async function handleChangePageStatus(message, sendResponse) {
     injectContentScripts(message.tab).catch(console.error);
   }
   sendResponse('change-page-status done');
+}
+
+/**
+ *
+ * @param message {{url}} Note that the url and title can be different from the tab.
+ * @param sendResponse
+ * @return {Promise<void>}
+ */
+async function handleRemovePageStatus(message, sendResponse) {
+  console.log('remove status of page', message.url);
+
+  await removePageState(normalizeUrl(message.url));
+  await updateLinksInAllTabs();
+
+  // TODO: Make sure the scripts are injected
+  // if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.url)) {
+  //   // not waiting for the injection to complete:
+  //   injectContentScripts(message.tab).catch(console.error);
+  // }
+  sendResponse('remove-page done');
 }
 
 async function handleImportData(message, sendResponse) {

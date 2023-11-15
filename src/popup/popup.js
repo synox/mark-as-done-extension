@@ -1,12 +1,12 @@
-import {
-  getPageState,
-  listPages,
-  listPagesForDomain,
-} from '../storage.js';
+import { getPageState, listPages, listPagesForDomain } from '../storage.js';
 import {
   ensureSitePermissions,
-  getOrigin, isValidUrl,
-  normalizeUrl, STATUS_DONE, STATUS_NONE, STATUS_TODO,
+  getOrigin,
+  isValidUrl,
+  normalizeUrl,
+  STATUS_DONE,
+  STATUS_NONE,
+  STATUS_TODO,
 } from '../global.js';
 
 const optimisticUpdates = {};
@@ -16,7 +16,7 @@ async function main() {
   const pageInfo = await getPageState(normalizeUrl(tab.url));
 
   initEventButtonHandlers(tab.url);
-  await updatePopup(pageInfo, tab.url);
+  await updatePopup(pageInfo);
   //
   // let currentSiteLinks = await getAllLinksForDomain(new URL(tab.url).origin);
   // // Remove current page from list, only show other pages on the same domain
@@ -56,14 +56,31 @@ async function handleChangeState(url, status) {
   // not waiting for response to not block user interaction
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   chrome.runtime.sendMessage({
-    type: 'change-page-status', status, url: tab.url, tab,
+    type: 'change-page-status',
+    status,
+    url: tab.url,
+    title: tab.title,
+    tab,
   });
 
   // do optimistic local data update, assuming the change will be successful
   console.log('change state', url, status);
-  const updatedPageInfo = { url, properties: { status } };
+  const updatedPageInfo = { url, properties: { status, title: tab.title } };
   optimisticUpdates[url] = updatedPageInfo;
-  await updatePopup(updatedPageInfo, tab.url);
+  await updatePopup(updatedPageInfo);
+
+  setTimeout(window.close, 800);
+}
+
+async function removePageState(url) {
+  // not waiting for response to not block user interaction
+  chrome.runtime.sendMessage({ type: 'remove-page', url });
+
+  // do optimistic local data update, assuming the change will be successful
+  console.log('remove state of', url);
+  const updatedPageInfo = { url, properties: { status: STATUS_NONE } };
+  optimisticUpdates[url] = updatedPageInfo;
+  await updatePopup(updatedPageInfo);
 
   setTimeout(window.close, 800);
 }
@@ -107,7 +124,7 @@ function createPageElement(page, tabUrl) {
   button.textContent = 'remove';
   button.addEventListener('click', async () => {
     div.remove();
-    await handleChangeState(page.url, STATUS_NONE);
+    await removePageState(page.url);
   });
   a.append(title);
   a.append(metadata);
@@ -148,9 +165,10 @@ async function replacePagesInPopup(onlyShowCurrentDomain, tabUrl) {
 /**
  *
  * @param pageInfo {PageInfo}
- * @param tabUrl {string}
  */
-async function updatePopup(pageInfo, tabUrl) {
+async function updatePopup(pageInfo) {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const tabUrl = tab.url;
   console.debug('update popup with status', pageInfo);
 
   if (!isValidUrl(tabUrl)) {
