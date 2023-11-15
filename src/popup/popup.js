@@ -2,31 +2,16 @@ import {
   getPageState,
   listPages,
   listPagesForDomain,
-  listPagesGroupedByDomain,
-  removePageState,
-  updatePageState,
 } from '../storage.js';
 import {
+  ensureSitePermissions,
   getOrigin, isValidUrl,
-  normalizeUrl, sortLinksByStatus, STATUS_DONE, STATUS_NONE, STATUS_TODO,
+  normalizeUrl, STATUS_DONE, STATUS_NONE, STATUS_TODO,
 } from '../global.js';
 
-function initEventButtonHandlers(tabUrl) {
-  document.getElementById('mark-as-unread-button').addEventListener('click', (event) => {
-    event.preventDefault();
-    handleChangeState(tabUrl, STATUS_TODO);
-  });
-  document.getElementById('mark-as-finished-button').addEventListener('click', (event) => {
-    event.preventDefault();
-    handleChangeState(tabUrl, STATUS_DONE);
-  });
-  document.getElementById('settings-button').addEventListener('click', (event) => {
-    event.preventDefault();
-    chrome.runtime.openOptionsPage();
-  });
-}
+const optimisticUpdates = {};
 
-async function init() {
+async function main() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const pageInfo = await getPageState(normalizeUrl(tab.url));
 
@@ -46,22 +31,39 @@ async function init() {
   //   .forEach((button) => button.addEventListener('click', () => handleChangeState(button)));
 }
 
+function initEventButtonHandlers(tabUrl) {
+  document.getElementById('mark-as-unread-button').addEventListener('click', (event) => {
+    event.preventDefault();
+    // we cannot use async/await here because we can only request permissions from a user gesture.
+    ensureSitePermissions(tabUrl).then(() => {
+      handleChangeState(tabUrl, STATUS_TODO);
+    });
+  });
+  document.getElementById('mark-as-finished-button').addEventListener('click', (event) => {
+    event.preventDefault();
+    // we cannot use async/await here because we can only request permissions from a user gesture.
+    ensureSitePermissions(tabUrl).then(() => {
+      handleChangeState(tabUrl, STATUS_DONE);
+    });
+  });
+  document.getElementById('settings-button').addEventListener('click', (event) => {
+    event.preventDefault();
+    chrome.runtime.openOptionsPage();
+  });
+}
+
 async function handleChangeState(url, status) {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  let updatedPageInfo;
-  if (status === STATUS_NONE) {
-    await removePageState(normalizeUrl(url));
-    updatedPageInfo = null;
-  } else {
-    await updatePageState(url, { status, title: tab.title });
-    updatedPageInfo = await getPageState(normalizeUrl(url));
-    updatedPageInfo.status = status;
-  }
-
-  await updatePopup(updatedPageInfo, tab.url);
-
   // not waiting for response to not block user interaction
-  chrome.runtime.sendMessage({ type: 'change-page-status', status, tab });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  chrome.runtime.sendMessage({
+    type: 'change-page-status', status, url: tab.url, tab,
+  });
+
+  // do optimistic local data update, assuming the change will be successful
+  console.log('change state', url, status);
+  const updatedPageInfo = { url, properties: { status } };
+  optimisticUpdates[url] = updatedPageInfo;
+  await updatePopup(updatedPageInfo, tab.url);
 
   setTimeout(window.close, 800);
 }
@@ -124,13 +126,18 @@ async function replacePagesInPopup(onlyShowCurrentDomain, tabUrl) {
   let unreadCount = 0;
   let finishedCount = 0;
   for (const page of pages) {
+    if (optimisticUpdates[page.url]) {
+      page.properties = { ...page.properties, ...optimisticUpdates[page.url].properties };
+    }
     const pageElement = createPageElement(page, tabUrl);
     if (page.properties.status === 'todo') {
       document.querySelector('main section.unread .pages').append(pageElement);
       unreadCount += 1;
-    } else {
+    } else if (page.properties.status === 'done') {
       document.querySelector('main section.finished .pages').append(pageElement);
       finishedCount += 1;
+    } else {
+      // ignore "none" status
     }
   }
 
@@ -144,7 +151,7 @@ async function replacePagesInPopup(onlyShowCurrentDomain, tabUrl) {
  * @param tabUrl {string}
  */
 async function updatePopup(pageInfo, tabUrl) {
-  console.debug('update with status', pageInfo);
+  console.debug('update popup with status', pageInfo);
 
   if (!isValidUrl(tabUrl)) {
     document.getElementById('mark-as-unread-button').classList.add('hidden');
@@ -175,4 +182,5 @@ async function updatePopup(pageInfo, tabUrl) {
 
   await replacePagesInPopup(showOnlyCurrentDomain, tabUrl);
 }
-init().catch(console.error);
+
+main().catch(console.error);

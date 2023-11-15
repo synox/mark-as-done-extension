@@ -4,13 +4,12 @@
  * @return {Promise<PageInfo>}
  */
 export async function getPageState(url) {
-  console.log('getPageState', url);
   if (!url || !url.startsWith('http')) {
     return null;
   }
 
   const valueWrapper = await chrome.storage.local.get(url);
-  if (!valueWrapper) {
+  if (!valueWrapper || Object.keys(valueWrapper).length === 0) {
     return null;
   }
   return readPageStateFromStorageValue(url, valueWrapper[url]);

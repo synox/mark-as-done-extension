@@ -122,3 +122,15 @@ export function getOrigin(url) {
     return null;
   }
 }
+
+export async function ensureSitePermissions(tabUrl) {
+  if (!isValidUrl(tabUrl)) {
+    return;
+  }
+
+  if (!await chrome.permissions.contains({ origins: [tabUrl] })) {
+    console.log('requesting optional permissions');
+    const granted = await chrome.permissions.request({ origins: [tabUrl] });
+    console.log('permissions requested. Granted: ', granted);
+  }
+}

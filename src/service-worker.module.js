@@ -5,31 +5,15 @@ import { getOrigin, normalizeUrl } from './global.js';
 
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
-  chrome.permissions.onAdded.addListener((ev) => {
-    console.log(`Permissions added: [${ev.permissions}] with origins [${ev.origins}]`);
-    chrome.action.setPopup({ popup: 'src/popup/popup.html' });
-  });
-
-  chrome.action.setTitle({ title: 'disabled for this site. Click to request permissions' });
-  chrome.action.onClicked.addListener((tab) => {
-    try {
-      if (getOrigin(tab.url)) {
-        chrome.permissions.request({ origins: [tab.url] });
-      }
-    } catch (e) {
-      console.error('error requesting permision', e);
-    }
-  });
-  /** react to tab activation: update popup and icon, and inject scripts */
+  /** on tab activation: update popup and icon, and inject scripts */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     try {
-      // Only inject script if there are already any entries for the current domain
       if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
+        // Only inject script if there are already any entries for the current domain
         await injectContentScripts(tab);
         chrome.action.setTitle({ title: '' });
       } else {
         chrome.action.setTitle({ title: 'mark as done: disabled for this domain' });
-        await updateIcon(tab.id, 'disabled');
       }
 
       if (tab.status === 'loading') {
@@ -86,7 +70,7 @@ async function injectContentScripts(tab) {
 
 /**
  *
- * @param message {{status: LinkStatus, tab}}
+ * @param message {{status: LinkStatus, url, tab}}
  * @param sendResponse
  * @return {Promise<void>}
  */
@@ -94,22 +78,23 @@ async function handleChangePageStatus(message, sendResponse) {
   console.log('updating status to', message.status);
 
   if (message.status === 'none') {
-    await removePageState(normalizeUrl(message.tab.url));
+    await removePageState(normalizeUrl(message.url));
   } else {
-    await updatePageState(normalizeUrl(message.tab.url), { status: message.status });
+    await updatePageState(normalizeUrl(message.url), { status: message.status });
   }
   await updateLinksInAllTabs();
-  try {
-    await chrome.tabs.sendMessage(message.tab.id, { type: 'update-content' });
-  } catch (e) {
-    if (e.message !== 'Could not establish connection. Receiving end does not exist.') {
-      console.error('error while sending "update-content" message', e);
-    }
-  }
+  // TODO: is this needed? don't we already update the current tab above?
+  // try {
+  //   await chrome.tabs.sendMessage(message.tab.id, { type: 'update-content' });
+  // } catch (e) {
+  //   if (e.message !== 'Could not establish connection. Receiving end does not exist.') {
+  //     console.error('error while sending "update-content" message', e);
+  //   }
+  // }
   await updateIcon(message.tab.id, message.status);
 
   // Make sure the scripts are injected
-  if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.tab.url)) {
+  if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.url)) {
     // not waiting for the injection to complete:
     injectContentScripts(message.tab).catch(console.error);
   }
@@ -136,6 +121,7 @@ async function handleGetStatusMessage(message, sendResponse) {
  * @return {Promise<void>}
  */
 async function updateIcon(tabId, status) {
+  // TODO: refactor all calls to this function
   await chrome.action.setIcon({ tabId, path: `/images/icon-${status}.png` });
 }
 
