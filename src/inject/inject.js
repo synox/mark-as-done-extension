@@ -13,10 +13,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-async function getStatusFromServiceWorker(url) {
-  return await chrome.runtime.sendMessage({ type: 'get-status', url });
-}
-
 /**
  *
  * @param documentUrl {string}
@@ -29,13 +25,12 @@ async function updateAllLinksOnPage(documentUrl, root = document) {
   // console.debug('content: found ', links.length, 'links');
   await Promise.all([...links].map(async (link) => {
     if (isNormalLink(link, documentUrl)) {
-      const status = await getStatusFromServiceWorker(link.href);
+      const status = await chrome.runtime.sendMessage({ type: 'get-status', url: link.href });
 
       link.classList.remove('marked-as-done');
       link.classList.remove('marked-as-todo');
-      link.classList.remove('marked-as-started');
 
-      if (status !== 'none') {
+      if (status && status !== 'none') {
         link.classList.add(`marked-as-${status}`);
       }
     }
