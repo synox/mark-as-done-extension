@@ -6,19 +6,22 @@ import { getOrigin, normalizeUrl } from './global.js';
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
   chrome.action.setPopup({ popup: 'src/popup/popup.html' });
+
   /** on tab activation: update popup and icon, and inject scripts */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     try {
-      // Only inject script if there are already any entries for the current domain
-      if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
-        await injectContentScripts(tab);
-      }
+      if (changeInfo.status === 'loading' && changeInfo.url) {
+        console.log('getting page info');
+        const pageInfo = await getPageState(normalizeUrl(changeInfo.url));
+        console.log('page info', pageInfo);
+        console.log('updating icon');
+        await updateIcon(tabId, pageInfo?.properties.status || 'none');
+        console.log('icon updated');
 
-      if (tab.status === 'loading') {
-        const pageInfo = await getPageState(normalizeUrl(tab.url));
-        await updateIcon(tab.id, pageInfo?.properties.status || 'none');
-      } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
-        // console.debug('tab was updated', tab.url, changeInfo);
+        // Only inject script if there are already any entries for the current domain
+        if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
+          await injectContentScripts(tab);
+        }
       }
     } catch (e) {
       console.error(e);
