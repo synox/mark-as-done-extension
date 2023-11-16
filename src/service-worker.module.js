@@ -10,13 +10,11 @@ export function main() {
   /** on tab activation: update popup and icon, and inject scripts */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     try {
-      if (changeInfo.status === 'loading' && changeInfo.url) {
-        console.log('getting page info');
-        const pageInfo = await getPageState(normalizeUrl(changeInfo.url));
-        console.log('page info', pageInfo);
-        console.log('updating icon');
+      console.log('tab updated', { tabId, changeInfo, tab });
+      if (changeInfo.status === 'loading') {
+        const url = changeInfo.url || tab.url;
+        const pageInfo = await getPageState(normalizeUrl(url));
         await updateIcon(tabId, pageInfo?.properties.status || 'none');
-        console.log('icon updated');
 
         // Only inject script if there are already any entries for the current domain
         if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
