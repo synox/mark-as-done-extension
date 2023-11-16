@@ -1,7 +1,7 @@
 import {
   getPageState, listPagesForDomain, removePageState, updatePageState,
 } from './storage.js';
-import { getOrigin, normalizeUrl } from './global.js';
+import { getOrigin, normalizeUrl, STATUS_NONE } from './global.js';
 
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
@@ -108,7 +108,7 @@ async function handleChangePageStatus(message, sendResponse) {
 
 /**
  *
- * @param message {{url}} Note that the url and title can be different from the tab.
+ * @param message {{tabId, tabUrl, url}} Note that the url and title can be different from the tab.
  * @param sendResponse
  * @return {Promise<void>}
  */
@@ -117,6 +117,10 @@ async function handleRemovePageStatus(message, sendResponse) {
 
   await removePageState(normalizeUrl(message.url));
   await updateLinksInAllTabs();
+
+  if (message.tabUrl === message.url) {
+    await updateIcon(message.tabId, STATUS_NONE);
+  }
 
   // TODO: Make sure the scripts are injected
   // if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.url)) {

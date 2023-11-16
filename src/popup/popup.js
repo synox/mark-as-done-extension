@@ -38,6 +38,7 @@ async function main() {
   function handleChangeCurrentPageState(status) {
     const tabUrl = popupContext.tab.url;
     const properties = { status, title: popupContext.tab.title };
+
     // not waiting for response to not block user interaction
     chrome.runtime.sendMessage({
       type: 'change-page-status',
@@ -84,7 +85,9 @@ async function main() {
 
   function removePageState(url) {
     // not waiting for response to not block user interaction
-    chrome.runtime.sendMessage({ type: 'remove-page', url });
+    chrome.runtime.sendMessage({
+      type: 'remove-page', url, tabUrl: popupContext.tab.url, tabId: popupContext.tab.id,
+    });
 
     // do optimistic local data update, assuming the change will be successful
     if (popupContext.pageInfo && popupContext.pageInfo.url === url) {
