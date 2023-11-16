@@ -9,6 +9,10 @@ body {
   background-color: #e6e6e6;
 }
 
+body.body-hidden > * {
+  visibility: hidden;
+}
+
 @media only screen and (prefers-color-scheme: dark) {
   body {
     background-color: #333;
@@ -23,7 +27,8 @@ body.popup > header {
 }
 
 .hidden,
-[role=button].hidden {
+[role=button].hidden,
+main .pages .page.hidden {
   display: none;
 }
 

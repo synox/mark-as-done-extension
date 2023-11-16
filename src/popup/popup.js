@@ -211,6 +211,9 @@ async function main() {
     }
 
     await replacePagesInPopup();
+
+    // popup content is hidden until rendered for the first time
+    document.body.classList.remove('body-hidden');
   }
 }
 
