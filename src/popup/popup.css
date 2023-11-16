@@ -43,6 +43,41 @@ header .logo {
   height: 40px;
 }
 
+.page-status {
+  margin: 7px;
+  background-color: var(--primary);
+  border: 0;
+  padding: 5px 9px;
+  border-radius: 25px;
+  color: var(--contrast);
+  display: none;
+}
+
+.page-status.unread {
+  display: block;
+  background-color: #d4f5ff;
+}
+
+.page-status.finished {
+  display: block;
+  background-color: #ecffb6;
+}
+
+
+
+@media only screen and (prefers-color-scheme: dark) {
+  .page-status.unread {
+    display: block;
+    background-color: #0089a8;
+  }
+
+  .page-status.finished {
+    display: block;
+    background-color: #008001;
+  }
+}
+
+
 header .header-buttons [role="button"] {
   padding: 5px;
 }
