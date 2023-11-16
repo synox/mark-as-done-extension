@@ -5,19 +5,16 @@ import { getOrigin, normalizeUrl } from './global.js';
 
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
+  chrome.action.setPopup({ popup: 'src/popup/popup.html' });
   /** on tab activation: update popup and icon, and inject scripts */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     try {
+      // Only inject script if there are already any entries for the current domain
       if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
-        // Only inject script if there are already any entries for the current domain
         await injectContentScripts(tab);
-        chrome.action.setTitle({ title: '' });
-      } else {
-        chrome.action.setTitle({ title: 'mark as done: disabled for this domain' });
       }
 
       if (tab.status === 'loading') {
-        await chrome.action.setPopup({ popup: 'src/popup/popup.html', tabId: tab.id });
         const pageInfo = await getPageState(normalizeUrl(tab.url));
         await updateIcon(tab.id, pageInfo?.properties.status || 'none');
       } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
