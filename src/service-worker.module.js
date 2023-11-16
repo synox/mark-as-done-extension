@@ -73,17 +73,17 @@ async function injectContentScripts(tab) {
 
 /**
  *
- * @param message {{status: LinkStatus, url, title, tab}} Note that the url and title can be different from the tab.
+ * @param message {{url, tab, properties: {title, status: LinkStatus,} }} Note that the url and title can be different from the tab.
  * @param sendResponse
  * @return {Promise<void>}
  */
 async function handleChangePageStatus(message, sendResponse) {
-  console.log('updating status to', message.status);
+  console.log('updating status to', message.properties.status);
 
-  if (message.status === 'none') {
+  if (message.properties.status === 'none') {
     await removePageState(normalizeUrl(message.url));
   } else {
-    await updatePageState(normalizeUrl(message.url), { status: message.status, title: message.title });
+    await updatePageState(normalizeUrl(message.url), message.properties);
   }
   await updateLinksInAllTabs();
   // TODO: is this needed? don't we already update the current tab above?
@@ -94,10 +94,11 @@ async function handleChangePageStatus(message, sendResponse) {
   //     console.error('error while sending "update-content" message', e);
   //   }
   // }
-  await updateIcon(message.tab.id, message.status);
+  await updateIcon(message.tab.id, message.properties.status);
 
+  // TODO: cleanup
   // Make sure the scripts are injected
-  if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.url)) {
+  if (message.properties.status !== 'none' && !await hasAnyEntriesForDomain(message.url)) {
     // not waiting for the injection to complete:
     injectContentScripts(message.tab).catch(console.error);
   }

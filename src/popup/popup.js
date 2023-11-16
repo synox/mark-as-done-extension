@@ -2,7 +2,7 @@ import { getPageState, listPages, listPagesForDomain } from '../storage.js';
 import {
   ensureSitePermissions,
   getOrigin,
-  isValidUrl,
+  isValidUrl, PageInfo,
   STATUS_DONE,
   STATUS_NONE,
   STATUS_TODO,
@@ -10,6 +10,9 @@ import {
 
 class PopupContext {
   constructor() {
+    /**
+     * @type {PageInfo}
+     */
     this.pageInfo = null;
     this.optimisticUpdates = {};
     this.tab = null;
@@ -32,25 +35,28 @@ async function main() {
   initEventButtonHandlers(popupContext.tab.url);
   await updatePopup();
 
-  async function handleChangeState(url, status) {
+  function handleChangeCurrentPageState(status) {
+    const tabUrl = popupContext.tab.url;
+    const properties = { status, title: popupContext.tab.title };
     // not waiting for response to not block user interaction
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     chrome.runtime.sendMessage({
       type: 'change-page-status',
-      status,
-      url: tab.url,
-      title: tab.title,
-      tab,
+      tab: popupContext.tab,
+      url: tabUrl,
+      properties,
     });
 
     // do optimistic local data update, assuming the change will be successful
-    console.log('change state', url, status);
+    console.log('change state', tabUrl, status);
     if (!popupContext.pageInfo) {
-      popupContext.pageInfo = { url, properties: {} };
+      popupContext.pageInfo = new PageInfo(tabUrl);
     }
-    popupContext.pageInfo.status = status;
-    popupContext.optimisticUpdates[url] = popupContext.pageInfo;
-    await updatePopup();
+    popupContext.pageInfo.properties.status = status;
+    popupContext.pageInfo.properties.title = popupContext.tab.title;
+    popupContext.optimisticUpdates[tabUrl] = popupContext.pageInfo;
+
+    // noinspection ES6MissingAwait
+    updatePopup();
 
     setTimeout(window.close, 800);
   }
@@ -60,14 +66,14 @@ async function main() {
       event.preventDefault();
       // we cannot use async/await here because we can only request permissions from a user gesture.
       ensureSitePermissions(tabUrl).then(() => {
-        handleChangeState(tabUrl, STATUS_TODO);
+        handleChangeCurrentPageState(STATUS_TODO);
       });
     });
     document.getElementById('mark-as-finished-button').addEventListener('click', (event) => {
       event.preventDefault();
       // we cannot use async/await here because we can only request permissions from a user gesture.
       ensureSitePermissions(tabUrl).then(() => {
-        handleChangeState(tabUrl, STATUS_DONE);
+        handleChangeCurrentPageState(STATUS_DONE);
       });
     });
     document.getElementById('settings-button').addEventListener('click', (event) => {
@@ -76,17 +82,18 @@ async function main() {
     });
   }
 
-  async function removePageState(url) {
+  function removePageState(url) {
     // not waiting for response to not block user interaction
     chrome.runtime.sendMessage({ type: 'remove-page', url });
 
     // do optimistic local data update, assuming the change will be successful
-    console.log('remove state of', url);
     if (popupContext.pageInfo && popupContext.pageInfo.url === url) {
       popupContext.pageInfo = null;
     }
     popupContext.optimisticUpdates[url] = { url, properties: { status: STATUS_NONE } };
-    await updatePopup();
+
+    // noinspection ES6MissingAwait
+    updatePopup();
 
     setTimeout(window.close, 800);
   }
@@ -149,10 +156,18 @@ async function main() {
 
     let unreadCount = 0;
     let finishedCount = 0;
-    for (const page of pages) {
-      if (popupContext.optimisticUpdates[page.url]) {
-        page.properties = { ...page.properties, ...popupContext.optimisticUpdates[page.url].properties };
+
+    // eslint-disable-next-line guard-for-in
+    for (const url in popupContext.optimisticUpdates) {
+      const page = pages.find((p) => p.url === url);
+      if (page) {
+        page.properties = { ...page.properties, ...popupContext.optimisticUpdates[url].properties };
+      } else {
+        pages.push(popupContext.optimisticUpdates[url]);
       }
+    }
+
+    for (const page of pages) {
       const pageElement = createPageElement(page);
       if (page.properties.status === 'todo') {
         document.querySelector('main section.unread .pages').append(pageElement);

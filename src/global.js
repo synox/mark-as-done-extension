@@ -5,6 +5,20 @@ export const STATUS_DISABLED = 'disabled';
 export const STATUS_TODO = 'todo';
 
 /**
+ * @param url {string}
+ * @property {LinkStatus} status
+ * @property {string} title
+ * @property {string} lastModified
+ * @property {string} created
+ */
+export class PageInfo {
+  constructor(url, properties = {}) {
+    this.url = url;
+    this.properties = properties;
+  }
+}
+
+/**
  * @typedef {Object} LinkInfo
  * @property {string} url - The URL of the link.
  * @property {LinkStatus} status - The status of the link.

@@ -1,4 +1,4 @@
-import { normalizeUrl } from './global.js';
+import { normalizeUrl, PageInfo } from './global.js';
 
 /**
  * get state of a page
@@ -16,20 +16,6 @@ export async function getPageState(url) {
     return null;
   }
   return readPageStateFromStorageValue(url, valueWrapper[url]);
-}
-
-/**
- * @param url {string}
- * @property {LinkStatus} status
- * @property {string} title
- * @property {string} lastModified
- * @property {string} created
- */
-class PageInfo {
-  constructor(url, properties) {
-    this.url = url;
-    this.properties = properties;
-  }
 }
 
 /**
