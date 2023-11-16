@@ -44,6 +44,9 @@ export function main() {
     if (message.type === 'get-status') {
       handleGetStatusMessage(message, sendResponse);
     }
+    if (message.type === 'batch-get-status') {
+      handleGetStatusMessageAsBatch(message, sendResponse);
+    }
 
     // Return true to indicate that the response should be sent asynchronously
     return true;
@@ -135,6 +138,18 @@ async function handleImportData(message, sendResponse) {
 async function handleGetStatusMessage(message, sendResponse) {
   const pageInfo = await getPageState(normalizeUrl(message.url));
   sendResponse(pageInfo?.properties?.status || 'none');
+}
+
+async function handleGetStatusMessageAsBatch(message, sendResponse) {
+  const urls = message.urls.map(normalizeUrl);
+  const resultMap = {};
+  await Promise.all(urls.map(async (url) => {
+    const pageInfo = await getPageState(normalizeUrl(url));
+    if (pageInfo) {
+      resultMap[url] = pageInfo.properties.status;
+    }
+  }));
+  sendResponse(resultMap);
 }
 
 /**

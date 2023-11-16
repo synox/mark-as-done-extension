@@ -13,16 +13,14 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [
-        "src/service-worker.module.js",
+      "resources": [ "src/service-worker.module.js",
         "images/icon-disabled.png",
         "images/icon-none.png",
         "images/icon-todo.png",
         "images/icon-started.png",
         "images/icon-done.png",
-        "images/icon-toolbar-disabled.png"
-      ],
-      "extension_ids": []
+        "images/icon-toolbar-disabled.png"],
+      "matches": ["<all_urls>"]
     }
   ],
   "permissions": [

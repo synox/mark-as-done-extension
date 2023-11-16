@@ -3,7 +3,9 @@
 
 // JS-Modules cannot be injected, so we cannot export or import anything.
 
-console.debug('mark-as-done script added');
+// console.debug('mark-as-done script added');
+
+// eslint-disable-next-line no-unused-vars
 
 // eslint-disable-next-line no-unused-vars
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -14,33 +16,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 /**
- *
  * @param documentUrl {string}
  * @param root {HTMLElement|Document}
  * @return {Promise<void>}
  */
 async function updateAllLinksOnPage(documentUrl, root = document) {
-  const links = root.querySelectorAll('a');
+  const links = root.querySelectorAll('a[href]');
 
-  // console.debug('content: found ', links.length, 'links');
-  await Promise.all([...links].map(async (link) => {
+  // create unique set of links
+  const allLinks = new Set();
+  Array.from(links)
+    .filter((link) => isNormalLink(link, documentUrl))
+    .forEach((link) => allLinks.add(link.href));
+
+  const statusMap = await chrome.runtime.sendMessage({ type: 'batch-get-status', urls: Array.from(allLinks) });
+  for (const link of links) {
     if (isNormalLink(link, documentUrl)) {
-      const status = await chrome.runtime.sendMessage({ type: 'get-status', url: link.href });
-
+      const url = normalizeUrl(link.href);
       link.classList.remove('marked-as-done');
       link.classList.remove('marked-as-todo');
 
-      if (status && status !== 'none') {
-        link.classList.add(`marked-as-${status}`);
+      if (statusMap[url]) {
+        link.classList.add(`marked-as-${statusMap[url]}`);
       }
     }
-  }));
+  }
 }
 
 /**
  * Only mark normal links and ignore links to anchors on the same page.
  * @param linkElement {HTMLAnchorElement}
- * @param documentUrl {string} Based on the current domain additing checks are done.
+ * @param documentUrl {string} Based on the current domain additional checks are done.
  * @return {boolean}
  */
 // eslint-disable-next-line no-unused-vars
@@ -83,5 +89,37 @@ function watchPageForDynamicallyAddedLinks() {
       document.querySelector('div.plugin_pagetree_children'),
       { childList: true, subtree: false },
     );
+  }
+}
+
+/**
+ * Normalize the url to be used as key in the storage. This removes the hash and the search parameters.
+ *
+ * @param url
+ * @return {null|string}
+ * @deprecated this is a copy of the function in global.js. please keep updating both
+ */
+function normalizeUrl(url) {
+  try {
+    const urlObject = new URL(url);
+    // In general, hash are ignored.
+
+    // Search parameters must be respected for confluence-wiki. (/pages/viewpage.action?pageId=123)
+    // but on other pages the "?lang=en" should be ignored.
+
+    let filteredSearch = urlObject.search.replace(/lang=.*$/, '');
+
+    // In confluence-wiki, there is a suffix when clicking the sidebar which should be ignored.
+    // https://wiki.corp.example.com/display/ABC/Link?src=contextnavpagetreemode
+    filteredSearch = urlObject.search.replace(/src=contextnavpagetreemode/, '');
+
+    if (filteredSearch === '?') {
+      filteredSearch = '';
+    }
+
+    return urlObject.origin + urlObject.pathname + filteredSearch;
+  } catch (error) {
+    console.error(`Can not parse as url=${url}, error=${error}`);
+    return null;
   }
 }
