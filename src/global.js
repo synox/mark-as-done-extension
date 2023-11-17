@@ -28,19 +28,6 @@ export class PageInfo {
  * @typedef {'todo','started','done'|'none'|'disabled'} LinkStatus
  */
 
-// Keep backwards compatibility
-export function compatibiltyStatus(oldStatus) {
-  if (oldStatus === true) {
-    return STATUS_DONE;
-  }
-
-  if (oldStatus === undefined) {
-    return STATUS_NONE;
-  }
-
-  return oldStatus;
-}
-
 /**
  * Normalize the url to be used as key in the storage. This removes the hash and the search parameters.
  *

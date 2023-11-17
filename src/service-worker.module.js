@@ -1,10 +1,12 @@
 import {
-  getPageState, listPagesForDomain, removePageState, updatePageState,
+  getPageState, listPagesForDomain, removePageState, updatePageState, upgradeDatastore,
 } from './storage.js';
 import { getOrigin, normalizeUrl, STATUS_NONE } from './global.js';
 
 // eslint-disable-next-line import/prefer-default-export
 export function main() {
+  chrome.runtime.onInstalled.addListener(upgradeDatastore);
+
   chrome.action.setPopup({ popup: 'src/popup/popup.html' });
 
   /** on tab activation: update popup and icon, and inject scripts */
@@ -136,6 +138,7 @@ async function handleImportData(message, sendResponse) {
     // eslint-disable-next-line no-await-in-loop
     await updatePageState(url, properties);
   }
+  await upgradeDatastore();
   sendResponse('success');
 }
 

@@ -114,4 +114,24 @@ export async function listPagesForDomain(origin) {
     .map(([key, value]) => readPageStateFromStorageValue(key, value));
 }
 
-// TODO: do automatic data migrations on first load
+export async function upgradeDatastore() {
+  console.log('upgrade datastore');
+  const allItems = await chrome.storage.local.get(null);
+  for (const key of Object.keys(allItems)) {
+    const value = allItems[key];
+    // eslint-disable-next-line no-await-in-loop
+    if (typeof value === 'boolean') {
+      // upgrade from v1
+      // eslint-disable-next-line no-await-in-loop
+      await updatePageState(key, { status: value ? 'done' : 'todo' });
+    } else if (typeof value === 'string') {
+      // upgrade from v2
+      // eslint-disable-next-line no-await-in-loop
+      await updatePageState(key, { status: value });
+    } else if (typeof value === 'object' && value.status === 'started') {
+      // upgrade from v3. Status 'started' is not used anymore and replaced with 'todo'.
+      // eslint-disable-next-line no-await-in-loop
+      await updatePageState(key, { status: 'todo' });
+    }
+  }
+}
