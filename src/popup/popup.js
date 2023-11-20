@@ -2,7 +2,8 @@ import { getPageState, listPages, listPagesForDomain } from '../storage.js';
 import {
   ensureSitePermissions,
   getOrigin,
-  isValidUrl, PageInfo,
+  isValidUrl,
+  PageInfo,
   STATUS_DONE,
   STATUS_NONE,
   STATUS_TODO,
@@ -21,8 +22,7 @@ class PopupContext {
 
 function showOnlyCurrentDomain(popupContext) {
   const currentDomainFilter = document.getElementById('current-domain-filter');
-  const onlyShowCurrentDomain = isValidUrl(popupContext.tab.url) && currentDomainFilter.checked;
-  return onlyShowCurrentDomain;
+  return isValidUrl(popupContext.tab.url) && currentDomainFilter.checked;
 }
 
 async function main() {
