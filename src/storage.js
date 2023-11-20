@@ -85,7 +85,10 @@ export async function listPagesGroupedByStatus() {
     .map(([url, value]) => new PageInfo(url, value))
     .sort()
     .reduce((accumulator, currentValue) => {
-      accumulator[currentValue.properties.status] = [...accumulator[currentValue.properties.status] || [], currentValue];
+      accumulator[currentValue.properties.status] = [
+        ...accumulator[currentValue.properties.status] || [],
+        currentValue,
+      ];
       return accumulator;
     }, {});
 }
