@@ -27,8 +27,3 @@ a.marked-as-done::after {
     content:"";
     margin-left: 0.3em;
 }
-
-
-h1 {
-    font-size: 22pt;
-}
