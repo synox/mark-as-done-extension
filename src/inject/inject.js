@@ -24,12 +24,12 @@ async function updateAllLinksOnPage(documentUrl, root = document) {
   const links = root.querySelectorAll('a[href]');
 
   // create unique set of links
-  const allLinks = new Set();
+  const uniqueLinks = new Set();
   Array.from(links)
     .filter((link) => isNormalLink(link, documentUrl))
-    .forEach((link) => allLinks.add(link.href));
+    .forEach((link) => uniqueLinks.add(link.href));
 
-  const statusMap = await chrome.runtime.sendMessage({ type: 'batch-get-status', urls: Array.from(allLinks) });
+  const statusMap = await chrome.runtime.sendMessage({ type: 'batch-get-status', urls: Array.from(uniqueLinks) });
   for (const link of links) {
     if (isNormalLink(link, documentUrl)) {
       const url = normalizeUrl(link.href);
