@@ -29,6 +29,10 @@ export async function updatePageState(url, properties) {
   const state = await getPageState(url);
   const existingProperties = state?.properties || {};
   const mergedProperties = { ...existingProperties, ...properties };
+  if(!state) {
+    mergedProperties.created = new Date().toISOString();
+  }
+  mergedProperties.modified = new Date().toISOString();
   await chrome.storage.local.set({ [url]: mergedProperties });
 }
 
