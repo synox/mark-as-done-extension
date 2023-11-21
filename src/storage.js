@@ -29,7 +29,7 @@ export async function updatePageState(url, properties) {
   const state = await getPageState(url);
   const existingProperties = state?.properties || {};
   const mergedProperties = { ...existingProperties, ...properties };
-  if(!state) {
+  if(!mergedProperties.created) {
     mergedProperties.created = new Date().toISOString();
   }
   mergedProperties.modified = new Date().toISOString();
