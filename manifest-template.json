@@ -19,7 +19,8 @@
         "images/icon-todo.png",
         "images/icon-started.png",
         "images/icon-done.png",
-        "images/icon-toolbar-disabled.png"],
+        "images/icon-toolbar-disabled.png",
+        "src/3rdparty/p-debounce-4.0.0/index.js"],
       "matches": ["<all_urls>"]
     }
   ],

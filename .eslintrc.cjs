@@ -24,7 +24,7 @@ module.exports = {
     'max-len': ['warn', { code: 120 }],
   },
   ignorePatterns: [
-    '3rdparty/**',
+    'src/3rdparty/**',
     'dist/**'
   ],
 };
