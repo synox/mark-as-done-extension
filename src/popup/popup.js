@@ -232,7 +232,7 @@ async function main() {
   }
 }
 
-if (chrome.tabs) {
+if (window.chrome?.tabs) {
   // running as the extension
   main().catch(console.error);
 } else {

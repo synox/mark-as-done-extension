@@ -32,15 +32,9 @@ main .pages .page.hidden {
   display: none;
 }
 
-header h1 {
-  flex-grow: 1;
-  font-weight: 200;
-  font-size: 30px;
-  margin-bottom: 0;
-}
 
-header .logo {
-  height: 40px;
+body.popup > header header-hero {
+  flex-grow: 1;
 }
 
 .page-status {
