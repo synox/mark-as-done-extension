@@ -13,6 +13,7 @@ class HeaderHero extends HTMLElement {
         font-weight: 200;
         font-size: 30px;
         margin-bottom: 0;
+        margin-top: 0;
       }
       
       .logo {
