@@ -232,4 +232,10 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+if (chrome.tabs) {
+  // running as the extension
+  main().catch(console.error);
+} else {
+  // running as a standalone page for testing
+  document.body.classList.remove('body-hidden');
+}
