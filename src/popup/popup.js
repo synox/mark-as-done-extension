@@ -35,6 +35,8 @@ async function main() {
   initEventButtonHandlers(popupContext.tab.url);
   await updatePopup();
 
+  document.querySelector('filter-search')?.addEventListener('input', updatePopup);
+
   function handleChangeCurrentPageState(status) {
     const tabUrl = popupContext.tab.url;
     const properties = { status, title: popupContext.tab.title };
@@ -169,6 +171,8 @@ async function main() {
         pages.push(popupContext.optimisticUpdates[url]);
       }
     }
+
+    console.log('search', document.querySelector('filter-search')?.value);
 
     for (const page of pages) {
       const pageElement = createPageElement(page);
