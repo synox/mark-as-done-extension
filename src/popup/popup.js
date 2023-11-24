@@ -8,6 +8,7 @@ import {
   STATUS_NONE,
   STATUS_TODO,
 } from '../global.js';
+import { filterPages } from '../filter-utils.js';
 
 class PopupContext {
   constructor() {
@@ -35,7 +36,9 @@ async function main() {
   initEventButtonHandlers(popupContext.tab.url);
   await updatePopup();
 
-  document.querySelector('filter-search')?.addEventListener('input', updatePopup);
+  // init event handlers
+  document.getElementById('current-domain-filter').addEventListener('change', replacePagesInPopup);
+  document.querySelector('filter-search').addEventListener('change', replacePagesInPopup);
 
   function handleChangeCurrentPageState(status) {
     const tabUrl = popupContext.tab.url;
@@ -162,6 +165,7 @@ async function main() {
     let unreadCount = 0;
     let finishedCount = 0;
 
+    // use unsaved data from optimistic updates
     // eslint-disable-next-line guard-for-in
     for (const url in popupContext.optimisticUpdates) {
       const page = pages.find((p) => p.url === url);
@@ -172,9 +176,8 @@ async function main() {
       }
     }
 
-    console.log('search', document.querySelector('filter-search')?.value);
-
-    for (const page of pages) {
+    const filteredPages = filterPages(pages, document.querySelector('filter-search')?.value);
+    for (const page of filteredPages) {
       const pageElement = createPageElement(page);
       if (page.properties.status === 'todo') {
         document.querySelector('main section.unread .pages').append(pageElement);
@@ -221,12 +224,11 @@ async function main() {
       document.getElementById('mark-as-finished-button').classList.add('hidden');
     }
 
+    const currentDomainFilter = document.getElementById('current-domain-filter');
     if (isValidUrl(popupContext.tab.url)) {
-      const currentDomainFilter = document.getElementById('current-domain-filter');
       currentDomainFilter.closest('label').querySelector('span').textContent = new URL(popupContext.tab.url).hostname;
-      currentDomainFilter.addEventListener('change', async () => await replacePagesInPopup());
     } else {
-      document.querySelector('aside .filters').remove();
+      currentDomainFilter.closest('label').classList.add('hidden');
     }
 
     await replacePagesInPopup();

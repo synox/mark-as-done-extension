@@ -42,14 +42,13 @@ class FilterSearch extends HTMLElement {
     this.inputElement = shadow.querySelector('input');
     this.inputElement.addEventListener('input', ((event) => {
       console.log('input', event.target.value);
-      this.dispatchEvent(new CustomEvent('input', { detail: { value: event.target.value } }));
+      this.dispatchEvent(new CustomEvent('change', { detail: { value: event.target.value } }));
     }));
 
     this.clearButton = shadow.querySelector('button');
     this.clearButton.addEventListener('click', (() => {
       this.value = '';
       this.dispatchEvent(new CustomEvent('change', { detail: { value: '' } }));
-      this.dispatchEvent(new CustomEvent('input', { detail: { value: '' } }));
     }));
   }
 
