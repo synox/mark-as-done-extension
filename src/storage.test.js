@@ -2,9 +2,11 @@
 import { expect, test } from '@jest/globals';
 import {
   getDataExport,
-  getPageState, listPages,
+  getPageState,
+  listPages,
   listPagesForDomain,
-  listPagesGroupedByDomain, listPagesGroupedByStatus,
+  listPagesGroupedByDomain,
+  listPagesGroupedByStatus,
   removePageState,
   updatePageState,
 } from './storage.js';
@@ -45,11 +47,15 @@ test('updatePageState: create new', async () => {
     status: 'done',
   });
 
-  expect(chrome.storage.local.set).toHaveBeenCalledWith({
-    'https://www.google.com/': {
-      status: 'done',
-    },
-  });
+  expect(chrome.storage.local.set).toHaveBeenCalledWith(
+    expect.objectContaining({
+      'https://www.google.com/': {
+        status: 'done',
+        created: expect.any(String),
+        modified: expect.any(String),
+      },
+    }),
+  );
 });
 
 test('updatePageState: update', async () => {
@@ -64,12 +70,16 @@ test('updatePageState: update', async () => {
     status: 'done',
   });
 
-  expect(chrome.storage.local.set).toHaveBeenCalledWith({
-    'https://www.google.com/': {
-      status: 'done',
-      title: 'Google',
-    },
-  });
+  expect(chrome.storage.local.set).toHaveBeenCalledWith(
+    expect.objectContaining({
+      'https://www.google.com/': {
+        status: 'done',
+        title: 'Google',
+        created: expect.any(String),
+        modified: expect.any(String),
+      },
+    }),
+  );
 });
 
 test('removePageState', async () => {
