@@ -137,7 +137,7 @@ async function main() {
     const metadata = document.createElement('p');
     metadata.classList.add('metadata');
     const { hostname } = new URL(page.url);
-    const lastModified = new Date(page.properties.lastModified).toLocaleDateString();
+    const lastModified = new Date(page.properties.modified).toLocaleDateString();
     metadata.textContent = `${hostname} - ${lastModified}`;
     const button = document.createElement('button');
     button.classList.add('outline');

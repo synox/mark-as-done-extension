@@ -9,12 +9,12 @@ import {
   updatePageState,
 } from './storage.js';
 
-test('getPageState exixts', async () => {
+test('getPageState exists', async () => {
   chrome.storage.local.get.mockReturnValueOnce({
     'https://www.google.com/': {
       status: 'done',
       title: 'Google',
-      lastModified: '2021-03-21T12:00:00.000Z',
+      modified: '2021-03-21T12:00:00.000Z',
       created: '2021-02-21T12:00:00.000Z',
     },
   });
@@ -24,7 +24,7 @@ test('getPageState exixts', async () => {
   expect(state.url).toBe('https://www.google.com/');
   expect(state.properties.status).toBe('done');
   expect(state.properties.title).toBe('Google');
-  expect(state.properties.lastModified).toBe('2021-03-21T12:00:00.000Z');
+  expect(state.properties.modified).toBe('2021-03-21T12:00:00.000Z');
   expect(state.properties.created).toBe('2021-02-21T12:00:00.000Z');
 });
 

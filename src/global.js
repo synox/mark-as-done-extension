@@ -5,11 +5,11 @@ export const STATUS_DISABLED = 'disabled';
 export const STATUS_TODO = 'todo';
 
 /**
- * @param url {string}
  * @property {LinkStatus} status
- * @property {string} title
- * @property {string} lastModified
- * @property {string} created
+ * @property {string} url
+ * @property {string} properties.title
+ * @property {string} properties.modified
+ * @property {string} properties.created
  */
 export class PageInfo {
   constructor(url, properties = {}) {
