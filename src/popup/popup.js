@@ -2,13 +2,13 @@ import { getPageState, listPages, listPagesForDomain } from '../storage.js';
 import {
   ensureSitePermissions,
   getOrigin,
-  isValidUrl,
+  isValidUrl, normalizeUrl,
   PageInfo,
   STATUS_DONE,
   STATUS_NONE,
   STATUS_TODO,
 } from '../global.js';
-import { filterPages } from '../filter-utils.js';
+import { filterPages, sortWithCurrentFirst } from '../filter-utils.js';
 
 class PopupContext {
   constructor() {
@@ -154,29 +154,14 @@ async function main() {
   }
 
   async function replacePagesInPopup() {
-    const onlyShowCurrentDomain = showOnlyCurrentDomain(popupContext);
-
-    document.querySelector('main section.unread .pages').innerHTML = '';
-    document.querySelector('main section.finished .pages').innerHTML = '';
-    const pages = onlyShowCurrentDomain
-      ? await listPagesForDomain(getOrigin(popupContext.tab.url))
-      : await listPages();
+    const filteredPages = await loadPagesToDisplay();
 
     let unreadCount = 0;
     let finishedCount = 0;
 
-    // use unsaved data from optimistic updates
-    // eslint-disable-next-line guard-for-in
-    for (const url in popupContext.optimisticUpdates) {
-      const page = pages.find((p) => p.url === url);
-      if (page) {
-        page.properties = { ...page.properties, ...popupContext.optimisticUpdates[url].properties };
-      } else {
-        pages.push(popupContext.optimisticUpdates[url]);
-      }
-    }
+    document.querySelector('main section.unread .pages').innerHTML = '';
+    document.querySelector('main section.finished .pages').innerHTML = '';
 
-    const filteredPages = filterPages(pages, document.querySelector('filter-search')?.value);
     for (const page of filteredPages) {
       const pageElement = createPageElement(page);
       if (page.properties.status === 'todo') {
@@ -192,6 +177,30 @@ async function main() {
 
     document.querySelector('main section.unread h2 .counter').textContent = `(${unreadCount})`;
     document.querySelector('main section.finished h2 .counter').textContent = `(${finishedCount})`;
+  }
+
+  async function loadPagesToDisplay() {
+    let pages;
+    if (showOnlyCurrentDomain(popupContext)) {
+      pages = await listPagesForDomain(getOrigin(popupContext.tab.url));
+    } else {
+      pages = await listPages();
+    }
+
+    // use unsaved data from optimistic updates
+    // eslint-disable-next-line guard-for-in
+    for (const url in popupContext.optimisticUpdates) {
+      const page = pages.find((p) => p.url === url);
+      if (page) {
+        page.properties = { ...page.properties, ...popupContext.optimisticUpdates[url].properties };
+      } else {
+        pages.push(popupContext.optimisticUpdates[url]);
+      }
+    }
+
+    const filteredPages = filterPages(pages, { search: document.querySelector('filter-search')?.value });
+    sortWithCurrentFirst(filteredPages, normalizeUrl(popupContext.tab.url));
+    return filteredPages;
   }
 
   async function updatePopup() {
