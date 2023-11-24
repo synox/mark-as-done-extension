@@ -159,6 +159,55 @@ async function handleGetStatusMessageAsBatch(message, sendResponse) {
   sendResponse(resultMap);
 }
 
+async function createDynamicIcon(status) {
+  const canvas = new OffscreenCanvas(32, 32);
+  const context = canvas.getContext('2d');
+  context.clearRect(0, 0, 32, 32);
+
+  /// / -----
+
+  const lineWidth = 5;
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const radius = canvas.width / 2 - 2; // 5px for padding
+  const startAngle = -0.5 * Math.PI; // Start from the top
+  const progress = 0.75; // 75% progress
+
+  // Clear the canvas
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  let statusImage;
+  if (status === 'none') statusImage = 'icon-none';
+  if (status === 'todo') statusImage = 'chevron';
+  if (status === 'done') statusImage = 'icon-done';
+
+  const image = await fetch(chrome.runtime.getURL(`images/${statusImage}.png`));
+  const imageBlob = await image.blob();
+  // convert blob to bitmap
+  const imageBitmap = await createImageBitmap(imageBlob);
+  const padding = 8;
+  context.drawImage(imageBitmap, padding, padding, canvas.width - padding - 7, canvas.height - padding - 7);
+  // context.drawImage(imageBitmap, padding, padding, 32, 32);
+
+  // Draw the progress arc
+  context.beginPath();
+  context.arc(centerX, centerY, radius, startAngle, startAngle + progress * 2 * Math.PI);
+  context.lineWidth = lineWidth;
+  context.strokeStyle = '#1665ed';
+  context.stroke();
+
+  // Draw the rest of the line in gray
+  context.beginPath();
+  context.arc(centerX, centerY, radius, startAngle + progress * 2 * Math.PI, startAngle + 2 * Math.PI);
+  context.lineWidth = lineWidth;
+  context.strokeStyle = '#eee';
+  context.stroke();
+
+  const imageData = context.getImageData(0, 0, 32, 32);
+  return imageData;
+}
+
 /**
  * @param tabId {string}
  * @param status {LinkStatus}
@@ -167,6 +216,10 @@ async function handleGetStatusMessageAsBatch(message, sendResponse) {
 async function updateIcon(tabId, status) {
   // TODO: refactor all calls to this function
   await chrome.action.setIcon({ tabId, path: `/images/icon-${status}.png` });
+
+  // the following is an experiment, and it does not look good. Maybe we come back to this later.
+  // const imageData = await createDynamicIcon(status);
+  // await chrome.action.setIcon({ imageData });
 }
 
 /**
