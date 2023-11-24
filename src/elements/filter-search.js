@@ -36,20 +36,29 @@ class FilterSearch extends HTMLElement {
     </style>
     <img src="../../images/magnifying-glass.svg" alt="search" />
     <input type="text" placeholder="search..." />   
-     <button>X</button> 
-`;
+    <button style="visibility: hidden">X</button> 
+    `;
 
     this.inputElement = shadow.querySelector('input');
     this.inputElement.addEventListener('input', ((event) => {
-      console.log('input', event.target.value);
       this.dispatchEvent(new CustomEvent('change', { detail: { value: event.target.value } }));
+      this.updateClearButton();
     }));
 
     this.clearButton = shadow.querySelector('button');
     this.clearButton.addEventListener('click', (() => {
       this.value = '';
       this.dispatchEvent(new CustomEvent('change', { detail: { value: '' } }));
+      this.updateClearButton();
     }));
+  }
+
+  updateClearButton() {
+    if (this.value.length > 0) {
+      this.clearButton.style.visibility = 'visible';
+    } else {
+      this.clearButton.style.visibility = 'hidden';
+    }
   }
 
   get value() {
