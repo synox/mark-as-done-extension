@@ -207,24 +207,16 @@ async function main() {
     console.log('context', popupContext);
     console.debug('update popup with status', popupContext.pageInfo);
 
-    // reset
-    document.getElementById('page-status').textContent = '';
-    document.getElementById('page-status').classList.remove('unread', 'finished');
-
     if (!isValidUrl(popupContext.tab.url)) {
       // invalid url
       document.getElementById('mark-as-unread-button').classList.add('hidden');
       document.getElementById('mark-as-finished-button').classList.add('hidden');
     } else if (popupContext.pageInfo && popupContext.pageInfo.properties.status === 'todo') {
       // already marked as unread
-      document.getElementById('page-status').textContent = 'unread';
-      document.getElementById('page-status').classList.add('unread');
       document.getElementById('mark-as-unread-button').classList.add('hidden');
       document.getElementById('mark-as-finished-button').classList.remove('hidden');
     } else if (popupContext.pageInfo && popupContext.pageInfo.properties.status === 'done') {
       // already marked as finished
-      document.getElementById('page-status').textContent = 'finished';
-      document.getElementById('page-status').classList.add('finished');
       document.getElementById('mark-as-unread-button').classList.add('hidden');
       document.getElementById('mark-as-finished-button').classList.add('hidden');
     } else {
