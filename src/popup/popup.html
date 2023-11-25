@@ -11,27 +11,38 @@
 <body class="popup body-hidden">
 
 <header>
-  <header-hero></header-hero>
-  <div class="header-buttons">
-    <a role="button" data-new-status="todo" id="mark-as-unread-button" class=" hidden" href="#">
-      <img class="icon" src="../../images/icon-todo.png"> save for later</a>
-    <a role="button" data-new-status="done" id="mark-as-finished-button" class=" hidden" href="#">
-      <img class="icon" src="../../images/icon-done.png"> mark as finished</a>
-    <a role="button" id="settings-button" href="#" class="outline settings" title="settings">
-      <img src="../../images/gear.svg" alt="settings">
-    </a>
-  </div>
-</header>
+  <div class="first-row">
+    <img class="logo" style="height: 40px;" src="../../images/icon-none.png" alt="logo">
 
-<aside>
+    <filter-search></filter-search>
+
+    <div class="header-buttons">
+      <a role="button" data-new-status="todo" id="mark-as-unread-button" class=" hidden" href="#">
+        <img class="icon" src="../../images/icon-todo.png"> save for later</a>
+      <a role="button" data-new-status="done" id="mark-as-finished-button" class=" hidden" href="#">
+        <img class="icon" src="../../images/icon-done.png"> mark as finished</a>
+      <a role="button" id="settings-button" href="#" class="outline settings" title="settings">
+        <img src="../../images/gear.svg" alt="settings">
+      </a>
+    </div>
+  </div>
+
   <div class="filters">
     Filters:
     <label>
       <input id="current-domain-filter" type="checkbox" name="filter" checked>
       <span></span>
     </label>
-    <filter-search></filter-search>
+
   </div>
+
+
+
+
+</header>
+
+<aside>
+
 </aside>
 
 <main>

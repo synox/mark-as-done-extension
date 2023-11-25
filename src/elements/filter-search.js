@@ -18,6 +18,7 @@ class FilterSearch extends HTMLElement {
       }
       
       input[type="text"] {
+        width: 100%;
         height: 2rem;
         padding-left: 2rem;
         padding-right: 25px;

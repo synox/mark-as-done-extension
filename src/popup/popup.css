@@ -20,10 +20,19 @@ body.body-hidden > * {
 }
 
 body.popup > header {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+body.popup > header .first-row {
   display: flex;
   align-items: center;
   padding-top: 0;
   padding-bottom: 0;
+}
+
+body.popup > header filter-search {
+  flex-grow: 1;
 }
 
 .hidden,
@@ -32,14 +41,9 @@ main .pages .page.hidden {
   display: none;
 }
 
-
-body.popup > header header-hero {
-  flex-grow: 1;
-}
-
-
 header .header-buttons [role="button"] {
   padding: 5px;
+  margin-left: 5px;
 }
 
 header .header-buttons .icon {
@@ -51,7 +55,8 @@ header .settings img {
   filter: opacity(70%);
 }
 
-aside .filters {
+header .filters {
+  margin-left: 40px;
   display: flex;
   gap: 20px;
 }

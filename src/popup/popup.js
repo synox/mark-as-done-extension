@@ -4,9 +4,8 @@ import {
   getOrigin,
   isValidUrl, normalizeUrl,
   PageInfo,
-  STATUS_DONE,
   STATUS_NONE,
-  STATUS_TODO,
+
 } from '../global.js';
 import { filterPages, sortWithCurrentFirst } from '../filter-utils.js';
 
