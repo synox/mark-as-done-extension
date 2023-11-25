@@ -1,5 +1,6 @@
-import { sortLinksByStatus, STATUS_DONE } from '../global.js';
+import { STATUS_DONE } from '../global.js';
 import { listPagesGroupedByDomain } from '../storage.js';
+import { sortLinksByStatus } from '../filter-utils.js';
 
 async function init() {
   const linksByDomain = await listPagesGroupedByDomain();

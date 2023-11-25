@@ -1,8 +1,6 @@
-export const STATUS_DONE = 'done';
-export const STATUS_STARTED = 'started';
 export const STATUS_NONE = 'none';
-export const STATUS_DISABLED = 'disabled';
 export const STATUS_TODO = 'todo';
+export const STATUS_DONE = 'done';
 
 /**
  * @property {LinkStatus} status
@@ -59,52 +57,6 @@ export function normalizeUrl(url) {
   }
 }
 
-/**
- * sort links by status in-place
- * @param links {array}
- * return {void}
- */
-export function sortLinksByStatus(links) {
-  links.sort((a, b) => {
-    const statusValues = {
-      [STATUS_STARTED]: 2,
-      [STATUS_TODO]: 1,
-      [STATUS_DONE]: -1,
-      default: 0,
-    };
-
-    const getMappedValue = (status) => statusValues[status] || statusValues.default;
-
-    return getMappedValue(b.status) - getMappedValue(a.status);
-  });
-}
-
-/**
- *
- * @param links {Array<LinkInfo>}
- * @param url {string}
- */
-export function removeUrl(links, url) {
-  // the update was sent async, so the current page might not yet be in the list. But it should be.
-  return links.filter((link) => link.url !== url);
-}
-
-/**
- * change the status of one url. This is done in-place.
- * @param links {Array<LinkInfo>}
- * @param url {string}
- * @param newStatus {string}
- */
-export function updateStatusForUrl(links, url, newStatus) {
-  // the update was sent async, so the current page might not yet be in the list. But it should be.
-  const link = links.find((aLink) => aLink.url === url);
-  if (link) {
-    link.status = newStatus;
-  } else {
-    links.push({ url, status: newStatus });
-  }
-}
-
 export function isValidUrl(url) {
   if (!url || !url.startsWith('http')) {
     return false;
@@ -124,14 +76,12 @@ export function getOrigin(url) {
   }
 }
 
-export async function ensureSitePermissions(tabUrl) {
+export function ensureSitePermissions(tabUrl) {
   if (!isValidUrl(tabUrl)) {
-    return;
+    return Promise.resolve();
   }
 
-  if (!await chrome.permissions.contains({ origins: [tabUrl] })) {
-    console.log('requesting optional permissions');
-    const granted = await chrome.permissions.request({ origins: [tabUrl] });
-    console.log('permissions requested. Granted: ', granted);
-  }
+  return chrome.permissions.request({ origins: [tabUrl] }).then((granted) => {
+    console.debug('permissions requested. Granted: ', granted);
+  });
 }

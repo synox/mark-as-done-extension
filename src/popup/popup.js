@@ -68,20 +68,15 @@ async function main() {
   }
 
   function initEventButtonHandlers(tabUrl) {
-    document.getElementById('mark-as-unread-button').addEventListener('click', (event) => {
+    const changeStatus = (event) => {
       event.preventDefault();
       // we cannot use async/await here because we can only request permissions from a user gesture.
       ensureSitePermissions(tabUrl).then(() => {
-        handleChangeCurrentPageState(STATUS_TODO);
+        handleChangeCurrentPageState(event.target.dataset.newStatus);
       });
-    });
-    document.getElementById('mark-as-finished-button').addEventListener('click', (event) => {
-      event.preventDefault();
-      // we cannot use async/await here because we can only request permissions from a user gesture.
-      ensureSitePermissions(tabUrl).then(() => {
-        handleChangeCurrentPageState(STATUS_DONE);
-      });
-    });
+    };
+    document.getElementById('mark-as-unread-button').addEventListener('click', changeStatus);
+    document.getElementById('mark-as-finished-button').addEventListener('click', changeStatus);
     document.getElementById('settings-button').addEventListener('click', (event) => {
       event.preventDefault();
       chrome.runtime.openOptionsPage();

@@ -1,3 +1,5 @@
+import { STATUS_DONE, STATUS_TODO } from './global.js';
+
 /**
  * @param pages {PageInfo[]}
  * @param search {string}
@@ -28,4 +30,23 @@ export function sortWithCurrentFirst(pages, currentUrl) {
     return 0;
   });
   return pages;
+}
+
+/**
+ * sort links by status in-place
+ * @param links {array}
+ * return {void}
+ */
+export function sortLinksByStatus(links) {
+  links.sort((a, b) => {
+    const statusValues = {
+      [STATUS_TODO]: 1,
+      [STATUS_DONE]: -1,
+      default: 0,
+    };
+
+    const getMappedValue = (status) => statusValues[status] || statusValues.default;
+
+    return getMappedValue(b.status) - getMappedValue(a.status);
+  });
 }
