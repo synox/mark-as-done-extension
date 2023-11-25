@@ -12,9 +12,8 @@ export function filterPages(pages, { search = '' }) {
   }
 
   return pages.filter((page) => {
-    const { title, url } = page.properties;
-    const titleMatch = searchTerms.every((term) => title?.toLowerCase().includes(term));
-    const urlMatch = searchTerms.every((term) => url?.toLowerCase().includes(term));
+    const titleMatch = searchTerms.every((term) => page.properties.title?.toLowerCase().includes(term));
+    const urlMatch = searchTerms.every((term) => page.url?.toLowerCase().includes(term));
     return titleMatch || urlMatch;
   });
 }
