@@ -34,7 +34,7 @@ export class PageInfo {
  */
 export function normalizeUrl(url) {
   try {
-    if (url.startsWith('mailto://')) {
+    if (url.startsWith('mailto:')) {
       return null;
     }
     const urlObject = new URL(url);
