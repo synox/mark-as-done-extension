@@ -12,16 +12,12 @@ export function main() {
   /** on tab activation: update popup and icon, and inject scripts */
   chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     try {
-      console.log('tab updated', { tabId, changeInfo, tab });
       if (changeInfo.status === 'loading') {
         const url = changeInfo.url || tab.url;
         const pageInfo = await getPageState(normalizeUrl(url));
         await updateIcon(tabId, pageInfo?.properties.status || 'none');
-
-        // Only inject script if there are already any entries for the current domain
-        if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
-          await injectContentScripts(tab);
-        }
+        // not waiting for the injection to complete:
+        injectContentScripts(tab).catch(console.error);
       }
     } catch (e) {
       console.error(e);
@@ -69,13 +65,15 @@ function isAllowedDomain(url) {
 }
 
 async function injectContentScripts(tab) {
-  await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/inject.js'] });
-  await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/inject.css'] });
-  await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
+  // Only inject script if there are already any entries for the current domain
+  if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
+    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/inject.js'] });
+    await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/inject.css'] });
+    await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
+  }
 }
 
 /**
- *
  * @param message {{url, tab, properties: {title, status: LinkStatus,} }} Note that the url and title can be different from the tab.
  * @param sendResponse
  * @return {Promise<void>}
@@ -89,22 +87,10 @@ async function handleChangePageStatus(message, sendResponse) {
     await updatePageState(normalizeUrl(message.url), message.properties);
   }
   await updateLinksInAllTabs();
-  // TODO: is this needed? don't we already update the current tab above?
-  // try {
-  //   await chrome.tabs.sendMessage(message.tab.id, { type: 'update-content' });
-  // } catch (e) {
-  //   if (e.message !== 'Could not establish connection. Receiving end does not exist.') {
-  //     console.error('error while sending "update-content" message', e);
-  //   }
-  // }
   await updateIcon(message.tab.id, message.properties.status);
 
-  // TODO: cleanup
-  // Make sure the scripts are injected
-  if (message.properties.status !== 'none' && !await hasAnyEntriesForDomain(message.url)) {
-    // not waiting for the injection to complete:
-    injectContentScripts(message.tab).catch(console.error);
-  }
+  // not waiting for the injection to complete:
+  injectContentScripts(message.tab).catch(console.error);
   sendResponse('change-page-status done');
 }
 
@@ -124,11 +110,8 @@ async function handleRemovePageStatus(message, sendResponse) {
     await updateIcon(message.tabId, STATUS_NONE);
   }
 
-  // TODO: Make sure the scripts are injected
-  // if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.url)) {
-  //   // not waiting for the injection to complete:
-  //   injectContentScripts(message.tab).catch(console.error);
-  // }
+  // not waiting for the injection to complete:
+  injectContentScripts(message.tab).catch(console.error);
   sendResponse('remove-page done');
 }
 
@@ -214,7 +197,6 @@ async function createDynamicIcon(status) {
  * @return {Promise<void>}
  */
 async function updateIcon(tabId, status) {
-  // TODO: refactor all calls to this function
   await chrome.action.setIcon({ tabId, path: `/images/icon-${status}.png` });
 
   // the following is an experiment, and it does not look good. Maybe we come back to this later.
