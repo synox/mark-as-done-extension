@@ -34,6 +34,9 @@ export class PageInfo {
  */
 export function normalizeUrl(url) {
   try {
+    if (url.startsWith('mailto://')) {
+      return null;
+    }
     const urlObject = new URL(url);
     // In general, hash are ignored.
 
@@ -52,7 +55,7 @@ export function normalizeUrl(url) {
 
     return urlObject.origin + urlObject.pathname + filteredSearch;
   } catch (error) {
-    console.error(`Can not parse as url=${url}, error=${error}`);
+    console.warn(`Can not parse as url=${url}, error=${error}`);
     return null;
   }
 }
