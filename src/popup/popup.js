@@ -135,7 +135,11 @@ async function main() {
     metadata.textContent = `${hostname} - ${lastModified}`;
     const button = document.createElement('button');
     button.classList.add('outline');
-    button.textContent = 'remove';
+
+    const icon = document.createElement('img');
+    icon.src = chrome.runtime.getURL('images/trash-can.svg');
+    button.prepend(icon);
+
     button.addEventListener('click', async () => {
       div.remove();
       await removePageState(page.url);

@@ -53,12 +53,12 @@ header .header-buttons .icon {
 
 header .settings img {
   height: 20px;
-  filter: opacity(70%);
+  filter: opacity(50%);
 }
 
 @media only screen and (prefers-color-scheme: dark) {
   header .settings img {
-    filter: invert(1);
+    filter: opacity(50%) invert(1);
   }
 }
 
@@ -145,5 +145,16 @@ main .pages .page button {
   width: initial;
   padding: 5px;
   margin: 0;
+  font-size: 0.7rem;
+}
+
+main .pages .page button img {
+  width: 10px;
+}
+
+@media only screen and (prefers-color-scheme: dark) {
+  main .pages .page button img {
+    filter: invert(1);
+  }
 }
 
