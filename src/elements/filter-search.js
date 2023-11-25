@@ -17,6 +17,12 @@ class FilterSearch extends HTMLElement {
         filter: opacity(0.5);
       }
       
+      @media only screen and (prefers-color-scheme: dark) {
+          img {
+            filter: invert(1);
+          }
+      }
+      
       input[type="text"] {
         width: 100%;
         height: 2rem;

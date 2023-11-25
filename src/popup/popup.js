@@ -223,7 +223,7 @@ async function main() {
     if (isValidUrl(popupContext.tab.url)) {
       currentDomainFilter.closest('label').querySelector('span').textContent = new URL(popupContext.tab.url).hostname;
     } else {
-      currentDomainFilter.closest('label').classList.add('hidden');
+      document.getElementById('filters').classList.add('hidden');
     }
 
     await replacePagesInPopup();

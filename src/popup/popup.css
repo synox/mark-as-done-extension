@@ -37,8 +37,9 @@ body.popup > header filter-search {
 
 .hidden,
 [role=button].hidden,
+header #filters.hidden,
 main .pages .page.hidden {
-  display: none;
+  display: none !important;
 }
 
 header .header-buttons [role="button"] {
@@ -55,7 +56,13 @@ header .settings img {
   filter: opacity(70%);
 }
 
-header .filters {
+@media only screen and (prefers-color-scheme: dark) {
+  header .settings img {
+    filter: invert(1);
+  }
+}
+
+header #filters {
   margin-left: 40px;
   display: flex;
   gap: 20px;
