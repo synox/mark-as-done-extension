@@ -48,6 +48,7 @@ class FilterSearch extends HTMLElement {
 
     this.inputElement = shadow.querySelector('input');
     this.inputElement.addEventListener('input', ((event) => {
+      this.value = event.target.value;
       this.dispatchEvent(new CustomEvent('change', { detail: { value: event.target.value } }));
       this.updateClearButton();
     }));
@@ -74,6 +75,7 @@ class FilterSearch extends HTMLElement {
 
   set value(val) {
     this.inputElement.value = val;
+    this.setAttribute('value', val);
   }
 }
 
