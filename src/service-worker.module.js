@@ -67,8 +67,8 @@ function isAllowedDomain(url) {
 async function injectContentScripts(tab) {
   // Only inject script if there are already any entries for the current domain
   if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
-    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/inject.js'] });
-    await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/inject.css'] });
+    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/mark-as-done-content.js'] });
+    await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/mark-as-done-content.css'] });
     await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
   }
 }

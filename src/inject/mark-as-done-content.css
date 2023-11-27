@@ -1,0 +1,43 @@
+a.marked-as-todo {
+    color: #ff6758 !important;
+}
+
+a.marked-as-todo::after {
+  /* noinspection CssUnknownTarget */
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-todo.png');
+    background-size: 1em 1em;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    content:"";
+    margin-left: 0.3em;
+}
+
+@-moz-document url-prefix() {
+    a.marked-as-todo::after {
+        /* noinspection CssUnknownTarget */
+        background-image: url('moz-extension://__MSG_@@extension_id__/images/icon-todo.png');
+    }
+}
+
+a.marked-as-done {
+    color: #009100 !important;
+}
+
+a.marked-as-done::after {
+    /* noinspection CssUnknownTarget */
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-done.png');
+    background-size: 1em 1em;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    content:"";
+    margin-left: 0.3em;
+}
+
+@-moz-document url-prefix() {
+    a.marked-as-done::after {
+        /* noinspection CssUnknownTarget */
+        background-image: url('moz-extension://__MSG_@@extension_id__/images/icon-done.png');
+    }
+}
