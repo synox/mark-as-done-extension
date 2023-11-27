@@ -62,7 +62,7 @@ function readPageStateFromStorageValue(url, value) {
 export async function getDataExport() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
-    .map(([url, value]) => ({ url, properties: value }))
+    .map(([url, value]) => ({ url, ...value }))
     .sort();
 }
 
