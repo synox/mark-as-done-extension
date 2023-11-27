@@ -5,13 +5,11 @@
 
 // console.debug('mark-as-done script added');
 
-// eslint-disable-next-line no-unused-vars
-
-// eslint-disable-next-line no-unused-vars
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.debug('content: received', request);
+chrome.runtime.onMessage.addListener((request) => {
   if (request.type === 'update-content') {
-    updateAllLinksOnPage().then(() => watchPageForDynamicallyAddedLinks());
+    updateAllLinksOnPage().then(() => {
+      watchPageForDynamicallyAddedLinks();
+    });
   }
 });
 
