@@ -37,7 +37,7 @@ async function updateAllLinksOnPage(root = document) {
 
   const statusMap = await chrome.runtime.sendMessage({ type: 'batch-get-status', urls: Array.from(uniqueLinks) });
   for (const link of links) {
-    if (isNormalLink(link, window.location.href)) {
+    if (isNormalLink(link, window.location.href) && !isHashLinkToCurrentPage(link, window.location.href)) {
       const url = normalizeUrl(link.href);
       link.classList.remove('marked-as-done');
       link.classList.remove('marked-as-todo');
@@ -47,6 +47,18 @@ async function updateAllLinksOnPage(root = document) {
       }
     }
   }
+}
+
+function isHashLinkToCurrentPage(link, documentUrl) {
+  const pageUrl = new URL(link.href);
+  const currentPageUrl = new URL(documentUrl);
+
+  // compare urls, ignoring hash
+  const isCurrentPage = pageUrl.origin === currentPageUrl.origin
+    && pageUrl.pathname === currentPageUrl.pathname
+    && pageUrl.search === currentPageUrl.search;
+
+  return isCurrentPage && pageUrl.hash.length > 0;
 }
 
 /**
@@ -76,7 +88,7 @@ function watchPageForDynamicallyAddedLinks() {
         if (mutation.type === 'childList') {
           const hasAddedLinks = Array
             .from(mutation.addedNodes)
-            .some((node) => node instanceof HTMLAnchorElement || node.querySelector('a'));
+            .some((node) => node instanceof HTMLAnchorElement || (node.querySelector && node.querySelector('a')));
           if (hasAddedLinks) {
             console.debug('links were added');
             debouncedUpdateAllLinksOnPage();
