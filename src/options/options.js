@@ -1,4 +1,4 @@
-import { getDataExport } from '../storage.js';
+import { getDataExport, listPages, updatePageState } from '../storage.js';
 
 function startFileDownload(filename, data) {
   const blob = new Blob([data], { type: 'text/json' });
@@ -51,5 +51,30 @@ document.getElementById('resetAllDataButton').addEventListener('click', async (e
   } else {
     await chrome.storage.local.clear();
     event.target.textContent = 'Done';
+  }
+});
+
+document.getElementById('updateTitles').addEventListener('click', async () => {
+  const withoutTitle = (await listPages())
+    .filter((page) => !page.properties.title);
+
+  for (const page of withoutTitle) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const response = await fetch(page.url);
+      if (response.ok) {
+        // eslint-disable-next-line no-await-in-loop
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const title = doc.querySelector('title')?.textContent;
+        if (title) {
+          // eslint-disable-next-line no-await-in-loop
+          await updatePageState(page.url, { title });
+        }
+      }
+    } catch (error) {
+      console.log('cannot update title for ', page.url);
+    }
   }
 });
