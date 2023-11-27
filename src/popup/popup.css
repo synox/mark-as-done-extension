@@ -31,14 +31,13 @@ body.popup > header .first-row {
   padding-bottom: 0;
 }
 
-body.popup > header filter-search {
+body.popup > header [role="search"] {
   flex-grow: 1;
 }
 
 .hidden,
 [role=button].hidden,
-header #filters.hidden,
-main .pages .page.hidden {
+header #filters.hidden {
   display: none !important;
 }
 
@@ -84,77 +83,3 @@ main h2 .counter {
 main section {
   margin: 20px 0;
 }
-
-main .pages .page {
-  border-radius: 10px;
-  background-color: white;
-  margin: 2px;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-}
-
-@media only screen and (prefers-color-scheme: dark) {
-  main .pages .page {
-    background-color: #1a1a1a;
-  }
-}
-
-main section.unread .pages .page.current {
-  background-color: #d4f5ff;
-}
-
-main section.finished .pages .page.current {
-  background-color: #ecffb6;
-}
-
-@media only screen and (prefers-color-scheme: dark) {
-  main section.unread .pages .page.current {
-    background-color: #001c23;
-  }
-
-  main section.finished .pages .page.current {
-    background-color: #363d23;
-  }
-}
-
-main .pages .page a:any-link {
-  flex: 1 0 auto;
-  display: block;
-
-  --primary: var(--color);
-}
-
-main .pages .page a p {
-  margin: 0;
-  max-width: 450px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-main .pages .page a .title {
-  font-weight: bold;
-}
-
-main .pages .page a .metadata {
-  font-size: 0.8em;
-}
-
-main .pages .page button {
-  width: initial;
-  padding: 5px;
-  margin: 0;
-  font-size: 0.7rem;
-}
-
-main .pages .page button img {
-  width: 10px;
-}
-
-@media only screen and (prefers-color-scheme: dark) {
-  main .pages .page button img {
-    filter: invert(1);
-  }
-}
-

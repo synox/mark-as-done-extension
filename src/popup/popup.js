@@ -170,50 +170,18 @@ class Popup {
    * @return {HTMLElement}
    */
   createPageElement(page) {
-    /**
-     * example:
-     * <div class="page not-current-unread">
-     *         <a href="some page">
-     *           <p class="title">The Account and profile</p>
-     *           <p class="metadata">asdf.com - Nov 12</p>
-     *         </a>
-     *           <button class="outline">remove</button>
-     *       </div>
-     */
-    const div = document.createElement('div');
-    div.classList.add('page');
+    const entry = document.createElement('page-entry');
+    entry.setAttribute('title', page.properties.title || new URL(page.url).pathname);
+    entry.setAttribute('url', page.url);
+    entry.setAttribute('date', page.properties.modified);
+    entry.setAttribute('status', page.properties.status);
+    entry.setAttribute('is-current', page.url === this.tab.url);
 
-    if (page.url === this.tab.url) {
-      div.classList.add('current');
-    }
-
-    const a = document.createElement('a');
-    a.href = page.url;
-    a.target = '_blank';
-    const title = document.createElement('p');
-    title.classList.add('title');
-    title.textContent = page.properties.title || new URL(page.url).pathname;
-    const metadata = document.createElement('p');
-    metadata.classList.add('metadata');
-    const { hostname } = new URL(page.url);
-    const lastModified = new Date(page.properties.modified).toLocaleDateString();
-    metadata.textContent = `${hostname} - ${lastModified}`;
-    const button = document.createElement('button');
-    button.classList.add('outline');
-
-    const icon = document.createElement('img');
-    icon.src = chrome.runtime.getURL('images/trash-can.svg');
-    button.prepend(icon);
-
-    button.addEventListener('click', async () => {
-      div.remove();
-      await this.removePageState(page.url);
+    entry.addEventListener('remove', () => {
+      this.removePageState(page.url);
     });
-    a.append(title);
-    a.append(metadata);
-    div.append(a);
-    div.append(button);
-    return div;
+
+    return entry;
   }
 
   removePageState(url) {
