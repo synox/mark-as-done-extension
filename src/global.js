@@ -23,7 +23,7 @@ export class PageInfo {
  */
 
 /**
- * @typedef {'todo','started','done'|'none'|'disabled'} LinkStatus
+ * @typedef {'todo','done'|'none'} LinkStatus
  */
 
 /**

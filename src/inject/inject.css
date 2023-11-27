@@ -4,7 +4,7 @@ a.marked-as-todo {
 
 a.marked-as-todo::after {
   /* noinspection CssUnknownTarget */
-    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-todo.png');
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-todo.png'), url('moz-extension://__MSG_@@extension_id__/images/icon-todo.png');
     background-size: 1em 1em;
     display: inline-block;
     width: 1em;
@@ -19,7 +19,7 @@ a.marked-as-done {
 
 a.marked-as-done::after {
     /* noinspection CssUnknownTarget */
-    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-done.png');
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-done.png'), url('moz-extension://__MSG_@@extension_id__/images/icon-done.png');
     background-size: 1em 1em;
     display: inline-block;
     width: 1em;

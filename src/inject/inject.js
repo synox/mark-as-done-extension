@@ -19,7 +19,7 @@ let debouncedUpdateAllLinksOnPage;
 
 // eslint-disable-next-line func-names
 (async function () {
-  const pDebounceModule = await import('../3rdparty/p-debounce-4.0.0/index.js');
+  const pDebounceModule = await import(chrome.runtime.getURL('/src/3rdparty/p-debounce-4.0.0/index.js'));
   debouncedUpdateAllLinksOnPage = pDebounceModule.default(updateAllLinksOnPage, 200);
 }());
 
