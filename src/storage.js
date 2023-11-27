@@ -29,11 +29,22 @@ export async function updatePageState(url, properties) {
   const state = await getPageState(url);
   const existingProperties = state?.properties || {};
   const mergedProperties = { ...existingProperties, ...properties };
-  if(!mergedProperties.created) {
+  if (!mergedProperties.created) {
     mergedProperties.created = new Date().toISOString();
   }
   mergedProperties.modified = new Date().toISOString();
   await chrome.storage.local.set({ [url]: mergedProperties });
+  return mergedProperties;
+}
+
+/**
+ * Update the status of a page
+ * @param url {string}
+ * @param properties {object}
+ * @return {Promise<*>}
+ */
+export async function internalReplacePageState(url, properties) {
+  await chrome.storage.local.set({ [url]: properties });
 }
 
 export async function removePageState(url) {
@@ -51,7 +62,7 @@ function readPageStateFromStorageValue(url, value) {
 export async function getDataExport() {
   const allItems = await chrome.storage.local.get(null);
   return Object.entries(allItems)
-    .map(([url, value]) => ({ url, ...value }))
+    .map(([url, value]) => ({ url, properties: value }))
     .sort();
 }
 
@@ -125,20 +136,36 @@ export async function upgradeDatastore() {
   console.log('upgrade datastore');
   const allItems = await chrome.storage.local.get(null);
   for (const key of Object.keys(allItems)) {
-    const value = allItems[key];
+    let value = allItems[key];
     // eslint-disable-next-line no-await-in-loop
     if (typeof value === 'boolean') {
       // upgrade from v1
       // eslint-disable-next-line no-await-in-loop
-      await updatePageState(key, { status: value ? 'done' : 'todo' });
+      value = await updatePageState(key, { status: value ? 'done' : 'todo' });
     } else if (typeof value === 'string') {
       // upgrade from v2
       // eslint-disable-next-line no-await-in-loop
-      await updatePageState(key, { status: value });
+      value = await updatePageState(key, { status: value });
     } else if (typeof value === 'object' && value.status === 'started') {
       // upgrade from v3. Status 'started' is not used anymore and replaced with 'todo'.
       // eslint-disable-next-line no-await-in-loop
-      await updatePageState(key, { status: 'todo' });
+      value = await updatePageState(key, { status: 'todo' });
+    }
+
+    if (value['0']) {
+      // remove invalid keys
+      console.log('remove invalid keys for ', key);
+      delete value['0'];
+      delete value['1'];
+      delete value['2'];
+      delete value['3'];
+      delete value['4'];
+      delete value['5'];
+      delete value['6'];
+      delete value['7'];
+
+      // eslint-disable-next-line no-await-in-loop
+      await internalReplacePageState(key, value);
     }
   }
 }
