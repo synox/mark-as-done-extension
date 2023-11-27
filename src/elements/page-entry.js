@@ -77,14 +77,10 @@ customElements.define('page-entry', class PageEntry extends HTMLElement {
   }
 
   button {
-    width: initial;
-    padding: 5px;
+    width: 21px;
+    padding: 4px;
     margin: 0;
     font-size: 0.7rem;
-  }
-
-  button img {
-    width: 10px;
   }
 
   @media only screen and (prefers-color-scheme: dark) {
