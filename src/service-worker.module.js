@@ -110,8 +110,6 @@ async function handleRemovePageStatus(message, sendResponse) {
     await updateIcon(message.tabId, STATUS_NONE);
   }
 
-  // not waiting for the injection to complete:
-  injectContentScripts(message.tab).catch(console.error);
   sendResponse('remove-page done');
 }
 
@@ -142,6 +140,7 @@ async function handleGetStatusMessageAsBatch(message, sendResponse) {
   sendResponse(resultMap);
 }
 
+// eslint-disable-next-line no-unused-vars
 async function createDynamicIcon(status) {
   const canvas = new OffscreenCanvas(32, 32);
   const context = canvas.getContext('2d');
