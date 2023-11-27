@@ -13,12 +13,10 @@ chrome.runtime.onMessage.addListener((request) => {
   }
 });
 
-let debouncedUpdateAllLinksOnPage;
-
 // eslint-disable-next-line func-names
 (async function () {
   const pDebounceModule = await import(chrome.runtime.getURL('/src/3rdparty/p-debounce-4.0.0/index.js'));
-  debouncedUpdateAllLinksOnPage = pDebounceModule.default(updateAllLinksOnPage, 200);
+  window.debouncedUpdateAllLinksOnPage = pDebounceModule.default(updateAllLinksOnPage, 200);
 }());
 
 /**
@@ -76,12 +74,10 @@ function isNormalLink(linkElement, documentUrl) {
   return linkElement.getAttribute('href') !== '#';
 }
 
-let newLinkObserver = null;
-
 function watchPageForDynamicallyAddedLinks() {
-  if (!newLinkObserver) {
+  if (!window.newLinkObserver) {
     // eslint-disable-next-line no-unused-vars
-    newLinkObserver = new MutationObserver((mutationList, observer) => {
+    window.newLinkObserver = new MutationObserver((mutationList, observer) => {
       for (const mutation of mutationList) {
         if (mutation.type === 'childList') {
           const hasAddedLinks = Array
@@ -89,13 +85,13 @@ function watchPageForDynamicallyAddedLinks() {
             .some((node) => node instanceof HTMLAnchorElement || (node.querySelector && node.querySelector('a')));
           if (hasAddedLinks) {
             console.debug('links were added');
-            debouncedUpdateAllLinksOnPage();
+            window.debouncedUpdateAllLinksOnPage();
             break;
           }
         }
       }
     });
-    newLinkObserver.observe(
+    window.newLinkObserver.observe(
       document.querySelector('body'),
       { childList: true, subtree: true },
     );
