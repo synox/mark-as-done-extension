@@ -9,24 +9,26 @@ async function init() {
   for (const domain of Object.keys(linksByDomain).toSorted()) {
     const totalCount = linksByDomain[domain].length;
     const doneCount = linksByDomain[domain].filter((item) => item.properties.status === STATUS_DONE).length;
+
     const details = document.createElement('details');
-    const summary = document.createElement('summary');
-    const h2 = document.createElement('h2');
-    h2.innerText = `${domain} (${doneCount}/${totalCount})`;
-    summary.append(h2);
-    details.append(summary);
+    details.innerHTML = `
+      <summary>
+        <h2>${domain} (${doneCount}/${totalCount})</h2>
+        </summary>
+      <table></table>
+    `;
 
     const table = document.createElement('table');
     const items = sortLinksByStatus(linksByDomain[domain]);
-
     for (const page of items) {
       const row = document.createElement('tr');
 
       const cellStatus = document.createElement('td');
-      cellStatus.innerText = page.properties.status;
-      const icon = document.createElement('img');
-      icon.src = chrome.runtime.getURL(`images/icon-${page.properties.status}.png`);
-      cellStatus.prepend(icon);
+      cellStatus.innerHTML = `
+        ${page.properties.status}
+        <img alt="status ${page.properties.status}" 
+            src="${chrome.runtime.getURL(`images/icon-${page.properties.status}.png`)}" />
+      `;
       row.append(cellStatus);
 
       const a = document.createElement('a');
