@@ -5,8 +5,6 @@ import {
   getPageState,
   listPages,
   listPagesForDomain,
-  listPagesGroupedByDomain,
-  listPagesGroupedByStatus,
   removePageState,
   updatePageState,
 } from './storage.js';
@@ -111,63 +109,6 @@ test('listPagesForDomain', async () => {
   expect(entries[0].properties.status).toBe('todo');
   expect(entries[1].url).toBe('https://www.google.com/search');
   expect(entries[1].properties.status).toBe('done');
-});
-
-test('listPagesGroupedByDomain', async () => {
-  chrome.storage.local.get.mockReturnValueOnce({
-    'https://www.google.com/home': {
-      status: 'todo',
-      title: 'Google',
-    },
-    'https://www.google.com/search': {
-      status: 'done',
-      title: 'Google Search',
-    },
-    'https://www.facebook.com/maps': {
-      status: 'todo',
-      title: 'Facebook Maps',
-    },
-  });
-
-  const entriesByDomain = await listPagesGroupedByDomain();
-
-  expect(Object.keys(entriesByDomain)).toHaveLength(2);
-  expect(entriesByDomain['https://www.google.com']).toHaveLength(2);
-  expect(entriesByDomain['https://www.google.com'][0].url).toBe('https://www.google.com/home');
-  expect(entriesByDomain['https://www.google.com'][0].properties.status).toBe('todo');
-  expect(entriesByDomain['https://www.google.com'][1].url).toBe('https://www.google.com/search');
-  expect(entriesByDomain['https://www.google.com'][1].properties.status).toBe('done');
-
-  expect(entriesByDomain['https://www.facebook.com']).toHaveLength(1);
-  expect(entriesByDomain['https://www.facebook.com'][0].url).toBe('https://www.facebook.com/maps');
-  expect(entriesByDomain['https://www.facebook.com'][0].properties.status).toBe('todo');
-});
-
-test('listPagesGroupedByStatus', async () => {
-  chrome.storage.local.get.mockReturnValueOnce({
-    'https://www.google.com/home': {
-      status: 'todo',
-      title: 'Google',
-    },
-    'https://www.google.com/search': {
-      status: 'done',
-      title: 'Google Search',
-    },
-    'https://www.facebook.com/maps': {
-      status: 'todo',
-      title: 'Facebook Maps',
-    },
-  });
-
-  const entriesByStatus = await listPagesGroupedByStatus();
-
-  expect(Object.keys(entriesByStatus)).toHaveLength(2);
-  expect(entriesByStatus.todo).toHaveLength(2);
-  expect(entriesByStatus.todo[0].url).toBe('https://www.google.com/home');
-  expect(entriesByStatus.todo[1].url).toBe('https://www.facebook.com/maps');
-
-  expect(entriesByStatus.done).toHaveLength(1);
-  expect(entriesByStatus.done[0].url).toBe('https://www.google.com/search');
 });
 
 test('listPages', async () => {

@@ -37,15 +37,5 @@ export function sortWithCurrentFirst(pages, currentUrl) {
  * return {void}
  */
 export function sortLinksByStatus(links) {
-  links.sort((a, b) => {
-    const statusValues = {
-      [STATUS_TODO]: 1,
-      [STATUS_DONE]: -1,
-      default: 0,
-    };
-
-    const getMappedValue = (status) => statusValues[status] || statusValues.default;
-
-    return getMappedValue(b.status) - getMappedValue(a.status);
-  });
+  return links.toSorted((a, b) => -a.properties.status.localeCompare(b.properties.status));
 }

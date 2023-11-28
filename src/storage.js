@@ -67,48 +67,6 @@ export async function getDataExport() {
 }
 
 /**
- Retrieves all stored links by their domain from the browser's local storage.
- The links are sorted and grouped by domain.
- @returns {Promise<Map<string,Array.<PageInfo>>>} links by domain.
-  each domain contains an array of `LinkInfo`.
- */
-export async function listPagesGroupedByDomain() {
-  const allItems = await chrome.storage.local.get(null);
-  return Object.entries(allItems)
-    .map(([url, value]) => new PageInfo(url, value))
-    .sort()
-    .reduce((accumulator, currentValue) => {
-      let domain;
-      try {
-        domain = new URL(currentValue.url).origin;
-      } catch (error) {
-        // ignore bad urls
-        return accumulator;
-      }
-
-      accumulator[domain] = [...accumulator[domain] || [], currentValue];
-      return accumulator;
-    }, {});
-}
-
-/**
- @returns {Promise<Map<string,Array.<PageInfo>>>}
- */
-export async function listPagesGroupedByStatus() {
-  const allItems = await chrome.storage.local.get(null);
-  return Object.entries(allItems)
-    .map(([url, value]) => new PageInfo(url, value))
-    .sort()
-    .reduce((accumulator, currentValue) => {
-      accumulator[currentValue.properties.status] = [
-        ...accumulator[currentValue.properties.status] || [],
-        currentValue,
-      ];
-      return accumulator;
-    }, {});
-}
-
-/**
  @returns {Promise<Map<string,Array.<PageInfo>>>}
  */
 export async function listPages() {
