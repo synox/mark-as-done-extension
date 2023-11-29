@@ -37,5 +37,5 @@ export function sortWithCurrentFirst(pages, currentUrl) {
  * return {void}
  */
 export function sortLinksByStatus(links) {
-  return links.toSorted((a, b) => -a.properties.status.localeCompare(b.properties.status));
+  return links.toSorted((a, b) => -a.properties.status?.localeCompare(b.properties.status));
 }
