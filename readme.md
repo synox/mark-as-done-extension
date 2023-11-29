@@ -1,31 +1,31 @@
 # Mark as Done (Chrome & Firefox Extension)
 
-> Mark any page as Done, Todo, or Started. All the links to that page will be automatically marked with an icon and colored, helping you keep track of your reading progress of large documentations or books.
+> Easily track the reading status of any page. 
+> All the links to these pages are automatically highlighted on the original website, 
+> helping you keep track of your reading progress of large documentations or books.
 
 
 For example, the following shows a partially read website, with some links marked as done. 
 
  ![](images/example.png) 
 
-With one click, the page is marked as Todo, Started, or Done.
-
-![](docs/screenshot-todo.png)
+And below is the extension popup, showing the status of pages and where you can update the status.
+![](docs/screenshot-popup.png)
 
 
 
 ## Features
 
-  -  Mark pages as Todo, Started, or Done with one click
-  -  Visual indicators for marked pages
+  -  Visual indicators for marked pages, the original website
   -  Export and import your marked pages list
-  -  Works on Chrome and Firefox
-
-
 
 # Icons
-<img src="images/icon-none.png" width=30> **Unmarked**: Current page is not marked.   
-<img src="images/icon-todo.png" width=20> **Unread**: Page is marked to Read  
-<img src="images/icon-done.png" width=20> **Finished**: Page is marked as finished  
+| Icon | Meaning                     |
+| --- |-----------------------------|
+| <img src="images/icon-none.png" width=30> | Current page is not marked. |
+| <img src="images/icon-todo.png" width=20> | Page is unread              |
+| <img src="images/icon-done.png" width=20> | Page is marked as finished  |
+
 
 # How to Install
 
@@ -34,11 +34,11 @@ Firefox: [Mark as Done on Firefox Add-ons](https://addons.mozilla.org/en-US/fire
 
 Or: Clone the repository and "load unpacked" as described in [Chrome Developer Guide](https://developer.chrome.com/docs/extensions/mv3/getstarted/#manifest)
 
-
 # Notes
 
 * Only sites that have any marked pages are processed, ensuring no slowdown for sites not used with this extension.
-* Logo meaning 🔰: We are constantly learning. See [Source](https://emojipedia.org/japanese-symbol-for-beginner/)
+* The permission is requested individually for each website, so that only the sites you use with this extension are affected.
+* The logo 🔰 means: We are constantly learning. See [Source](https://emojipedia.org/japanese-symbol-for-beginner/)
 
 # Reviews
 If you find our extension useful, please consider leaving a review on the 
@@ -48,7 +48,9 @@ If you find our extension useful, please consider leaving a review on the
 
 # Development
 
-Please use  Commit Message Format: https://github.com/angular/angular/blob/main/CONTRIBUTING.md#-commit-message-format and https://semantic-release.gitbook.io/semantic-release/#commit-message-format
+Please use  Commit Message Format: 
+- https://semantic-release.gitbook.io/semantic-release/#commit-message-format  
+- https://github.com/angular/angular/blob/main/CONTRIBUTING.md#-commit-message-format  
 
 ## Build
 
@@ -76,25 +78,5 @@ npm run lint
 
 ## Release
 
-Releases are triggered automatically. To release manually, run:
+Releases are triggered automatically when merging pull requests. This also updates the extension in the chrome and firefox store. 
 
-```bash
-npm run release
-```
-
-## Deploy to Firefox Store
-
-Build, sign and upload to Firefox store: 
-```bash
-npm run build:firefox 
-
-web-ext sign --api-key "user:xxx" --api-secret "xxxx"
-```
-
-## Deploy to Chrome Store
-
-```bash
-npm run build:chrome
-```
-
-and upload to https://chrome.google.com/webstore/developer/dashboard?hl=en
