@@ -79,8 +79,6 @@ async function injectContentScripts(tab) {
  * @return {Promise<void>}
  */
 async function handleChangePageStatus(message, sendResponse) {
-  console.log('updating status to', message.properties.status);
-
   if (message.properties.status === 'none') {
     await removePageState(normalizeUrl(message.url));
   } else {
@@ -101,8 +99,6 @@ async function handleChangePageStatus(message, sendResponse) {
  * @return {Promise<void>}
  */
 async function handleRemovePageStatus(message, sendResponse) {
-  console.log('remove status of page', message.url);
-
   await removePageState(normalizeUrl(message.url));
   await updateLinksInAllTabs();
 

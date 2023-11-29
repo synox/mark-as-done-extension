@@ -66,7 +66,6 @@ class Popup {
     });
 
     // do optimistic local data update, assuming the change will be successful
-    console.log('change state', tabUrl, status);
     if (!this.pageInfo) {
       this.pageInfo = new PageInfo(tabUrl);
     }
@@ -159,7 +158,6 @@ class Popup {
       }
     }
 
-    console.log({ search: document.querySelector('filter-search').value });
     const filteredPages = filterPages(pages, { search: document.querySelector('filter-search')?.value });
     sortWithCurrentFirst(filteredPages, normalizeUrl(this.tab.url));
     return filteredPages;
