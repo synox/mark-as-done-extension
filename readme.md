@@ -7,7 +7,7 @@
 
 For example, the following shows a partially read website, with some links marked as done. 
 
- ![](images/example.png) 
+ ![](docs/example.png) 
 
 And below is the extension popup, showing the status of pages and where you can update the status.
 ![](docs/screenshot-popup.png)
