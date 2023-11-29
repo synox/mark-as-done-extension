@@ -1,5 +1,3 @@
-import { STATUS_DONE, STATUS_TODO } from './global.js';
-
 /**
  * @param pages {PageInfo[]}
  * @param search {string}
@@ -37,5 +35,10 @@ export function sortWithCurrentFirst(pages, currentUrl) {
  * return {void}
  */
 export function sortLinksByStatus(links) {
-  return links.toSorted((a, b) => -a.properties.status?.localeCompare(b.properties.status));
+  return links.toSorted((a, b) => {
+    if (!a.properties.status) {
+      return 1;
+    }
+    return -a.properties.status.localeCompare(b.properties.status);
+  });
 }
