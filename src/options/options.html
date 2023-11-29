@@ -1,29 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Mark as done - options</title>
+  <link rel="stylesheet" href="../3rdparty/pico.min.css">
   <link rel="stylesheet" href="../popup/popup.css">
-  <link rel="stylesheet" href="options.css">
+  <link rel="stylesheet" href="./options.css">
   <script src="../global.js" type="module"></script>
 </head>
 <body class="options">
 <h1>Mark as done | Options</h1>
-<div class="section states">
-  <h2>Activated States</h2>
-  <p>
-    You can deactivate states that you don't need. This will remove the state from the popup menu and skip it
-    when you open the popup.
-  </p>
-  <div class="states-list">
-    <label><input type="checkbox" data-status="todo"><span>Todo</span></label>
-    <label><input type="checkbox" data-status="started"><span>Started</span></label>
-    <label><input type="checkbox" data-status="done"><span>Done</span></label>
-  </div>
-</div>
-
-<hr>
-
 <h2>Operations</h2>
 <p>
   <button id="exportButton">
@@ -36,9 +22,15 @@
   <input type="file" id="upload" hidden/>
   <span id="importStatus"></span>
 
+  <button id="updateTitles" >
+    <span>try to fetch missing page titles</span>
+  </button>
+
   <button id="resetAllDataButton" class="danger">
     <span>reset all data</span>
   </button>
+
+
 </p>
 
 </body>

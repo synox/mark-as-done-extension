@@ -1,37 +1,39 @@
-import { getAllLinksByDomain, sortLinksByStatus, STATUS_DONE } from '../global.js';
+import { STATUS_DONE } from '../global.js';
+import { listPages } from '../storage.js';
+import { sortLinksByStatus } from '../filter-utils.js';
 
 async function init() {
-  const linksByDomain = await getAllLinksByDomain();
-  const listElement = document.querySelector('.links');
+  const pages = await listPages();
+  const linksByDomain = Object.groupBy(pages.values(), (page) => new URL(page.url).origin);
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const domain of Object.keys(linksByDomain).sort()) {
+  for (const domain of Object.keys(linksByDomain).toSorted()) {
     const totalCount = linksByDomain[domain].length;
-    const doneCount = linksByDomain[domain].filter((item) => item.status === STATUS_DONE).length;
+    const doneCount = linksByDomain[domain].filter((item) => item.properties.status === STATUS_DONE).length;
+
     const details = document.createElement('details');
-    const summary = document.createElement('summary');
-    const h2 = document.createElement('h2');
-    h2.innerText = `${domain} (${doneCount}/${totalCount})`;
-    summary.append(h2);
-    details.append(summary);
+    details.innerHTML = `
+      <summary>
+        <h2>${domain} (${doneCount}/${totalCount})</h2>
+        </summary>
+      <table></table>
+    `;
 
     const table = document.createElement('table');
-    const items = linksByDomain[domain];
-    sortLinksByStatus(items);
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of items) {
+    const items = sortLinksByStatus(linksByDomain[domain]);
+    for (const page of items) {
       const row = document.createElement('tr');
 
       const cellStatus = document.createElement('td');
-      cellStatus.innerText = item.status;
-      const icon = document.createElement('img');
-      icon.src = chrome.runtime.getURL(`images/icon-${item.status}.png`);
-      cellStatus.prepend(icon);
+      cellStatus.innerHTML = `
+        ${page.properties.status}
+        <img alt="status ${page.properties.status}" 
+            src="${chrome.runtime.getURL(`images/icon-${page.properties.status}.png`)}" />
+      `;
       row.append(cellStatus);
 
       const a = document.createElement('a');
-      a.href = item.url;
-      a.innerText = item.url.replace(domain, '');
+      a.href = page.url;
+      a.innerText = page.properties.title || page.url.replace(domain, '');
       a.target = '_blank';
 
       const cellLink = document.createElement('td');
@@ -41,7 +43,7 @@ async function init() {
       table.append(row);
     }
     details.append(table);
-    listElement.append(details);
+    document.querySelector('.links').append(details);
   }
 }
 

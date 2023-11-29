@@ -1,8 +1,20 @@
-export const STATUS_DONE = 'done';
-export const STATUS_STARTED = 'started';
 export const STATUS_NONE = 'none';
-export const STATUS_DISABLED = 'disabled';
 export const STATUS_TODO = 'todo';
+export const STATUS_DONE = 'done';
+
+/**
+ * @property {LinkStatus} status
+ * @property {string} url
+ * @property {string} properties.title
+ * @property {string} properties.modified
+ * @property {string} properties.created
+ */
+export class PageInfo {
+  constructor(url, properties = {}) {
+    this.url = url;
+    this.properties = properties;
+  }
+}
 
 /**
  * @typedef {Object} LinkInfo
@@ -11,21 +23,8 @@ export const STATUS_TODO = 'todo';
  */
 
 /**
- * @typedef {'todo','started','done'|'none'|'disabled'} LinkStatus
+ * @typedef {'todo','done'|'none'} LinkStatus
  */
-
-// Keep backwards compatibility
-export function compatibiltyStatus(oldStatus) {
-  if (oldStatus === true) {
-    return STATUS_DONE;
-  }
-
-  if (oldStatus === undefined) {
-    return STATUS_NONE;
-  }
-
-  return oldStatus;
-}
 
 /**
  * Normalize the url to be used as key in the storage. This removes the hash and the search parameters.
@@ -35,6 +34,9 @@ export function compatibiltyStatus(oldStatus) {
  */
 export function normalizeUrl(url) {
   try {
+    if (url.startsWith('mailto:')) {
+      return null;
+    }
     const urlObject = new URL(url);
     // In general, hash are ignored.
 
@@ -53,108 +55,36 @@ export function normalizeUrl(url) {
 
     return urlObject.origin + urlObject.pathname + filteredSearch;
   } catch (error) {
-    console.error(`Can not parse as url=${url}, error=${error}`);
+    console.warn(`Can not parse as url=${url}, error=${error}`);
     return null;
   }
 }
 
-/**
- * @param url
- * @return {Promise<LinkStatus>}
- */
-export async function getStatus(url) {
-  if (!url) {
-    return STATUS_NONE;
+export function isValidUrl(url) {
+  if (!url || !url.startsWith('http')) {
+    return false;
   }
-
-  if (!url.startsWith('http')) {
-    return STATUS_DISABLED;
+  try {
+    return new URL(url).origin;
+  } catch (error) {
+    return false;
   }
-
-  const normalizedUrl = normalizeUrl(url);
-  if (!url) {
-    return STATUS_NONE;
-  }
-  const value = await chrome.storage.local.get(normalizedUrl);
-  return compatibiltyStatus(value[normalizedUrl]);
 }
 
-/**
- * @param {string} origin - The origin URL to get links from.
- * @returns {Promise<Array.<LinkInfo>>} links
- */
-export async function getAllLinksForDomain(origin) {
-  const allLinks = await getAllLinksByDomain();
-  return allLinks[origin] || [];
-}
-
-/**
- * sort links by status in-place
- * @param links {array}
- * return {void}
- */
-export function sortLinksByStatus(links) {
-  links.sort((a, b) => {
-    const statusValues = {
-      [STATUS_STARTED]: 2,
-      [STATUS_TODO]: 1,
-      [STATUS_DONE]: -1,
-      default: 0,
-    };
-
-    const getMappedValue = (status) => statusValues[status] || statusValues.default;
-
-    return getMappedValue(b.status) - getMappedValue(a.status);
-  });
-}
-
-/**
- *
- * @param links {Array<LinkInfo>}
- * @param url {string}
- */
-export function removeUrl(links, url) {
-  // the update was sent async, so the current page might not yet be in the list. But it should be.
-  return links.filter((link) => link.url !== url);
-}
-
-/**
- * change the status of one url. This is done in-place.
- * @param links {Array<LinkInfo>}
- * @param url {string}
- * @param newStatus {string}
- */
-export function updateStatusForUrl(links, url, newStatus) {
-  // the update was sent async, so the current page might not yet be in the list. But it should be.
-  const link = links.find((aLink) => aLink.url === url);
-  if (link) {
-    link.status = newStatus;
+export function getOrigin(url) {
+  if (isValidUrl(url)) {
+    return new URL(url).origin;
   } else {
-    links.push({ url, status: newStatus });
+    return null;
   }
 }
 
-/**
- Retrieves all stored links by their domain from the browser's local storage.
- The links are sorted and grouped by domain.
- @returns {Promise<Map<string,Array.<LinkInfo>>>} links by domain.
-     each domain contains an array of `LinkInfo`.
- */
-export async function getAllLinksByDomain() {
-  const allItems = await chrome.storage.local.get(null);
-  return Object.entries(allItems)
-    .map((entry) => ({ url: entry[0], status: compatibiltyStatus(entry[1]) }))
-    .sort()
-    .reduce((accumulator, currentValue) => {
-      let domain;
-      try {
-        domain = new URL(currentValue.url).origin;
-      } catch (error) {
-        // ignore bad urls
-        return accumulator;
-      }
+export function ensureSitePermissions(tabUrl) {
+  if (!isValidUrl(tabUrl)) {
+    return Promise.resolve();
+  }
 
-      accumulator[domain] = [...accumulator[domain] || [], currentValue];
-      return accumulator;
-    }, {});
+  return chrome.permissions.request({ origins: [tabUrl] }).then((granted) => {
+    console.debug('permissions requested. Granted: ', granted);
+  });
 }

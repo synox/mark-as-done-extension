@@ -14,15 +14,11 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "src/service-worker.module.js",
-        "images/icon-disabled.png",
         "images/icon-none.png",
         "images/icon-todo.png",
-        "images/icon-started.png",
         "images/icon-done.png",
-        "images/icon-toolbar-disabled.png"
-      ],
-      "extension_ids": []
+        "src/3rdparty/p-debounce-4.0.0/index.js"],
+      "matches": ["<all_urls>"]
     }
   ],
   "permissions": [
@@ -36,11 +32,11 @@
   "optional_host_permissions.chrome": ["http://*/*", "https://*/*"],
   "action": {
     "default_icon": {
-      "128": "images/icon-toolbar-disabled.png"
+      "128": "images/icon-none.png"
     }
   },
   "icons": {
-    "128": "/images/icon-done.png"
+    "128": "/images/icon-none.png"
   },
   "options_ui": {
     "page": "src/options/options.html"

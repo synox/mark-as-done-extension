@@ -1,4 +1,203 @@
-import { getStatus, normalizeUrl } from './global.js';
+import {
+  getPageState, listPagesForDomain, removePageState, updatePageState, upgradeDatastore,
+} from './storage.js';
+import { getOrigin, normalizeUrl, STATUS_NONE } from './global.js';
+
+// eslint-disable-next-line import/prefer-default-export
+export function main() {
+  chrome.runtime.onInstalled.addListener(upgradeDatastore);
+
+  chrome.action.setPopup({ popup: 'src/popup/popup.html' });
+
+  /** on tab activation: update popup and icon, and inject scripts */
+  chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    try {
+      if (changeInfo.status === 'loading') {
+        const url = changeInfo.url || tab.url;
+        const pageInfo = await getPageState(normalizeUrl(url));
+        await updateIcon(tabId, pageInfo?.properties.status || 'none');
+        // not waiting for the injection to complete:
+        injectContentScripts(tab).catch(console.error);
+      }
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  });
+
+  /** react to messages from the popup, settings and content scripts */
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // Status changed in popup
+    if (message.type === 'change-page-status') {
+      handleChangePageStatus(message, sendResponse);
+    }
+    if (message.type === 'remove-page') {
+      handleRemovePageStatus(message, sendResponse);
+    }
+
+    if (message.type === 'import-data') {
+      handleImportData(message, sendResponse);
+    }
+
+    if (message.type === 'get-status') {
+      handleGetStatusMessage(message, sendResponse);
+    }
+    if (message.type === 'batch-get-status') {
+      handleGetStatusMessageAsBatch(message, sendResponse);
+    }
+
+    // Return true to indicate that the response should be sent asynchronously
+    return true;
+  });
+}
+
+/**
+ * @param url {string}
+ * @return {Promise<boolean>}
+ */
+async function hasAnyEntriesForDomain(url) {
+  const pageStates = await listPagesForDomain(getOrigin(url));
+  return pageStates.length > 0;
+}
+
+function isAllowedDomain(url) {
+  return url && url.startsWith('http');
+}
+
+async function injectContentScripts(tab) {
+  // Only inject script if there are already any entries for the current domain
+  if (await isAllowedDomain(tab.url) && await hasAnyEntriesForDomain(tab.url)) {
+    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/mark-as-done-content.js'] });
+    await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/mark-as-done-content.css'] });
+    await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
+  }
+}
+
+/**
+ * @param message {{url, tab, properties: {title, status: LinkStatus,} }} Note that the url and title can be different from the tab.
+ * @param sendResponse
+ * @return {Promise<void>}
+ */
+async function handleChangePageStatus(message, sendResponse) {
+  if (message.properties.status === 'none') {
+    await removePageState(normalizeUrl(message.url));
+  } else {
+    await updatePageState(normalizeUrl(message.url), message.properties);
+  }
+  await updateLinksInAllTabs();
+  await updateIcon(message.tab.id, message.properties.status);
+
+  // not waiting for the injection to complete:
+  injectContentScripts(message.tab).catch(console.error);
+  sendResponse('change-page-status done');
+}
+
+/**
+ *
+ * @param message {{tabId, tabUrl, url}} Note that the url and title can be different from the tab.
+ * @param sendResponse
+ * @return {Promise<void>}
+ */
+async function handleRemovePageStatus(message, sendResponse) {
+  await removePageState(normalizeUrl(message.url));
+  await updateLinksInAllTabs();
+
+  if (message.tabUrl === message.url) {
+    await updateIcon(message.tabId, STATUS_NONE);
+  }
+
+  sendResponse('remove-page done');
+}
+
+async function handleImportData(message, sendResponse) {
+  for (const entry of message.data) {
+    const { url, ...properties } = entry;
+    // eslint-disable-next-line no-await-in-loop
+    await updatePageState(url, properties);
+  }
+  await upgradeDatastore();
+  sendResponse('success');
+}
+
+async function handleGetStatusMessage(message, sendResponse) {
+  const pageInfo = await getPageState(normalizeUrl(message.url));
+  sendResponse(pageInfo?.properties?.status || 'none');
+}
+
+async function handleGetStatusMessageAsBatch(message, sendResponse) {
+  const urls = message.urls.map(normalizeUrl);
+  const resultMap = {};
+  await Promise.all(urls.map(async (url) => {
+    const pageInfo = await getPageState(normalizeUrl(url));
+    if (pageInfo) {
+      resultMap[url] = pageInfo.properties.status;
+    }
+  }));
+  sendResponse(resultMap);
+}
+
+// eslint-disable-next-line no-unused-vars
+async function createDynamicIcon(status) {
+  const canvas = new OffscreenCanvas(32, 32);
+  const context = canvas.getContext('2d');
+  context.clearRect(0, 0, 32, 32);
+
+  /// / -----
+
+  const lineWidth = 5;
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const radius = canvas.width / 2 - 2; // 5px for padding
+  const startAngle = -0.5 * Math.PI; // Start from the top
+  const progress = 0.75; // 75% progress
+
+  // Clear the canvas
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  let statusImage;
+  if (status === 'none') statusImage = 'icon-none';
+  if (status === 'todo') statusImage = 'chevron';
+  if (status === 'done') statusImage = 'icon-done';
+
+  const image = await fetch(chrome.runtime.getURL(`images/${statusImage}.png`));
+  const imageBlob = await image.blob();
+  // convert blob to bitmap
+  const imageBitmap = await createImageBitmap(imageBlob);
+  const padding = 8;
+  context.drawImage(imageBitmap, padding, padding, canvas.width - padding - 7, canvas.height - padding - 7);
+  // context.drawImage(imageBitmap, padding, padding, 32, 32);
+
+  // Draw the progress arc
+  context.beginPath();
+  context.arc(centerX, centerY, radius, startAngle, startAngle + progress * 2 * Math.PI);
+  context.lineWidth = lineWidth;
+  context.strokeStyle = '#1665ed';
+  context.stroke();
+
+  // Draw the rest of the line in gray
+  context.beginPath();
+  context.arc(centerX, centerY, radius, startAngle + progress * 2 * Math.PI, startAngle + 2 * Math.PI);
+  context.lineWidth = lineWidth;
+  context.strokeStyle = '#eee';
+  context.stroke();
+
+  const imageData = context.getImageData(0, 0, 32, 32);
+  return imageData;
+}
+
+/**
+ * @param tabId {string}
+ * @param status {LinkStatus}
+ * @return {Promise<void>}
+ */
+async function updateIcon(tabId, status) {
+  await chrome.action.setIcon({ tabId, path: `/images/icon-${status}.png` });
+
+  // the following is an experiment, and it does not look good. Maybe we come back to this later.
+  // const imageData = await createDynamicIcon(status);
+  // await chrome.action.setIcon({ imageData });
+}
 
 /**
  * react to changes in the storage: update all tabs
@@ -6,10 +205,11 @@ import { getStatus, normalizeUrl } from './global.js';
 async function updateLinksInAllTabs() {
   console.debug('storage changed, updating all tabs');
   const tabs = await chrome.tabs.query({});
-  // don't wait until update is complete
+  // we don't wait until the other tabs are updated.
+  // noinspection ES6MissingAwait
   tabs
     .filter((tab) => isAllowedDomain(tab.url))
-    .map(async (tab) => {
+    .forEach(async (tab) => {
       try {
         await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
       } catch (e) {
@@ -20,161 +220,4 @@ async function updateLinksInAllTabs() {
     });
 }
 
-async function activatePopup(tab) {
-  await chrome.action.setPopup({ popup: 'src/popup/popup.html', tabId: tab.id });
-}
-
-/**
- * @param url {string}
- * @return {Promise<boolean>}
- */
-async function hasAnyEntriesForDomain(url) {
-  const urlObj = new URL(url);
-  const allItems = await chrome.storage.local.get(null);
-  return Object.keys(allItems).some((key) => key.startsWith(urlObj.origin));
-}
-
-function isAllowedDomain(url) {
-  return url && url.startsWith('http');
-}
-
-async function injectContentScripts(tab) {
-  await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['src/inject/inject.js'] });
-  await chrome.scripting.insertCSS({ target: { tabId: tab.id }, files: ['/src/inject/inject.css'] });
-  await chrome.tabs.sendMessage(tab.id, { type: 'update-content' });
-}
-
-/**
- *
- * @param message {{status: LinkStatus, tab}}
- * @param sendResponse
- * @return {Promise<void>}
- */
-async function handleChangePageStatus(message, sendResponse) {
-  console.log('updating status to', message.status);
-
-  await storePageStatus(message.tab.url, message.status);
-  try {
-    await chrome.tabs.sendMessage(message.tab.id, { type: 'update-content' });
-  } catch (e) {
-    if (e.message !== 'Could not establish connection. Receiving end does not exist.') {
-      console.error('error while sending "update-content" message', e);
-    }
-  }
-  await updateIcon(message.tab.id, message.status);
-
-  // Make sure the scripts are injected
-  if (message.status !== 'none' && !await hasAnyEntriesForDomain(message.tab.url)) {
-    // not waiting for the injection to complete:
-    injectContentScripts(message.tab).catch(console.error);
-  }
-  sendResponse('change-page-status done');
-}
-
-function handleImportData(message, sendResponse) {
-  message.data.forEach((entry) => {
-    chrome.storage.local.set({ [entry.url]: entry.status });
-  });
-
-  sendResponse('success');
-}
-
-async function handleGetStatusMessage(message, sendResponse) {
-  const status = await getStatus(message.url);
-  sendResponse(status);
-}
-
-/**
- * @param tabId {string}
- * @param status {LinkStatus}
- * @return {Promise<void>}
- */
-async function updateIcon(tabId, status) {
-  await chrome.action.setIcon({ tabId, path: `/images/icon-${status}.png` });
-}
-
-/**
- *
- * @param url
- * @param newStatus {LinkStatus}
- * @return {Promise<*>}
- */
-async function storePageStatus(url, newStatus) {
-  const normalizedUrl = normalizeUrl(url);
-
-  if (newStatus === 'none') {
-    await chrome.storage.local.remove(normalizedUrl);
-  } else {
-    // This special syntax uses the value of normalizedUrl as the key of the object
-    await chrome.storage.local.set({ [normalizedUrl]: newStatus });
-  }
-
-  await updateLinksInAllTabs();
-}
-
-// eslint-disable-next-line import/prefer-default-export
-export function main() {
-  chrome.permissions.onAdded.addListener((ev) => {
-    console.log(`Permissions added: [${ev.permissions}] with origins [${ev.origins}]`);
-    chrome.action.setPopup({ popup: 'src/popup/popup.html' });
-  });
-
-  chrome.action.setTitle({ title: 'disabled for this site. Click to request permissions' });
-  chrome.action.onClicked.addListener((tab) => {
-    try {
-      chrome.permissions.request({ origins: [tab.url] });
-    } catch (e) {
-      console.error('error requesting permision', e);
-      throw e;
-    }
-  });
-  /**
-   * react to tab activation: update popup and icon, and inject scripts
-   */
-  chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    try {
-      // Only inject script if there are already any entries for the current domain
-      if (!await isAllowedDomain(tab.url) || !await hasAnyEntriesForDomain(tab.url)) {
-        console.debug('extension is disabled on domain', tab.url);
-        await updateIcon(tab.id, 'disabled');
-        chrome.action.setTitle({ title: 'mark as done: disabled for this site' });
-        return;
-      }
-
-      chrome.action.setTitle({ title: '' });
-      if (tab.status === 'loading') {
-        await activatePopup(tab);
-        const status = await getStatus(tab.url);
-        await updateIcon(tab.id, status);
-      } else if (tab.status === 'complete' && changeInfo.status === 'complete') {
-        console.debug('tab was updated', tab.url, changeInfo);
-        await injectContentScripts(tab);
-      }
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
-  });
-
-  /**
-   * react to messages from the popup, settings and content scripts
-   */
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // Status changed in popup
-    if (message.type === 'change-page-status') {
-      handleChangePageStatus(message, sendResponse);
-    }
-
-    if (message.type === 'import-data') {
-      handleImportData(message, sendResponse);
-    }
-
-    if (message.type === 'get-status') {
-      handleGetStatusMessage(message, sendResponse);
-    }
-
-    // Return true to indicate that the response should be sent asynchronously
-    return true;
-  });
-}
 main();

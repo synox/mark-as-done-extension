@@ -1,113 +1,85 @@
-:root {
-    font-family: Arial, sans-serif;
-    font-size: 12px;
+html {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
 }
 
 body {
-  min-width: 350px;
+  min-width: 480px;
+  padding: 10px;
+  background-color: #e6e6e6;
 }
 
-.appear-from-top {
-    position: relative;
-    animation: appear-from-top 0.2s ease-in forwards;
+body.body-hidden > * {
+  visibility: hidden;
 }
 
-@keyframes appear-from-top {
-    from {
-        top: -30px;
-        opacity: 0;
-    }
-
-    to {
-        top: 0;
-        opacity: 1
-    }
+@media only screen and (prefers-color-scheme: dark) {
+  body {
+    background-color: #333;
+  }
 }
 
-
-.controls {
-    margin: 5px;
-    min-width: 20rem;;
-    display: none;
+body.popup > header {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-.controls.current {
-    display: block;
-    white-space: nowrap;
+body.popup > header .first-row {
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
-.controls h1 {
-    font-size: 1.5rem;
-    padding: 5px 5px 5px 0;
+body.popup > header [role="search"] {
+  flex-grow: 1;
 }
 
-.controls a {
-    margin-right: 15px;
-    padding: 10px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-size: 1rem;
-    background-color: #eee;
-    color: #444;
+.hidden,
+[role=button].hidden,
+header #filters.hidden {
+  display: none !important;
 }
 
-.controls h1 img {
-    height: 1.5em;
-    vertical-align: middle;
+header .header-buttons [role="button"] {
+  padding: 5px;
+  margin-left: 5px;
 }
 
-.controls a:hover {
-    background-color: #eaeaea;
+header .header-buttons .icon {
+  height: 20px;
 }
 
-.controls .state-change-buttons {
-    margin: 20px 0;
+header .settings img {
+  height: 20px;
+  filter: opacity(50%);
 }
 
-.controls a img {
-    height: 1.5em;
-    vertical-align: middle;
-    filter: grayscale(1);
+@media only screen and (prefers-color-scheme: dark) {
+  header .settings img {
+    filter: opacity(50%) invert(1);
+  }
 }
 
-.controls a:hover img {
-    filter: none;
+header #filters {
+  margin-left: 40px;
+  display: flex;
+  gap: 20px;
 }
 
-#controls-disabled h1 {
-  color: darkgray;
+body.popup > main {
+  padding: 0;
 }
 
-.related-links ul {
-    padding: 0;
-    margin: 0;
-    max-height: 300px;
-    overflow-y: auto;
+main h2 {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-hr {
-  border:none;
-  border-top: 1px solid lightblue;
+main h2 .counter {
+  font-size: 0.5em;
 }
 
-.related-links h2 {
-    margin-bottom: 5px;
-    font-size: 1.2rem;
-    font-weight: normal;
-}
-
-
-.related-links ul li {
-    list-style: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 25rem;
-    overflow-x: hidden;
-    font-size: 1.1rem;
-}
-
-.related-links ul li img {
-    height: 1.0em;
-    margin-right: 0.2em;
-    vertical-align: middle;
+main section {
+  margin: 20px 0;
 }

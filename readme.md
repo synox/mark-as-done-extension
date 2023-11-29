@@ -23,11 +23,9 @@ With one click, the page is marked as Todo, Started, or Done.
 
 
 # Icons
-<img src="images/icon-toolbar-disabled.png" width=30> **Inactive**: Extension is not yet active on this site.  
-<img src="images/icon-none.png" width=30> **Ready**: Extension is active, current page is not marked.   
-<img src="images/icon-todo.png" width=20> **Todo**: Page is marked as Todo  
-<img src="images/icon-started.png" width=20> **Started**: Page is marked as Started or partially completed  
-<img src="images/icon-done.png" width=20> **Done**: Page is marked as Done  
+<img src="images/icon-none.png" width=30> **Unmarked**: Current page is not marked.   
+<img src="images/icon-todo.png" width=20> **Unread**: Page is marked to Read  
+<img src="images/icon-done.png" width=20> **Finished**: Page is marked as finished  
 
 # How to Install
 
@@ -36,15 +34,6 @@ Firefox: [Mark as Done on Firefox Add-ons](https://addons.mozilla.org/en-US/fire
 
 Or: Clone the repository and "load unpacked" as described in [Chrome Developer Guide](https://developer.chrome.com/docs/extensions/mv3/getstarted/#manifest)
 
-# How to Use
-
-**Activate on site:** 
-Click the icon <img src="images/icon-toolbar-disabled.png" width=30> to activate highlighting links for this site.
-
-**Mark a page:** Click the icon <img src="images/icon-none.png" width=30>, then mark the current page as Todo, Started, Done, or unmarked. 
-
-
-**List all pages / Export**: Right-click on the Icon, then Click "Options" (Chrome) or "Manage Extension" (Firefox).
 
 # Notes
 

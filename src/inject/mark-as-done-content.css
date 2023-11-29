@@ -13,22 +13,12 @@ a.marked-as-todo::after {
     margin-left: 0.3em;
 }
 
-a.marked-as-started {
-    color: #00c7ff !important;
+@-moz-document url-prefix() {
+    a.marked-as-todo::after {
+        /* noinspection CssUnknownTarget */
+        background-image: url('moz-extension://__MSG_@@extension_id__/images/icon-todo.png');
+    }
 }
-
-a.marked-as-started::after {
-  /* noinspection CssUnknownTarget */
-  background-image: url('chrome-extension://__MSG_@@extension_id__/images/icon-started.png');
-    background-size: 1em 1em;
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    content:"";
-    margin-left: 0.3em;
-}
-
-
 
 a.marked-as-done {
     color: #009100 !important;
@@ -45,7 +35,9 @@ a.marked-as-done::after {
     margin-left: 0.3em;
 }
 
-
-h1 {
-    font-size: 22pt;
+@-moz-document url-prefix() {
+    a.marked-as-done::after {
+        /* noinspection CssUnknownTarget */
+        background-image: url('moz-extension://__MSG_@@extension_id__/images/icon-done.png');
+    }
 }
