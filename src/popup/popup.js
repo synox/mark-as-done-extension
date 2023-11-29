@@ -80,8 +80,6 @@ class Popup {
   }
 
   async updatePopup() {
-    console.debug('update popup with status', this.pageInfo);
-
     if (!isValidUrl(this.tab.url)) {
       // invalid url
       document.getElementById('mark-as-unread-button').classList.add('hidden');

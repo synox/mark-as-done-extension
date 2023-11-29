@@ -3,8 +3,6 @@
 
 // JS-Modules cannot be injected, so we cannot export or import anything.
 
-// console.debug('mark-as-done script added');
-
 chrome.runtime.onMessage.addListener((request) => {
   if (request.type === 'update-content') {
     updateAllLinksOnPage().then(() => {
@@ -84,7 +82,6 @@ function watchPageForDynamicallyAddedLinks() {
             .from(mutation.addedNodes)
             .some((node) => node instanceof HTMLAnchorElement || (node.querySelector && node.querySelector('a')));
           if (hasAddedLinks) {
-            console.debug('links were added');
             window.debouncedUpdateAllLinksOnPage();
             break;
           }
