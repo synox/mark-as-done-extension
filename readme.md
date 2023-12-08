@@ -1,3 +1,5 @@
+[Chrome Extension](https://chrome.google.com/webstore/detail/mark-as-done/eamfmbodggklinbmhfgeogcpebhfoojb?hl=de)  /  [Firefox Add-on](https://addons.mozilla.org/en-US/firefox/addon/mark-as-done/)
+
 # Mark as Done (Chrome & Firefox Extension)
 
 > Easily track the reading status of any page. 
