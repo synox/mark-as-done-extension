@@ -116,6 +116,11 @@ function normalizeUrl(url) {
     // https://wiki.corp.example.com/display/ABC/Link?src=contextnavpagetreemode
     filteredSearch = urlObject.search.replace(/src=contextnavpagetreemode/, '');
 
+    if (filteredSearch.endsWith('&')) {
+      // remove the trailing "&" after removing the  src param
+      // https://wiki.corp.example.com/display/ABC/pageId=1234&src=contextnavpagetreemode
+      filteredSearch = filteredSearch.substring(0, filteredSearch.length - 1);
+    }
     if (filteredSearch === '?') {
       filteredSearch = '';
     }
