@@ -22,8 +22,8 @@ And below is the extension popup, showing the status of pages and where you can 
   -  Export and import your marked pages list
 
 # Icons
-| Icon | Meaning                     |
-| --- |-----------------------------|
+| Icon                                      | Meaning                     |
+|-------------------------------------------|-----------------------------|
 | <img src="images/icon-none.png" width=30> | Current page is not marked. |
 | <img src="images/icon-todo.png" width=20> | Page is unread              |
 | <img src="images/icon-done.png" width=20> | Page is marked as finished  |
